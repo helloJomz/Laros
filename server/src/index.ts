@@ -1,10 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import { makeApiRequest } from "./utils/utils";
 import { MakeAPIRequestProps } from "./utils/types";
-import mongoose from "mongoose";
-import { User } from "./models/User";
+import { UserModel } from "./models/User";
+import { SearchHistoryModel } from "./models/SearchHistory";
 import { generateDefaultSearch } from "./utils/utils";
 
 dotenv.config();
@@ -18,6 +19,21 @@ app.use(
 );
 
 app.use(express.json());
+
+const CONNECTION: string = process.env.MONGODBCREDENTIALS!;
+const PORT: string | number = process.env._PORT || 3000;
+
+mongoose
+  .connect(CONNECTION)
+  .then(() => {
+    console.log("connected to the database");
+    app.listen(PORT, () => {
+      console.log(`listening to PORT ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 // FOR SIGNUP USERS
 app.post("/api/users/signup", async (req, res) => {
@@ -37,7 +53,7 @@ app.post("/api/users/signup", async (req, res) => {
       dateCreated: dateCreated,
     };
 
-    const user = await User.create(newUser);
+    const user = await UserModel.create(newUser);
 
     return res.status(200).send(user);
   } catch (error) {
@@ -80,11 +96,10 @@ app.get("/api/search/games/:query?", async (req, res) => {
   };
 
   try {
-    if (!apiKey) {
+    if (!apiKey)
       return res.status(400).json({
         error: "API KEY IS NOT DEFINED!",
       });
-    }
 
     apiRequestParams = {
       url: giantBombAPIURL,
@@ -103,22 +118,66 @@ app.get("/api/search/games/:query?", async (req, res) => {
   }
 });
 
-const CONNECTION = process.env.MONGODBCREDENTIALS;
-const PORT = process.env._PORT || 3000;
+// FOR SEARCH HISTORY
+app.post("/api/recent_history", async (req, res) => {
+  try {
+    const { query, guid, userid, origin } = req.body;
 
-if (!CONNECTION) {
-  console.error("Error: MONGODBURL environment variable is not defined.");
-  process.exit(1);
-}
+    // Origin is set to required by default in the SearchHistory Model thus
+    // Check if Origin is not present in the request body.
+    if (!origin)
+      return res.status(400).json({ message: "Origin must have a value" });
 
-mongoose
-  .connect(CONNECTION)
-  .then(() => {
-    console.log("connected to the database");
-    app.listen(PORT, () => {
-      console.log(`listening to PORT ${PORT}`);
+    // Check if the query already exists in the database
+    const isDuplicated = await SearchHistoryModel.findOne({
+      query: { $exists: true, $ne: null, $eq: query },
     });
-  })
-  .catch((error) => {
+
+    // If it exists check for GUID, USERID, and QUERY if duplicated
+    if (isDuplicated) {
+      if (isDuplicated.guid && isDuplicated.guid === guid)
+        return res.status(400).json({ message: "Duplicated by GUID" });
+
+      if (isDuplicated.userid && isDuplicated.userid === userid)
+        return res.status(400).json({ message: "Duplicated by USERID" });
+
+      return res.status(400).json({ message: "Duplicated by QUERY" });
+    } else {
+      // If it does not exist check for GUID and USERID instead
+      // Check if either guid or userid is set
+      // FIXME: its still saves when the guid or userid is duplicated!
+      if (guid || userid) {
+        // Check if the query already exists in the database with the same GUID or USERID
+        const isDuplicateByGuidOrUserId = await SearchHistoryModel.findOne({
+          $or: [{ guid: guid }, { userid: userid }],
+        });
+
+        if (isDuplicateByGuidOrUserId) {
+          if (
+            isDuplicateByGuidOrUserId.guid &&
+            isDuplicateByGuidOrUserId.guid === guid
+          )
+            return res.status(400).json({ message: "Duplicated by GUID" });
+
+          if (
+            isDuplicateByGuidOrUserId.userid &&
+            isDuplicateByGuidOrUserId.userid === userid
+          )
+            return res.status(400).json({ message: "Duplicated by USERID" });
+        }
+      }
+    }
+
+    const newSearchHistory = {
+      query: guid || userid ? undefined : query,
+      guid: guid,
+      userid: userid,
+      origin: origin,
+    };
+
+    const SearchHistory = await SearchHistoryModel.create(newSearchHistory);
+    return res.status(200).json(SearchHistory);
+  } catch (error) {
     console.error(error);
-  });
+  }
+});

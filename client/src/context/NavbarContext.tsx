@@ -80,7 +80,6 @@ const useNavbarContext = () => {
   const context = useContext(NavbarContext);
   if (context === undefined) {
     throw new Error(
-      // FIXME:
       "useSearchContext must be used within a APISearchContextProvider"
     );
   }

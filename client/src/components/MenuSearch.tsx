@@ -15,6 +15,8 @@ const MenuSearch = () => {
   const lowercasedSearchBoxType = searchBoxType.toLowerCase();
 
   return (
+    // FIXME: Fix the length of the MenuSearch when there is no result
+    //        As well as hide the 'see all' button
     <div
       className={cn(
         "w-full bg-secondary absolute z-10 px-2 pt-4  top-[2.5rem] rounded shadow-md overflow-hidden h-fit",
