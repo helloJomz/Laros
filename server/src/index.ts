@@ -17,8 +17,6 @@ app.use(
   })
 );
 
-const PORT = process.env._PORT || 3000;
-
 app.use(express.json());
 
 // FOR SIGNUP USERS
@@ -72,7 +70,7 @@ app.get("/api/search/games/:query?", async (req, res) => {
 
   let apiRequestParams: MakeAPIRequestProps;
 
-  const apiKey = process.env.GIANTBOMB_API_KEY;
+  const apiKey = process.env.GIANTBOMB_API_KEY2;
   const randomId = generateDefaultSearch();
   const giantBombAPIURL = "https://www.giantbomb.com/api/games/";
 
@@ -106,6 +104,7 @@ app.get("/api/search/games/:query?", async (req, res) => {
 });
 
 const CONNECTION = process.env.MONGODBCREDENTIALS;
+const PORT = process.env._PORT || 3000;
 
 if (!CONNECTION) {
   console.error("Error: MONGODBURL environment variable is not defined.");
