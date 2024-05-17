@@ -1,7 +1,7 @@
 import { TailSpin } from "react-loading-icons";
 import { useNavbarContext } from "../context/NavbarContext";
 import { Badge } from "./ui/badge";
-import { FishOff, MonitorSmartphone, Search } from "lucide-react";
+import { FishOff, MonitorSmartphone } from "lucide-react";
 import { cn } from "../utils/utils";
 
 import {
@@ -28,12 +28,11 @@ const GameList = () => {
           (!isAPISearchLoading && APISearchResult.length > 0) ||
           APISearchResult.length === 0 ||
           (windowWidth > 768 && APISearchResult.length === 10),
-        "h-fit": APISearchResult.length === 0,
+        "h-fit": APISearchResult.length === 0 || windowWidth <= 768,
       })}
     >
       {APISearchResult.length > 0 && (
-        <div className="flex gap-x-2 py-2 items-center font-semibold">
-          <Search size={16} />
+        <div className="flex gap-x-2 py-2 px-2 items-center font-semibold">
           <span>Search results for '{searchQuery.trim()}'</span>
         </div>
       )}
@@ -46,39 +45,35 @@ const GameList = () => {
         APISearchResult.map((api) => (
           <div
             key={api.guid}
-            className={cn("mb-4 p-2  rounded hover:bg-primary cursor-pointer", {
+            className={cn("mb-4 p-2 rounded hover:bg-primary cursor-pointer", {
               "py-0": windowWidth <= 768,
             })}
             onClick={() => console.log(api.guid)}
           >
-            <div
-              className={cn("flex gap-x-3", {
-                "items-center": windowWidth <= 768,
-              })}
-            >
+            <div className="flex gap-x-3 items-center">
               <img
                 src={api.image.icon_url}
                 alt={api.image.image_tags}
                 className={cn(
-                  "w-24 h-24 object-cover rounded border border-muted-foreground",
+                  "w-20 h-20 object-cover rounded border border-muted-foreground",
                   {
                     "w-10 h-10": windowWidth <= 768,
                   }
                 )}
               />
               <div
-                className={cn("flex flex-col", {
+                className={cn("flex flex-col gap-y-2 ", {
                   "gap-y-[0.25rem]": windowWidth <= 768,
-                  "gap-y-2": windowWidth > 768,
                 })}
               >
-                <h3
+                <h4
                   className={cn("font-semibold", {
                     "text-sm": windowWidth <= 768,
                   })}
                 >
                   {api.name}
-                </h3>
+                </h4>
+
                 <div className="flex gap-x-2">
                   {/* FOR BADGES PLATFORMS */}
                   {api.platforms && api.platforms.length > 0 ? (
@@ -167,7 +162,7 @@ const GameList = () => {
                 >
                   {api.deck
                     ? api.deck.length >= 150
-                      ? api.deck.substring(0, 150) + "..."
+                      ? api.deck.substring(0, 100) + "..."
                       : api.deck
                     : "No description available."}
                 </span>
