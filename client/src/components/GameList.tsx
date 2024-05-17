@@ -1,7 +1,7 @@
 import { TailSpin } from "react-loading-icons";
 import { useNavbarContext } from "../context/NavbarContext";
 import { Badge } from "./ui/badge";
-import { FishOff, MonitorSmartphone } from "lucide-react";
+import { FishOff, MonitorSmartphone, Search } from "lucide-react";
 import { cn } from "../utils/utils";
 
 import {
@@ -13,18 +13,31 @@ import {
 
 const GameList = () => {
   // Context
-  const { isAPISearchLoading, APISearchResult, windowWidth, searchQuery } =
-    useNavbarContext();
+  const {
+    isAPISearchLoading,
+    APISearchResult,
+    windowWidth,
+    searchQuery,
+    isSearchTyping,
+  } = useNavbarContext();
 
   return (
     <div
-      className={cn("w-full h-full overflow-y-auto", {
+      className={cn("w-full h-full overflow-y-auto ", {
         "h-[32rem]":
           (!isAPISearchLoading && APISearchResult.length > 0) ||
           APISearchResult.length === 0 ||
           (windowWidth > 768 && APISearchResult.length === 10),
+        "h-fit": APISearchResult.length === 0,
       })}
     >
+      {APISearchResult.length > 0 && (
+        <div className="flex gap-x-2 py-2 items-center font-semibold">
+          <Search size={16} />
+          <span>Search results for '{searchQuery.trim()}'</span>
+        </div>
+      )}
+
       {isAPISearchLoading ? (
         <div className="flex justify-center">
           <TailSpin speed={1} />
@@ -33,7 +46,7 @@ const GameList = () => {
         APISearchResult.map((api) => (
           <div
             key={api.guid}
-            className={cn("mb-4 p-2 rounded hover:bg-primary cursor-pointer", {
+            className={cn("mb-4 p-2  rounded hover:bg-primary cursor-pointer", {
               "py-0": windowWidth <= 768,
             })}
             onClick={() => console.log(api.guid)}
@@ -163,8 +176,9 @@ const GameList = () => {
           </div>
         ))
       ) : (
-        searchQuery.trim() !== "" && (
-          <div className="text-center text-muted-foreground">
+        searchQuery.trim() !== "" &&
+        !isSearchTyping && (
+          <div className="py-6 text-center text-muted-foreground">
             <div className="flex justify-center">
               <FishOff size={120} />
             </div>

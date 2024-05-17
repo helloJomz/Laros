@@ -32,6 +32,7 @@ const Navbar = () => {
     setIsSearchTyping,
     recentSearchHistory,
     fetchSearchHistory,
+    setAPISearchResult,
   } = useNavbarContext();
 
   // State

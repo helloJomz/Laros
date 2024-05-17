@@ -2,13 +2,22 @@ import { History, X } from "lucide-react";
 import { useNavbarContext } from "../context/NavbarContext";
 import { type SearchHistoryType } from "../types/SearchHistory";
 import AvatarDisplay from "./AvatarDisplay";
+import { Button } from "./ui/button";
 
 const SearchHistoryList = () => {
   const { recentSearchHistory } = useNavbarContext();
 
-  console.log(recentSearchHistory);
   return (
-    <div>
+    <div className="py-2">
+      <div className="font-semibold flex justify-between px-2 ">
+        <div className="flex gap-x-2 items-center">
+          <span>Recent</span>
+        </div>
+        <Button variant="link" size={"sm"} className="p-0 text-cyan-400">
+          Edit
+        </Button>
+      </div>
+
       {recentSearchHistory.map((recent: SearchHistoryType) => (
         <div key={recent._id}>
           {recent.history.map((history) => (
