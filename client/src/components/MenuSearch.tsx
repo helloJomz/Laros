@@ -1,12 +1,15 @@
 import { cn } from "../utils/utils";
 import { useNavbarContext } from "../context/NavbarContext";
 import GameList from "./GameList";
-import { Joystick, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import SearchHistoryList from "./SearchHistoryList";
+import { Button } from "./ui/button";
 
 const MenuSearch = () => {
   const {
     isAPISearchLoading,
     APISearchResult,
+    recentSearchHistory,
     windowWidth,
     searchBoxType,
     searchQuery,
@@ -19,36 +22,40 @@ const MenuSearch = () => {
     //        As well as hide the 'see all' button
     <div
       className={cn(
-        "w-full bg-secondary absolute z-10 px-2 pt-4  top-[2.5rem] rounded shadow-md overflow-hidden h-fit",
+        "w-full bg-secondary absolute z-10 px-4 pt-2 top-[2.5rem] rounded shadow-md overflow-hidden h-fit",
         {
           "top-[2.35rem]": windowWidth <= 1023,
           "h-24": isAPISearchLoading,
         }
       )}
     >
-      {APISearchResult.length > 0 &&
-      !isAPISearchLoading &&
-      searchQuery.trim() !== "" ? (
-        <div className="flex gap-x-2 items-center font-semibold">
-          <Search size={16} />
-          <span>Search results for '{searchQuery.trim()}'</span>
-        </div>
-      ) : (
-        APISearchResult.length > 0 &&
-        !isAPISearchLoading && (
-          <div className="px-2 pb-3 flex gap-x-2 items-center font-semibold">
-            <Joystick size={16} />
-            <span>Random games</span>
+      <div>
+        {recentSearchHistory.length > 0 &&
+        APISearchResult.length === 0 &&
+        searchQuery.trim() === "" &&
+        !isAPISearchLoading ? (
+          <div className="font-semibold flex justify-between px-2 pt-1">
+            <div className="flex gap-x-2 items-center">
+              <span>Recent</span>
+            </div>
+            <Button variant="link" size={"sm"} className="p-0 text-cyan-400">
+              Edit
+            </Button>
           </div>
-        )
-      )}
+        ) : (
+          <div className="flex gap-x-2 items-center font-semibold">
+            <Search size={16} />
+            <span>Search results for '{searchQuery.trim()}'</span>
+          </div>
+        )}
+      </div>
 
-      {lowercasedSearchBoxType === "games" ? (
-        <>
-          <GameList />
-        </>
+      {searchQuery.trim() === "" ? (
+        <SearchHistoryList />
+      ) : lowercasedSearchBoxType === "games" ? (
+        <GameList />
       ) : (
-        "hi"
+        <span>hi</span>
       )}
 
       <div className="py-2 text-center hover:text-primary hover:underline text-xs border-t-2 lg:text-sm">

@@ -30,6 +30,8 @@ const Navbar = () => {
     setSearchQuery,
     isSearchTyping,
     setIsSearchTyping,
+    recentSearchHistory,
+    fetchSearchHistory,
   } = useNavbarContext();
 
   // State
@@ -83,19 +85,13 @@ const Navbar = () => {
     try {
       if (searchBoxLowerCased === "games") {
         if (isEmptySearch) {
-          // If debounced search is empty, set random games
-          searchAPI(searchBoxLowerCased);
-          console.log("im empty");
+          fetchSearchHistory("123");
         } else {
           // If debounced search is not empty, search for games based on search query
           searchAPI(searchBoxLowerCased, debouncedSearch);
           console.log("not empty");
         }
       } else {
-        // if (debouncedSearch.trim() === "") {
-        //   // If debounced search is empty, handle users
-        //   searchAPI();
-        // }
         console.log("im in user");
       }
     } catch (error) {

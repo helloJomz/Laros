@@ -21,6 +21,10 @@ const UserSchema = new Schema({
     type: Number,
     required: true,
   },
+  imgURL: {
+    type: String,
+    required: false,
+  },
 });
 
 export const UserModel = model("users", UserSchema);

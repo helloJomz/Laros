@@ -1,15 +1,20 @@
 import { createContext, useContext, useState, FC } from "react";
-import { type SearchGameProps } from "../types/search_api";
-import { getApiResponse } from "../utils/utils";
+import { type SearchGameProps } from "../types/SearchAPI";
+import { getApiResponse, getRecentSearchHistory } from "../utils/utils";
 
 type NavbarContextProps = {
   searchAPI: (type: string, query?: string) => void;
+
+  fetchSearchHistory: (userid: string) => void;
 
   isAPISearchLoading: boolean;
   setIsAPISearchLoading: (isLoading: boolean) => void;
 
   APISearchResult: SearchGameProps[];
   setAPISearchResult: (response: SearchGameProps[]) => void;
+
+  recentSearchHistory: any[];
+  setRecentSearchHistory: (response: any[]) => void;
 
   searchBoxType: string;
   setSearchBoxType: (type: "Games" | "Users") => void;
@@ -36,6 +41,7 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSearchTyping, setIsSearchTyping] = useState<boolean>(false);
+  const [recentSearchHistory, setRecentSearchHistory] = useState<string[]>([]);
 
   // Fetch data from the API
   const searchAPI = async (type: string, query?: string | undefined) => {
@@ -52,10 +58,22 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const fetchSearchHistory = async (userid: string) => {
+    try {
+      setIsAPISearchLoading(true);
+      const response = await getRecentSearchHistory(userid);
+      setRecentSearchHistory(response);
+      setIsAPISearchLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <NavbarContext.Provider
       value={{
         searchAPI,
+        fetchSearchHistory,
         isAPISearchLoading,
         setIsAPISearchLoading,
         APISearchResult,
@@ -68,6 +86,8 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
         setSearchQuery,
         isSearchTyping,
         setIsSearchTyping,
+        recentSearchHistory,
+        setRecentSearchHistory,
       }}
     >
       {children}

@@ -24,3 +24,14 @@ export const getApiResponse = async (
     throw new Error("Error getting data from API");
   }
 };
+
+// GET A RECENT HISTORY FOR SEARCH
+export const getRecentSearchHistory = async (userid: string) => {
+  const SEARCH_API_URL = `http://localhost:5000/api/recent_history/${userid}`;
+  try {
+    const response = await axios.get(SEARCH_API_URL);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
