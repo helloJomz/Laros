@@ -3,9 +3,38 @@ import { useNavbarContext } from "../context/NavbarContext";
 import { type SearchHistoryType } from "../types/SearchHistory";
 import AvatarDisplay from "./AvatarDisplay";
 import { Button } from "./ui/button";
+import { getAPIBasedOnTrackerId } from "../utils/utils";
+import { useEffect, useState } from "react";
 
 const SearchHistoryList = () => {
   const { recentSearchHistory } = useNavbarContext();
+  const [deconstructedItems, setDeconstructedItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const updatedHistory = await Promise.all(
+        recentSearchHistory.map(async (history) => {
+          const dataArray = history.history;
+          const updatedDataArray = await Promise.all(
+            dataArray.map(async (entry: any) => {
+              if (!entry.data.trackerid) return entry;
+              const result = await getAPIBasedOnTrackerId(
+                entry.origin,
+                entry.data.trackerid
+              );
+              entry.data = result;
+              return entry;
+            })
+          );
+          history.history = updatedDataArray;
+          return history;
+        })
+      );
+      setDeconstructedItems(updatedHistory);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="py-2">
@@ -18,26 +47,36 @@ const SearchHistoryList = () => {
         </Button>
       </div>
 
-      {recentSearchHistory.map((recent: SearchHistoryType) => (
+      {deconstructedItems.map((recent) => (
         <div key={recent._id}>
-          {recent.history.map((history) => (
+          {recent.history.map((history: any) => (
             <div
               key={history._id}
               className="flex justify-between p-2 items-center rounded cursor-pointer hover:bg-slate-700"
             >
+              {/* THIS MAPS THE VALUE AND ALSO HAVE THE INDEX OF USERID I WANT TO FEED THE USERID TO MY CUSTOM FUNCTION TO REQUEST TO THE ENDPOINT API TO GET THE RESULTS AND THEN I WANT TO HANDLE HERE THE NAME,IMAGE */}
               <div className="flex gap-x-3 items-center">
-                {!history.data.trackerid ? (
+                {history.data.query ? (
                   <AvatarDisplay
                     variant="search"
                     icon={<History size={24} />}
                   />
                 ) : (
-                  <AvatarDisplay variant="search" />
+                  <AvatarDisplay
+                    variant="search"
+                    src={
+                      history.data.imgURL
+                        ? history.data.imgURL
+                        : history.data.image.small_url
+                    }
+                  />
                 )}
 
                 <span>
-                  {history.data.trackerid
-                    ? history.data.trackerid
+                  {history.data.firstname || history.data.lastname
+                    ? history.data.firstname + " " + history.data.lastname
+                    : history.data.name
+                    ? history.data.name
                     : history.data.query}
                 </span>
               </div>

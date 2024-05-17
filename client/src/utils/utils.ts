@@ -27,9 +27,23 @@ export const getApiResponse = async (
 
 // GET A RECENT HISTORY FOR SEARCH
 export const getRecentSearchHistory = async (userid: string) => {
-  const SEARCH_API_URL = `http://localhost:5000/api/recent_history/${userid}`;
+  const ENDPOINT = `http://localhost:5000/api/recent_history/${userid}`;
   try {
-    const response = await axios.get(SEARCH_API_URL);
+    const response = await axios.get(ENDPOINT);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// GET THE API BASED ON THE TRACKERID
+export const getAPIBasedOnTrackerId = async (
+  origin: string,
+  trackerid: string
+) => {
+  const ENDPOINT = `http://localhost:5000/api/recent_history/${origin}/${trackerid}`;
+  try {
+    const response = await axios.get(ENDPOINT);
     return response.data;
   } catch (error) {
     console.error(error);

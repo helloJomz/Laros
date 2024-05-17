@@ -10,6 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const GameList = () => {
   // Context
@@ -21,6 +23,22 @@ const GameList = () => {
     isSearchTyping,
   } = useNavbarContext();
 
+  const [queryParams, setQueryParams] = useState({});
+
+  console.log(queryParams);
+
+  useEffect(() => {
+    if (Object.keys(queryParams).length > 0) {
+      try {
+        axios.post("http://localhost:5000/api/recent_history", queryParams, {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [queryParams]);
+
   return (
     <div
       className={cn("w-full h-full overflow-y-auto ", {
@@ -28,7 +46,7 @@ const GameList = () => {
           (!isAPISearchLoading && APISearchResult.length > 0) ||
           APISearchResult.length === 0 ||
           (windowWidth > 768 && APISearchResult.length === 10),
-        "h-fit": APISearchResult.length === 0 || windowWidth <= 768,
+        "h-fit": APISearchResult.length <= 5 || windowWidth <= 768,
       })}
     >
       {APISearchResult.length > 0 && (
@@ -48,7 +66,14 @@ const GameList = () => {
             className={cn("mb-4 p-2 rounded hover:bg-primary cursor-pointer", {
               "py-0": windowWidth <= 768,
             })}
-            onClick={() => console.log(api.guid)}
+            onClick={() =>
+              setQueryParams({
+                query: api.name,
+                trackerid: api.guid,
+                origin: "games",
+                userid: "123",
+              })
+            }
           >
             <div className="flex gap-x-3 items-center">
               <img

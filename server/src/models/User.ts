@@ -17,10 +17,6 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  dateCreated: {
-    type: Number,
-    required: true,
-  },
   imgURL: {
     type: String,
     required: false,

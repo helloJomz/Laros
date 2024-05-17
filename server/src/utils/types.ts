@@ -5,6 +5,6 @@ export type MakeAPIRequestProps = {
     field_list: string;
     filter: string;
     json?: string;
-    limit: number;
+    limit?: number;
   };
 };

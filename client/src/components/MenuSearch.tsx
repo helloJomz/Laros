@@ -1,15 +1,12 @@
 import { cn } from "../utils/utils";
 import { useNavbarContext } from "../context/NavbarContext";
 import GameList from "./GameList";
-import { Search } from "lucide-react";
 import SearchHistoryList from "./SearchHistoryList";
-import { Button } from "./ui/button";
 
 const MenuSearch = () => {
   const {
     isAPISearchLoading,
     APISearchResult,
-    recentSearchHistory,
     windowWidth,
     searchBoxType,
     searchQuery,
@@ -19,8 +16,6 @@ const MenuSearch = () => {
   const lowercasedSearchBoxType = searchBoxType.toLowerCase();
 
   return (
-    // FIXME: Fix the length of the MenuSearch when there is no result
-    //        As well as hide the 'see all' button
     !isSearchTyping && (
       <div
         className={cn(
@@ -36,7 +31,7 @@ const MenuSearch = () => {
         ) : lowercasedSearchBoxType === "games" ? (
           <GameList />
         ) : (
-          <span>hi</span>
+          <span>Render user list</span>
         )}
 
         {!isAPISearchLoading &&
