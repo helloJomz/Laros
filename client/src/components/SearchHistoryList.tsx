@@ -45,8 +45,9 @@ const SearchHistoryList = () => {
           <div className="flex gap-x-2 items-center">
             <span>Recent</span>
           </div>
+          {/* TODO: Implement a functionality here: */}
           <Button variant="link" size={"sm"} className="p-0 text-cyan-400">
-            Edit
+            Clear all
           </Button>
         </div>
 

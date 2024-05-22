@@ -1,17 +1,28 @@
 import { cn } from "../utils/utils";
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 import { useNavbarContext } from "../context/NavbarContext";
 
-const MenuSearchUtil = ({ children }: { children: ReactNode }) => {
+type MenuSearchUtilProps = HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+  className?: string;
+};
+
+const MenuSearchUtil = ({
+  children,
+  className,
+  ...props
+}: MenuSearchUtilProps) => {
   const { windowWidth } = useNavbarContext();
   return (
     <div
       className={cn(
-        "w-full bg-secondary absolute z-10 px-4 pt-2 pb-2 top-[2.5rem] rounded shadow-md h-fit ",
+        "w-full bg-secondary absolute z-10 px-4 pt-2 top-[2.5rem] rounded shadow-md h-[28rem] lg:h-[38rem]",
+        className,
         {
           "top-[2.35rem]": windowWidth <= 1023,
         }
       )}
+      {...props}
     >
       {children}
     </div>

@@ -55,7 +55,7 @@ export const addGameRecentHistory = async ({
   imageURL,
 }: {
   query: string;
-  trackerid: string;
+  trackerid?: string;
   origin: string;
   userid: string;
   imageURL: string;

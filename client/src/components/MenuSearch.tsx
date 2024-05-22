@@ -17,7 +17,12 @@ const MenuSearch = () => {
     return <MenuSearchUtil children={<span>users</span>} />;
 
   // This will be returned if the Search Box returns an empty string.
-  return <MenuSearchUtil children={<SearchHistoryList />} />;
+  return (
+    <MenuSearchUtil
+      children={<SearchHistoryList />}
+      className="h-fit lg:h-fit"
+    />
+  );
 };
 
 export default MenuSearch;

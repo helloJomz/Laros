@@ -8,14 +8,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
-import { useQueryClient, useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { addGameRecentHistory, getGameListBasedOnSearch } from "../api/search";
 import DataFetchStatus from "./DataFetchStatus";
 import { useDebounce } from "../hooks/useDebounce";
 
 const GameList = () => {
   const { windowWidth, searchQuery, isSearchTyping } = useNavbarContext();
-  const queryClient = useQueryClient();
   const debouncedSearch = useDebounce(searchQuery);
 
   const {
@@ -30,9 +29,6 @@ const GameList = () => {
 
   const { mutate: mutateAddGameRecentHistory } = useMutation({
     mutationFn: (obj: any) => addGameRecentHistory(obj),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["game_list"]);
-    },
   });
 
   if (isLoading || gameList === undefined) return <DataFetchStatus />;
@@ -43,12 +39,12 @@ const GameList = () => {
     return <DataFetchStatus type="no_length" query={debouncedSearch} />;
 
   return (
-    <div className={cn("w-full overflow-hidden h-full")}>
+    <div className="w-full overflow-hidden h-full pb-16 ">
       <div className="text-sm pt-2 pb-3 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">
         <span>Search results for '{searchQuery.trim()}'</span>
       </div>
 
-      <div className="overflow-y-auto h-full">
+      <div className="overflow-y-auto h-full ">
         {gameList.map((api: any) => (
           <div
             key={api.guid}
