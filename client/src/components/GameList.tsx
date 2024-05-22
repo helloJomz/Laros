@@ -1,77 +1,67 @@
-import { TailSpin } from "react-loading-icons";
 import { useNavbarContext } from "../context/NavbarContext";
 import { Badge } from "./ui/badge";
-import { FishOff, MonitorSmartphone } from "lucide-react";
+import { MonitorSmartphone } from "lucide-react";
 import { cn } from "../utils/utils";
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useQueryClient, useMutation, useQuery } from "react-query";
+import { addGameRecentHistory, getGameListBasedOnSearch } from "../api/search";
+import DataFetchStatus from "./DataFetchStatus";
+import { useDebounce } from "../hooks/useDebounce";
 
 const GameList = () => {
-  // Context
+  const { windowWidth, searchQuery, isSearchTyping } = useNavbarContext();
+  const queryClient = useQueryClient();
+  const debouncedSearch = useDebounce(searchQuery);
+
   const {
-    isAPISearchLoading,
-    APISearchResult,
-    windowWidth,
-    searchQuery,
-    isSearchTyping,
-  } = useNavbarContext();
+    data: gameList,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["game_list", debouncedSearch],
+    queryFn: ({ queryKey }) => getGameListBasedOnSearch(queryKey[1]),
+    enabled: isSearchTyping === false,
+  });
 
-  const [queryParams, setQueryParams] = useState({});
+  const { mutate: mutateAddGameRecentHistory } = useMutation({
+    mutationFn: (obj: any) => addGameRecentHistory(obj),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["game_list"]);
+    },
+  });
 
-  console.log(queryParams);
+  if (isLoading || gameList === undefined) return <DataFetchStatus />;
 
-  useEffect(() => {
-    if (Object.keys(queryParams).length > 0) {
-      try {
-        axios.post("http://localhost:5000/api/recent_history", queryParams, {
-          headers: { "Content-Type": "application/json" },
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, [queryParams]);
+  if (isError) return <DataFetchStatus type="error" />;
+
+  if (gameList.length === 0)
+    return <DataFetchStatus type="no_length" query={debouncedSearch} />;
 
   return (
-    <div
-      className={cn("w-full h-full overflow-y-auto ", {
-        "h-[32rem]":
-          (!isAPISearchLoading && APISearchResult.length > 0) ||
-          APISearchResult.length === 0 ||
-          (windowWidth > 768 && APISearchResult.length === 10),
-        "h-fit": APISearchResult.length <= 5 || windowWidth <= 768,
-      })}
-    >
-      {APISearchResult.length > 0 && (
-        <div className="flex gap-x-2 py-2 px-2 items-center font-semibold">
-          <span>Search results for '{searchQuery.trim()}'</span>
-        </div>
-      )}
+    <div className={cn("w-full overflow-hidden h-full")}>
+      <div className="text-sm pt-2 pb-3 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">
+        <span>Search results for '{searchQuery.trim()}'</span>
+      </div>
 
-      {isAPISearchLoading ? (
-        <div className="flex justify-center">
-          <TailSpin speed={1} />
-        </div>
-      ) : APISearchResult.length > 0 ? (
-        APISearchResult.map((api) => (
+      <div className="overflow-y-auto h-full">
+        {gameList.map((api: any) => (
           <div
             key={api.guid}
             className={cn("mb-4 p-2 rounded hover:bg-primary cursor-pointer", {
               "py-0": windowWidth <= 768,
             })}
             onClick={() =>
-              setQueryParams({
+              mutateAddGameRecentHistory({
                 query: api.name,
                 trackerid: api.guid,
                 origin: "games",
                 userid: "123",
+                imageURL: api.image.icon_url,
               })
             }
           >
@@ -104,7 +94,7 @@ const GameList = () => {
                   {api.platforms && api.platforms.length > 0 ? (
                     api.platforms
                       .slice(0, windowWidth <= 768 ? 3 : 5)
-                      .map((platform) => (
+                      .map((platform: any) => (
                         <TooltipProvider key={platform.id}>
                           <Tooltip key={platform.id}>
                             <TooltipTrigger asChild>
@@ -169,7 +159,7 @@ const GameList = () => {
                                   : 5 + 2,
                                 api.platforms.length
                               )
-                              .map((platform, index, array) =>
+                              .map((platform: any, index: any, array: any) =>
                                 index === array.length - 1
                                   ? platform.name
                                   : platform.name + ", "
@@ -194,18 +184,8 @@ const GameList = () => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        searchQuery.trim() !== "" &&
-        !isSearchTyping && (
-          <div className="py-6 text-center text-muted-foreground">
-            <div className="flex justify-center">
-              <FishOff size={120} />
-            </div>
-            <span>No result found for '{searchQuery}'</span>
-          </div>
-        )
-      )}
+        ))}
+      </div>
     </div>
   );
 };

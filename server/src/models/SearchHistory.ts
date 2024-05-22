@@ -11,19 +11,21 @@ const SearchHistorySchema = new Schema({
         type: String,
         required: true,
       },
+      query: {
+        type: String,
+        required: true,
+      },
+      trackerid: {
+        type: String,
+        required: false,
+      },
+      imageURL: {
+        type: String,
+        required: false,
+      },
       time: {
         type: Date,
         default: Date.now,
-      },
-      data: {
-        query: {
-          type: String,
-          required: true,
-        },
-        trackerid: {
-          type: String,
-          required: false,
-        },
       },
     },
   ],

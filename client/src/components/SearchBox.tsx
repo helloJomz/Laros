@@ -4,12 +4,13 @@ import { cn } from "../utils/utils";
 import { Badge } from "./ui/badge";
 import { useNavbarContext } from "../context/NavbarContext";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 type SearchBoxProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const SearchBox = ({ className, ...props }: SearchBoxProps) => {
   // Context
-  const { searchBoxType, setSearchBoxType, isSearchTyping } =
+  const { searchBoxType, setSearchBoxType, isSearchTyping, searchQuery } =
     useNavbarContext();
 
   // State
@@ -27,6 +28,23 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
     setPlaceholder(updatedPlaceholder);
   }, [searchBoxLowerCased]);
 
+  const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      try {
+        const queryParams = {
+          query: searchQuery,
+          origin: "undefined",
+          userid: "123",
+        };
+        axios.post("http://localhost:5000/api/recent_history", queryParams, {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <div className={cn("justify-center items-center", className)}>
       <div className="relative w-full">
@@ -37,6 +55,7 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
           })}
           placeholder={placeholder}
           {...props}
+          onKeyDown={handleEnter}
         />
 
         {/* TRIGGER  */}

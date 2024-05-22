@@ -1,21 +1,6 @@
 import { createContext, useContext, useState, FC } from "react";
-import { type SearchGameProps } from "../types/SearchAPI";
-import { getApiResponse, getRecentSearchHistory } from "../utils/utils";
 
 type NavbarContextProps = {
-  searchAPI: (type: string, query?: string) => void;
-
-  fetchSearchHistory: (userid: string) => void;
-
-  isAPISearchLoading: boolean;
-  setIsAPISearchLoading: (isLoading: boolean) => void;
-
-  APISearchResult: SearchGameProps[];
-  setAPISearchResult: (response: SearchGameProps[]) => void;
-
-  recentSearchHistory: any[];
-  setRecentSearchHistory: (response: any[]) => void;
-
   searchBoxType: string;
   setSearchBoxType: (type: "Games" | "Users") => void;
 
@@ -35,49 +20,14 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   // State
-  const [isAPISearchLoading, setIsAPISearchLoading] = useState<boolean>(false);
-  const [APISearchResult, setAPISearchResult] = useState<SearchGameProps[]>([]);
   const [searchBoxType, setSearchBoxType] = useState<string>("Games");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSearchTyping, setIsSearchTyping] = useState<boolean>(false);
-  const [recentSearchHistory, setRecentSearchHistory] = useState<string[]>([]);
-
-  // Fetch data from the API
-  const searchAPI = async (type: string, query?: string | undefined) => {
-    const APIQuerySearchType = type.toLowerCase();
-    const APIQuery = query ? query.toLowerCase() : "";
-
-    try {
-      setIsAPISearchLoading(true);
-      const response = await getApiResponse(APIQuerySearchType, APIQuery);
-      setAPISearchResult(response);
-      setIsAPISearchLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchSearchHistory = async (userid: string) => {
-    try {
-      setIsAPISearchLoading(true);
-      const response = await getRecentSearchHistory(userid);
-      setRecentSearchHistory(response);
-      setIsAPISearchLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <NavbarContext.Provider
       value={{
-        searchAPI,
-        fetchSearchHistory,
-        isAPISearchLoading,
-        setIsAPISearchLoading,
-        APISearchResult,
-        setAPISearchResult,
         setSearchBoxType,
         searchBoxType,
         windowWidth,
@@ -86,8 +36,6 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
         setSearchQuery,
         isSearchTyping,
         setIsSearchTyping,
-        recentSearchHistory,
-        setRecentSearchHistory,
       }}
     >
       {children}

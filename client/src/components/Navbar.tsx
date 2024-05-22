@@ -22,7 +22,7 @@ import { useDebounce } from "../hooks/useDebounce";
 const Navbar = () => {
   // Context
   const {
-    searchAPI,
+    // searchAPI,
     windowWidth,
     setWindowWidth,
     searchBoxType,
@@ -30,9 +30,9 @@ const Navbar = () => {
     setSearchQuery,
     isSearchTyping,
     setIsSearchTyping,
-    recentSearchHistory,
-    fetchSearchHistory,
-    setAPISearchResult,
+    // recentSearchHistory,
+    // fetchSearchHistory,
+    // setAPISearchResult,
   } = useNavbarContext();
 
   // State
@@ -80,25 +80,25 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const searchBoxLowerCased = searchBoxType.toLowerCase();
-    const isEmptySearch = debouncedSearch.trim() === "";
-    try {
-      if (searchBoxLowerCased === "games") {
-        if (isEmptySearch) {
-          fetchSearchHistory("123");
-        } else {
-          // If debounced search is not empty, search for games based on search query
-          searchAPI(searchBoxLowerCased, debouncedSearch);
-          console.log("not empty");
-        }
-      } else {
-        console.log("im in user");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [debouncedSearch || searchBoxType]);
+  // useEffect(() => {
+  //   const searchBoxLowercased = searchBoxType.toLowerCase();
+  //   const isEmptySearch = debouncedSearch.trim() === "";
+  //   try {
+  //     if (searchBoxLowercased === "games") {
+  //       if (isEmptySearch) {
+  //         fetchSearchHistory("123");
+  //       } else {
+  //         // If debounced search is not empty, search for games based on search query
+  //         searchAPI(searchBoxLowercased, debouncedSearch);
+  //         console.log("not empty");
+  //       }
+  //     } else {
+  //       console.log("im in user");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }, [debouncedSearch || searchBoxType]);
 
   return (
     <nav className="sticky top-0 px-4 py-2 lg:px-8 border-b-2 ">
