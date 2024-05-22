@@ -39,12 +39,12 @@ const GameList = () => {
     return <DataFetchStatus type="no_length" query={debouncedSearch} />;
 
   return (
-    <div className="w-full overflow-hidden h-full pb-16 ">
+    <div className="w-full h-full overflow-hidden pb-16 ">
       <div className="text-sm pt-2 pb-3 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">
         <span>Search results for '{searchQuery.trim()}'</span>
       </div>
 
-      <div className="overflow-y-auto h-full ">
+      <div className="h-full overflow-y-auto">
         {gameList.map((api: any) => (
           <div
             key={api.guid}

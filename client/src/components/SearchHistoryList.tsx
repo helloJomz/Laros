@@ -2,9 +2,10 @@ import { History, X } from "lucide-react";
 import AvatarDisplay from "./AvatarDisplay";
 import { Button } from "./ui/button";
 import { capitalizeFirstLetter } from "../utils/utils";
-import { useQuery, useMutation, useQueryClient } from "react-query";
-import { deleteRecentHistoryOne, getRecentHistoryList } from "../api/search";
+import { useMutation, useQueryClient } from "react-query";
+import { deleteRecentHistoryOne } from "../api/search";
 import DataFetchStatus from "./DataFetchStatus";
+import { useRecentHistory } from "../hooks/useRecentHistory";
 
 const SearchHistoryList = () => {
   const queryClient = useQueryClient();
@@ -14,12 +15,7 @@ const SearchHistoryList = () => {
     data: recentHistorylist,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ["recent_history", userId],
-    queryFn: ({ queryKey }) => {
-      return getRecentHistoryList(queryKey[1]);
-    },
-  });
+  } = useRecentHistory(userId);
 
   const { mutate: mutateHistoryOne } = useMutation({
     mutationFn: (obj: string) => deleteRecentHistoryOne(userId, obj),
@@ -31,7 +27,8 @@ const SearchHistoryList = () => {
     },
   });
 
-  if (isLoading) return <DataFetchStatus />;
+  if (isLoading || recentHistorylist === undefined)
+    return <DataFetchStatus type="loading" />;
 
   if (isError) return <DataFetchStatus type="error" />;
 
@@ -39,9 +36,9 @@ const SearchHistoryList = () => {
     return <DataFetchStatus type="no_result" />;
 
   return (
-    <div className="pt-1 pb-4 h-fit">
+    <div className="pt-1 h-full  pb-4">
       <>
-        <div className="text-sm lg:text-base font-semibold flex justify-between px-2">
+        <div className="text-sm lg:text-base font-semibold flex justify-between px-2 pb-1">
           <div className="flex gap-x-2 items-center">
             <span>Recent</span>
           </div>
@@ -51,7 +48,7 @@ const SearchHistoryList = () => {
           </Button>
         </div>
 
-        <div className="h-[92%] py-2 overflow-y-auto">
+        <div className="h-[92%] overflow-y-auto">
           {recentHistorylist.map((recent: any) => (
             <div key={recent._id}>
               {recent.history.map((history: any) => (

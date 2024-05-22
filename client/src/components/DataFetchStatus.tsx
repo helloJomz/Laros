@@ -14,14 +14,14 @@ const DataFetchStatus = ({ type = "loading", query }: DataFetchStatusTypes) => {
 
   if (type === "no_result")
     return (
-      <div className="text-muted-foreground text-center py-4">
+      <div className="text-muted-foreground text-center pt-4 pb-6">
         <span>No recent searches</span>
       </div>
     );
 
   if (type === "error")
     return (
-      <div className="text-muted-foreground text-center py-4">
+      <div className="text-muted-foreground text-center pt-4 pb-6">
         <span>There is some error</span>
       </div>
     );

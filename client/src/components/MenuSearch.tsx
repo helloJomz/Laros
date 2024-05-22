@@ -2,7 +2,6 @@ import { useNavbarContext } from "../context/NavbarContext";
 import GameList from "./GameList";
 import SearchHistoryList from "./SearchHistoryList";
 import MenuSearchUtil from "./MenuSearchUtil";
-import { useDebounce } from "../hooks/useDebounce";
 
 const MenuSearch = () => {
   const { searchBoxType, searchQuery } = useNavbarContext();
@@ -17,12 +16,7 @@ const MenuSearch = () => {
     return <MenuSearchUtil children={<span>users</span>} />;
 
   // This will be returned if the Search Box returns an empty string.
-  return (
-    <MenuSearchUtil
-      children={<SearchHistoryList />}
-      className="h-fit lg:h-fit"
-    />
-  );
+  return <MenuSearchUtil children={<SearchHistoryList />} />;
 };
 
 export default MenuSearch;

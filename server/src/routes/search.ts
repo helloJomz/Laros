@@ -6,7 +6,7 @@ import axios from "axios";
 
 dotenv.config();
 
-const APIKEY = process.env.GIANTBOMB_API_KEY2!;
+const APIKEY = process.env.GIANTBOMB_API_KEY!;
 const router = Router();
 
 // GET LIST OF GAMES BASED ON THE QUERY OF THE USER
