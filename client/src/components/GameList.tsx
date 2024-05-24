@@ -39,12 +39,16 @@ const GameList = () => {
     return <DataFetchStatus type="no_length" query={debouncedSearch} />;
 
   return (
-    <div className="w-full h-full overflow-hidden pb-16 ">
-      <div className="text-sm pt-2 pb-3 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">
+    <div
+      className={cn(
+        "w-full bg-secondary absolute z-10 px-4 pt-2 pb-8 top-[2.35rem] lg:top-[2.5rem] overflow-hidden rounded shadow-md h-[28rem] lg:h-[38rem]"
+      )}
+    >
+      <div className="text-sm pt-2 pb-4 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">
         <span>Search results for '{searchQuery.trim()}'</span>
       </div>
 
-      <div className="h-full overflow-y-auto">
+      <div className="h-[92%] overflow-y-auto overflow-x-hidden">
         {gameList.map((api: any) => (
           <div
             key={api.guid}
@@ -89,7 +93,10 @@ const GameList = () => {
                   {/* FOR BADGES PLATFORMS */}
                   {api.platforms && api.platforms.length > 0 ? (
                     api.platforms
-                      .slice(0, windowWidth <= 768 ? 3 : 5)
+                      .slice(
+                        0,
+                        windowWidth <= 768 ? (windowWidth <= 470 ? 2 : 3) : 5
+                      )
                       .map((platform: any) => (
                         <TooltipProvider key={platform.id}>
                           <Tooltip key={platform.id}>
@@ -98,7 +105,7 @@ const GameList = () => {
                                 className={cn(
                                   "text-xs bg-emerald-500 hover:bg-secondary cursor-default",
                                   {
-                                    "text-[0.6rem]": windowWidth <= 768,
+                                    "text-[0.6rem] h-6": windowWidth <= 768,
                                   }
                                 )}
                               >
@@ -128,7 +135,9 @@ const GameList = () => {
                   )}
 
                   {api.platforms &&
-                    api.platforms.length - (windowWidth <= 768 ? 3 : 5) > 0 && (
+                    api.platforms.length -
+                      (windowWidth <= 768 ? (windowWidth <= 470 ? 2 : 3) : 5) >
+                      0 && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -143,7 +152,11 @@ const GameList = () => {
                               <MonitorSmartphone size={14} />
                               {(
                                 api.platforms.length -
-                                (windowWidth <= 768 ? 3 : 5)
+                                (windowWidth <= 768
+                                  ? windowWidth <= 470
+                                    ? 2
+                                    : 3
+                                  : 5)
                               ).toString() + " more"}
                             </Badge>
                           </TooltipTrigger>

@@ -35,6 +35,16 @@ export const deleteRecentHistoryOne = async (
   }
 };
 
+export const deleteRecentHistoryAll = async (userid: string) => {
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/search/recent_history/${userid}`
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // GAME LIST
 export const getGameListBasedOnSearch = async (query: string) => {
   try {

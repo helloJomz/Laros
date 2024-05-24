@@ -1,7 +1,6 @@
 import { useNavbarContext } from "../context/NavbarContext";
 import GameList from "./GameList";
 import SearchHistoryList from "./SearchHistoryList";
-import MenuSearchUtil from "./MenuSearchUtil";
 
 const MenuSearch = () => {
   const { searchBoxType, searchQuery } = useNavbarContext();
@@ -10,13 +9,13 @@ const MenuSearch = () => {
   const isEmptySearchBox = searchQuery.trim() === "";
 
   if (lowercasedSearchBoxType === "games" && !isEmptySearchBox)
-    return <MenuSearchUtil children={<GameList />} />;
+    return <GameList />;
 
   if (lowercasedSearchBoxType === "users" && !isEmptySearchBox)
-    return <MenuSearchUtil children={<span>users</span>} />;
+    return <span>users</span>;
 
   // This will be returned if the Search Box returns an empty string.
-  return <MenuSearchUtil children={<SearchHistoryList />} />;
+  return <SearchHistoryList />;
 };
 
 export default MenuSearch;

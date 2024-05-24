@@ -1,7 +1,5 @@
-import ToggleTheme from "./ToggleTheme";
-import AvatarDisplay from "./AvatarDisplay";
 import SearchBox from "./SearchBox";
-import Sidebar from "./Sidebar";
+import SideMenu from "./SideMenu";
 import Logo from "./Logo";
 import {
   Search,
@@ -17,7 +15,6 @@ import { useClickOutside } from "../hooks/useClickedOutside";
 import { HeaderButtonID } from "../types/enums";
 import MenuSearch from "./MenuSearch";
 import { useNavbarContext } from "../context/NavbarContext";
-import { useDebounce } from "../hooks/useDebounce";
 
 const Navbar = () => {
   // Context
@@ -25,14 +22,10 @@ const Navbar = () => {
     // searchAPI,
     windowWidth,
     setWindowWidth,
-    searchBoxType,
     searchQuery,
     setSearchQuery,
     isSearchTyping,
     setIsSearchTyping,
-    // recentSearchHistory,
-    // fetchSearchHistory,
-    // setAPISearchResult,
   } = useNavbarContext();
 
   // State
@@ -42,7 +35,6 @@ const Navbar = () => {
   );
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);
-  const debouncedSearch = useDebounce(searchQuery);
 
   // Ref
   const searchBoxRef = useRef<HTMLDivElement>(null);
@@ -79,26 +71,6 @@ const Navbar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // useEffect(() => {
-  //   const searchBoxLowercased = searchBoxType.toLowerCase();
-  //   const isEmptySearch = debouncedSearch.trim() === "";
-  //   try {
-  //     if (searchBoxLowercased === "games") {
-  //       if (isEmptySearch) {
-  //         fetchSearchHistory("123");
-  //       } else {
-  //         // If debounced search is not empty, search for games based on search query
-  //         searchAPI(searchBoxLowercased, debouncedSearch);
-  //         console.log("not empty");
-  //       }
-  //     } else {
-  //       console.log("im in user");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, [debouncedSearch || searchBoxType]);
 
   return (
     <nav className="sticky top-0 px-4 py-2 lg:px-8 border-b-2 ">
@@ -161,33 +133,21 @@ const Navbar = () => {
             </div>
           )}
 
-          <div className="flex gap-x-2 items-center align-middle justify-end w-1/5 ">
-            <div className="hidden gap-x-1 items-center lg:flex">
+          <div className="flex items-center align-middle justify-end w-1/5 ">
+            <div className="hidden gap-x-2 items-center lg:flex">
               <ButtonIcon
-                icon={<MessageCircleMore size={20} />}
+                icon={<MessageCircleMore size={22} />}
                 size="icon"
                 variant="ghost"
               />
               <ButtonIcon
-                icon={<Bell size={20} />}
+                icon={<Bell size={22} />}
                 size="icon"
                 variant="ghost"
               />
             </div>
 
-            <div className="border-l-2 ps-2">
-              <ButtonIcon
-                icon={
-                  <AvatarDisplay
-                    src="https://www.mordeo.org/files/uploads/2022/01/Ezreal-League-of-Legends-2022-4K-Ultra-HD-Mobile-Wallpaper.jpg"
-                    fallback="AN"
-                  />
-                }
-                variant={"ghost"}
-                size={"icon"}
-                className="hidden lg:flex"
-              />
-            </div>
+            <SideMenu />
           </div>
         </div>
 
@@ -195,25 +155,14 @@ const Navbar = () => {
         {!isMobileSearchOpen ? (
           <div className="flex justify-between items-center lg:hidden">
             <Logo icon={<Swords size={30} className="text-primary" />} />
-            <div className="flex justify-end flex-1 gap-4">
+            <div className="flex justify-end flex-1 ">
               <ButtonIcon
                 icon={<Search size={20} />}
                 variant={"ghost"}
                 size={"icon"}
                 onClick={() => setIsMobileSearchOpen(true)}
               />
-              <div className="border-l-2 ps-4">
-                <ButtonIcon
-                  icon={
-                    <AvatarDisplay
-                      src="https://www.mordeo.org/files/uploads/2022/01/Ezreal-League-of-Legends-2022-4K-Ultra-HD-Mobile-Wallpaper.jpg"
-                      fallback="AN"
-                    />
-                  }
-                  variant={"ghost"}
-                  size={"icon"}
-                />
-              </div>
+              <SideMenu />
             </div>
           </div>
         ) : (
@@ -226,7 +175,6 @@ const Navbar = () => {
           </div>
         )}
       </div>
-      {isMenuOpen && <Sidebar />}
     </nav>
   );
 };

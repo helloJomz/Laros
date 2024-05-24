@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/utils/utils";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, HTMLAttributes } from "react";
 
-type ButtonIconProps = {
+type ButtonIconProps = HTMLAttributes<HTMLButtonElement> & {
   variant?:
     | "default"
     | "destructive"

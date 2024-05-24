@@ -4,7 +4,7 @@ import { cn } from "../utils/utils";
 import { Badge } from "./ui/badge";
 import { useNavbarContext } from "../context/NavbarContext";
 import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import { addGameRecentHistory } from "../api/search";
 
 type SearchBoxProps = React.InputHTMLAttributes<HTMLInputElement>;
@@ -13,8 +13,6 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
   // Context
   const { searchBoxType, setSearchBoxType, isSearchTyping, searchQuery } =
     useNavbarContext();
-
-  const queryClient = useQueryClient();
 
   // State
   const [placeholder, setPlaceholder] = useState<string>("Search games...");
@@ -33,9 +31,6 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
 
   const { mutate: addQueryToRecentHistory } = useMutation({
     mutationFn: (obj: any) => addGameRecentHistory(obj),
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries(["recent_history"]);
-    // },
   });
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,7 +62,7 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
 
         {/* TRIGGER  */}
         <Badge
-          className="flex items-center absolute mt-[0.30rem] ms-2 top-0 text-xs cursor-pointer"
+          className="flex items-center absolute mt-[0.32rem] ms-2 top-0 text-xs cursor-pointer"
           onClick={() => setIsTypeMenuOpen((isTypeMenuOpen) => !isTypeMenuOpen)}
         >
           {handleGameType ? "Games" : handleUserType && "Users"}:
