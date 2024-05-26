@@ -1,7 +1,8 @@
 import { History, X } from "lucide-react";
 import AvatarDisplay from "./AvatarDisplay";
 import { Button } from "./ui/button";
-import { capitalizeFirstLetter, cn } from "../utils/utils";
+import { cn } from "../lib/utils";
+import { capitalizeFirstLetter } from "../utils/utils";
 import { useMutation, useQueryClient } from "react-query";
 import { deleteRecentHistoryAll, deleteRecentHistoryOne } from "../api/search";
 import DataFetchStatus from "./DataFetchStatus";
@@ -57,7 +58,6 @@ const SearchHistoryList = () => {
             <div className="flex gap-x-2 items-center">
               <span>Recent</span>
             </div>
-            {/* TODO: Implement a functionality here: */}
             <Button
               variant="link"
               size={"sm"}

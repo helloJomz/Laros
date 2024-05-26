@@ -12,6 +12,7 @@ import ButtonIcon from "./ButtonIcon";
 import AvatarDisplay from "./AvatarDisplay";
 import { LogIn, LogOut } from "lucide-react";
 import ToggleTheme from "./ToggleTheme";
+import { Link } from "react-router-dom";
 
 const SideMenu = () => {
   return (
@@ -50,13 +51,12 @@ const SideMenu = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="">
+              {/* <Link to="/login">
                 <Button className="w-full flex gap-x-2 items-center">
                   <LogOut size={18} />
                   <span>Log Out</span>
                 </Button>
-              </div>
+              </Link> */}
             </div>
           </MenubarContent>
         </MenubarMenu>

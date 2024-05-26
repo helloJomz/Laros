@@ -6,7 +6,7 @@ import axios from "axios";
 
 dotenv.config();
 
-const APIKEY = process.env.GIANTBOMB_API_KEY!;
+const APIKEY = process.env.GIANTBOMB_API_KEY2!;
 const router = Router();
 
 // GET LIST OF GAMES BASED ON THE QUERY OF THE USER
@@ -102,6 +102,13 @@ router.delete("/recent_history/:userid/:historyid", async (req, res) => {
     { userid: userid },
     { $pull: { history: { _id: _id } } }
   );
+  return res.status(200).json(response);
+});
+
+// FOR DELETING / CLEAR ALL OF THE RECENT HISTORY
+router.delete("/recent_history/:userid", async (req, res) => {
+  const { userid } = req.params;
+  const response = await SearchHistoryModel.deleteOne({ userid: userid });
   return res.status(200).json(response);
 });
 

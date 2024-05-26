@@ -1,7 +1,7 @@
 import { useNavbarContext } from "../context/NavbarContext";
 import { Badge } from "./ui/badge";
 import { MonitorSmartphone } from "lucide-react";
-import { cn } from "../utils/utils";
+import { cn } from "../lib/utils";
 import {
   Tooltip,
   TooltipContent,

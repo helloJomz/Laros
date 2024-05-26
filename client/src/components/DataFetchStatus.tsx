@@ -1,4 +1,4 @@
-import { cn } from "../utils/utils";
+import { cn } from "../lib/utils";
 import { FishOff } from "lucide-react";
 import { TailSpin } from "react-loading-icons";
 

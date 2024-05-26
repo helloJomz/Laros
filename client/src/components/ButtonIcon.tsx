@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/utils/utils";
+import { cn } from "@/lib/utils";
 import { FC, ReactNode, HTMLAttributes } from "react";
 
 type ButtonIconProps = HTMLAttributes<HTMLButtonElement> & {

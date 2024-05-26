@@ -35,4 +35,4 @@ mongoose
   });
 
 app.use("/api/search", searchRouter);
-app.use("/users", userRouter);
+app.use("/api/users", userRouter);

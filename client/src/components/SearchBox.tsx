@@ -1,6 +1,6 @@
 import { Input } from "./ui/input";
 import { Check, LoaderCircle, Search } from "lucide-react";
-import { cn } from "../utils/utils";
+import { cn } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { useNavbarContext } from "../context/NavbarContext";
 import { useEffect, useState } from "react";
