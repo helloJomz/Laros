@@ -1,38 +1,28 @@
 import {
   Menubar,
   MenubarContent,
-  MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
   MenubarTrigger,
-} from "@/components/ui/menubar";
+} from "../components/ui/menubar";
 import { Button } from "./ui/button";
-import ButtonIcon from "./ButtonIcon";
 import AvatarDisplay from "./AvatarDisplay";
 import { LogIn, LogOut } from "lucide-react";
-import ToggleTheme from "./ToggleTheme";
-import { Link } from "react-router-dom";
+import { useUserContextProvider } from "../context/UserProvider";
 
 const SideMenu = () => {
+  const { fullname, id } = useUserContextProvider();
   return (
     <div>
       <Menubar className="border-none ps-2 relative">
         <MenubarMenu>
           <MenubarTrigger className="flex justify-center items-center h-fit w-fit p-0 ">
-            <ButtonIcon
-              icon={
-                <AvatarDisplay
-                  src="https://www.mordeo.org/files/uploads/2022/01/Ezreal-League-of-Legends-2022-4K-Ultra-HD-Mobile-Wallpaper.jpg"
-                  fallback="AN"
-                  variant="menu"
-                />
-              }
-              variant={"ghost"}
-              size={"icon"}
+            <AvatarDisplay
+              src="https://www.mordeo.org/files/uploads/2022/01/Ezreal-League-of-Legends-2022-4K-Ultra-HD-Mobile-Wallpaper.jpg"
+              fallback="AN"
+              variant="menu"
             />
           </MenubarTrigger>
-          <MenubarContent className="absolute top-[-0.4rem] right-[-4.5rem] ">
+          <MenubarContent className="absolute top-[-0.1rem] right-[-3.5rem] ">
             <div className="w-[15rem] h-[18rem] p-2 flex flex-col justify-between ">
               <div className="flex flex-col gap-y-2">
                 <div className="flex gap-x-3 p-2 bg-secondary rounded items-center cursor-pointer hover:bg-slate-700">
@@ -43,7 +33,7 @@ const SideMenu = () => {
                   />
                   <div className="flex flex-col mb-1 ">
                     <h6 className="text-xs lg:text-sm font-semibold">
-                      Jomark Amante
+                      {fullname}
                     </h6>
                     <span className="text-xs lg:text-xs text-muted-foreground">
                       Dedicated Poster
@@ -51,12 +41,11 @@ const SideMenu = () => {
                   </div>
                 </div>
               </div>
-              {/* <Link to="/login">
-                <Button className="w-full flex gap-x-2 items-center">
-                  <LogOut size={18} />
-                  <span>Log Out</span>
-                </Button>
-              </Link> */}
+              {/* TODO: Implement a logout function */}
+              <Button className="w-full flex gap-x-2 items-center">
+                {id ? <LogOut size={18} /> : <LogIn size={18} />}
+                {id ? <span>Log Out</span> : <span>Log in</span>}
+              </Button>
             </div>
           </MenubarContent>
         </MenubarMenu>

@@ -13,6 +13,7 @@ const LoginForm = () => {
     setTimeout(async () => {
       try {
         const response = await loginUser(email, password);
+        // TODO: Navigate user to the Homepage.
         console.log(response);
         setSubmitting(false);
       } catch (error) {

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { customAxios } from "./token";
 
 type UserObject = {
   firstname: string;
@@ -34,6 +35,7 @@ export const loginUser = async (email: string, password: string) => {
         password: password,
       },
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
@@ -45,3 +47,31 @@ export const loginUser = async (email: string, password: string) => {
     return axiosError.response;
   }
 };
+
+export const getUserDetails = async () => {
+  try {
+    const response = await customAxios.post("/get_user");
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// export const getUserDetailsById = async (userid: string) => {
+//   try {
+//     const response = await axios.post(
+//       "http://localhost:5000/api/users/get_user",
+//       {
+//         userid: userid,
+//       },
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };

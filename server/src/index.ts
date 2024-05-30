@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 import { default as searchRouter } from "./routes/search";
 import { default as userRouter } from "./routes/users";
+import { CONNECTION, PORT } from "./constants";
 
 dotenv.config();
 
@@ -11,14 +13,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 
 app.use(express.json());
-
-const CONNECTION: string = process.env.MONGODBCREDENTIALS!;
-const PORT: string | number = process.env._PORT || 3000;
+app.use(cookieParser());
 
 mongoose
   .connect(CONNECTION, {

@@ -17,6 +17,8 @@ import MenuSearch from "./MenuSearch";
 import { useNavbarContext } from "../context/NavbarContext";
 
 const Navbar = () => {
+  // TODO: CLEAN UP THESE MESS! CREATE CUSTOM HOOKS...
+
   // Context
   const {
     // searchAPI,
@@ -29,7 +31,6 @@ const Navbar = () => {
   } = useNavbarContext();
 
   // State
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeHeaderButton, setActiveHeaderButton] = useState<HeaderButtonID>(
     HeaderButtonID.Home
   );
@@ -45,7 +46,6 @@ const Navbar = () => {
   });
 
   // Event handlers
-  const handleMenuToggle = () => setIsMenuOpen((openMenu) => !openMenu);
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSearchTyping(true);
     setSearchQuery(e.target.value);
@@ -74,7 +74,7 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 px-4 py-2 lg:px-8 border-b-2 ">
-      <div>
+      <>
         {/* -------- For Larger Screen -------- */}
         <div className="hidden justify-between items-center lg:flex">
           <Logo icon={<Swords size={30} className="text-primary" />} />
@@ -83,7 +83,6 @@ const Navbar = () => {
             <div className="hidden w-1/3 lg:flex">
               <div className="flex w-full justify-between">
                 <ButtonIcon
-                  icon={<Users />}
                   variant={"ghost"}
                   size={"default"}
                   className={
@@ -92,9 +91,10 @@ const Navbar = () => {
                       : ""
                   }
                   onClick={() => setActiveHeaderButton(HeaderButtonID.Friends)}
-                />
+                >
+                  <Users />
+                </ButtonIcon>
                 <ButtonIcon
-                  icon={<Gamepad />}
                   variant={"ghost"}
                   size={"default"}
                   className={
@@ -103,13 +103,16 @@ const Navbar = () => {
                       : ""
                   }
                   onClick={() => setActiveHeaderButton(HeaderButtonID.Home)}
-                />
+                >
+                  <Gamepad />
+                </ButtonIcon>
                 <ButtonIcon
-                  icon={<Search />}
                   variant={"ghost"}
                   size={"default"}
                   onClick={() => setIsSearchOpen(true)}
-                />
+                >
+                  <Search />
+                </ButtonIcon>
               </div>
             </div>
           ) : (
@@ -135,16 +138,12 @@ const Navbar = () => {
 
           <div className="flex items-center align-middle justify-end w-1/5 ">
             <div className="hidden gap-x-2 items-center lg:flex">
-              <ButtonIcon
-                icon={<MessageCircleMore size={22} />}
-                size="icon"
-                variant="ghost"
-              />
-              <ButtonIcon
-                icon={<Bell size={22} />}
-                size="icon"
-                variant="ghost"
-              />
+              <ButtonIcon size="icon" variant="ghost">
+                <MessageCircleMore size={22} />
+              </ButtonIcon>
+              <ButtonIcon size="icon" variant="ghost">
+                <Bell size={22} />
+              </ButtonIcon>
             </div>
 
             <SideMenu />
@@ -157,11 +156,13 @@ const Navbar = () => {
             <Logo icon={<Swords size={30} className="text-primary" />} />
             <div className="flex justify-end flex-1 ">
               <ButtonIcon
-                icon={<Search size={20} />}
                 variant={"ghost"}
                 size={"icon"}
                 onClick={() => setIsMobileSearchOpen(true)}
-              />
+              >
+                <Search />
+              </ButtonIcon>
+
               <SideMenu />
             </div>
           </div>
@@ -174,7 +175,7 @@ const Navbar = () => {
             <MenuSearch />
           </div>
         )}
-      </div>
+      </>
     </nav>
   );
 };
