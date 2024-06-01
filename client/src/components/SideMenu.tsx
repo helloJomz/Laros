@@ -7,10 +7,14 @@ import {
 import { Button } from "./ui/button";
 import AvatarDisplay from "./AvatarDisplay";
 import { LogIn, LogOut } from "lucide-react";
-import { useUserContextProvider } from "../context/UserProvider";
 
 const SideMenu = () => {
-  const { fullname, id } = useUserContextProvider();
+  const handleLogout = () => {};
+
+  const handleLogin = () => {
+    console.log("login");
+  };
+
   return (
     <div>
       <Menubar className="border-none ps-2 relative">
@@ -32,9 +36,7 @@ const SideMenu = () => {
                     className="rounded-full h-10 w-10 object-cover"
                   />
                   <div className="flex flex-col mb-1 ">
-                    <h6 className="text-xs lg:text-sm font-semibold">
-                      {fullname}
-                    </h6>
+                    <h6 className="text-xs lg:text-sm font-semibold"></h6>
                     <span className="text-xs lg:text-xs text-muted-foreground">
                       Dedicated Poster
                     </span>
@@ -43,8 +45,7 @@ const SideMenu = () => {
               </div>
               {/* TODO: Implement a logout function */}
               <Button className="w-full flex gap-x-2 items-center">
-                {id ? <LogOut size={18} /> : <LogIn size={18} />}
-                {id ? <span>Log Out</span> : <span>Log in</span>}
+                <span>Log Out</span>
               </Button>
             </div>
           </MenubarContent>

@@ -1,8 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 const SearchHistorySchema = new Schema({
   userid: {
-    type: String,
+    type: Types.ObjectId,
     required: true,
   },
   history: [

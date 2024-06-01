@@ -4,14 +4,12 @@ import { cn } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { useNavbarContext } from "../context/NavbarContext";
 import { useEffect, useState } from "react";
-import { useMutation } from "react-query";
-import { addGameRecentHistory } from "../api/search";
 
 type SearchBoxProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const SearchBox = ({ className, ...props }: SearchBoxProps) => {
   // Context
-  const { searchBoxType, setSearchBoxType, isSearchTyping, searchQuery } =
+  const { searchBoxType, setSearchBoxType, isSearchTyping } =
     useNavbarContext();
 
   // State
@@ -29,18 +27,9 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
     setPlaceholder(updatedPlaceholder);
   }, [searchBoxLowerCased]);
 
-  const { mutate: addQueryToRecentHistory } = useMutation({
-    mutationFn: (obj: any) => addGameRecentHistory(obj),
-  });
-
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       try {
-        addQueryToRecentHistory({
-          query: searchQuery,
-          origin: "undefined",
-          userid: "123",
-        });
       } catch (error) {
         console.error(error);
       }

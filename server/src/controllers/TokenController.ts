@@ -4,7 +4,6 @@ import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "../constants";
-import mongoose from "mongoose";
 import * as jwt from "jsonwebtoken";
 import { generateToken } from "../helpers";
 
@@ -13,17 +12,25 @@ export const refreshTokenController = async (
   res: Response
 ) => {
   const cookies = req.cookies;
-  const refreshToken: string = cookies[REFRESH_TOKEN_STRING];
 
   // TODO: I NEED TO CHECK THIS AND HANDLE THIS BECAUSE IF THE COOKIE
   //       IS NOT SET ANYMORE I SHOULD REDIRECT THE USER TO THE LOGIN PAGE (401)
-  if (!refreshToken)
-    return res.status(401).json({ message: "Forbidden Access!" });
+  if (Object.keys(cookies).length === 0) {
+    return res
+      .status(401)
+      .json({
+        error: true,
+        identifier: "refreshToken",
+      })
+      .redirect("/auth/login");
+  }
+
+  const refreshToken: string = cookies[REFRESH_TOKEN_STRING];
 
   jwt.verify(refreshToken, REFRESH_SECRET!, (err: any, user: any) => {
     if (err) return res.status(401).json({ message: "Forbidden Access!" });
     const newUserObj = {
-      _id: user._id,
+      _id: user.user._id,
       firstname: user.user.firstname,
       lastname: user.user.lastname,
       email: user.user.email,
@@ -32,6 +39,7 @@ export const refreshTokenController = async (
     return res
       .cookie(ACCESS_TOKEN_STRING, accessToken, {
         httpOnly: true,
+
         secure: true,
         sameSite: "strict",
         maxAge: 30 * 60 * 1000,

@@ -48,30 +48,19 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
-export const getUserDetails = async () => {
+export const logoutUser = async () => {
   try {
-    const response = await customAxios.post("/get_user");
-    return response.data;
+    await customAxios.post("/logout");
   } catch (error) {
     console.error(error);
   }
 };
 
-// export const getUserDetailsById = async (userid: string) => {
-//   try {
-//     const response = await axios.post(
-//       "http://localhost:5000/api/users/get_user",
-//       {
-//         userid: userid,
-//       },
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+export const getUserDetails = async () => {
+  try {
+    const response = await customAxios.post("/get_user");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -3,40 +3,25 @@ import AvatarDisplay from "./AvatarDisplay";
 import { Button } from "./ui/button";
 import { cn } from "../lib/utils";
 import { capitalizeFirstLetter } from "../utils/utils";
-import { useMutation, useQueryClient } from "react-query";
-import { deleteRecentHistoryAll, deleteRecentHistoryOne } from "../api/search";
 import DataFetchStatus from "./DataFetchStatus";
-import { useRecentHistory } from "../hooks/useRecentHistory";
+import {
+  useGetAllRecentHistoryQuery,
+  useDeleteOneRecentHistoryMutation,
+  useDeleteAllRecentHistoryMutation,
+} from "@/redux/features/search/searchAPI";
 
 const SearchHistoryList = () => {
-  const queryClient = useQueryClient();
-  const userId = "123";
+  const userid = "6651c9017d25ff4478471968";
 
   const {
     data: recentHistorylist,
     isLoading,
     isError,
-  } = useRecentHistory(userId);
+    refetch,
+  } = useGetAllRecentHistoryQuery(userid);
 
-  const { mutate: mutateHistoryOne } = useMutation({
-    mutationFn: (obj: string) => deleteRecentHistoryOne(userId, obj),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["recent_history"]);
-    },
-    onError: (error) => {
-      console.error("Mutation error:", error);
-    },
-  });
-
-  const { mutate: mutateHistoryAll } = useMutation({
-    mutationFn: (obj: string) => deleteRecentHistoryAll(obj),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["recent_history"]);
-    },
-    onError: (error) => {
-      console.error("Mutation error:", error);
-    },
-  });
+  const [deleteOneRecentHistory] = useDeleteOneRecentHistoryMutation();
+  const [deleteAllRecentHistory] = useDeleteAllRecentHistoryMutation();
 
   if (isLoading || recentHistorylist === undefined)
     return <DataFetchStatus type="loading" />;
@@ -62,7 +47,10 @@ const SearchHistoryList = () => {
               variant="link"
               size={"sm"}
               className="p-0 text-cyan-400"
-              onClick={() => mutateHistoryAll(userId)}
+              onClick={async () => {
+                await deleteAllRecentHistory({ userid: userid });
+                refetch();
+              }}
             >
               Clear all
             </Button>
@@ -102,7 +90,13 @@ const SearchHistoryList = () => {
 
                     <span
                       className="rounded-full hover:bg-slate-800 w-6 h-6 flex justify-center items-center"
-                      onClick={() => mutateHistoryOne(history._id)}
+                      onClick={async () => {
+                        await deleteOneRecentHistory({
+                          userid: userid,
+                          historyid: history._id,
+                        });
+                        refetch();
+                      }}
                     >
                       <X size={15} />
                     </span>

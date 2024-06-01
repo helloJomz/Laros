@@ -64,43 +64,36 @@ export const loginController = async (req: Request, res: Response) => {
   res.cookie(ACCESS_TOKEN_STRING, accessToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
     maxAge: 15 * 1000,
   });
 
   res.cookie(REFRESH_TOKEN_STRING, refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
   return res.status(200).json({ message: "Login successfully!" });
 };
 
-// export const getUserController = async (req: Request, res: Response) => {
-//   const { userid } = req.body;
-
-//   if (!userid) return res.status(401).json({ message: "Missing userid." });
-
-//   const _id = mongoose.Types.ObjectId.createFromHexString(userid);
-
-//   const user = await UserModel.findById(_id);
-
-//   if (!user) return res.status(401).json({ message: "Cannot retrieve user!" });
-
-//   return res.status(200).json({
-//     id: user._id,
-//     firstname: user.firstname,
-//     lastname: user.lastname,
-//   });
-// };
-
 export const getUserController = async (req: Request | any, res: Response) => {
   const user = req.user;
-  return res.json({
+  console.log("im here at controller");
+
+  if (!user) return res.status(401).json({ message: "Forbidden Access!" });
+
+  return res.status(200).json({
     id: user._id,
     firstname: user.firstname,
     lastname: user.lastname,
+    email: user.email,
   });
+};
+
+export const logoutController = async (req: Request | any, res: Response) => {
+  const accessToken: string = ACCESS_TOKEN_STRING!;
+  const refreshToken: string = REFRESH_TOKEN_STRING!;
+  res.clearCookie("gqew");
+  res.clearCookie("sdvn");
+  res.status(200).send("Logged out successfully");
 };
