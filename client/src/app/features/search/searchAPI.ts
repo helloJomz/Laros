@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { HEADER_JSON } from "@/redux/constants";
+import { HEADER_JSON } from "@/app/constants";
 
 export const searchAPI = createApi({
   reducerPath: "searchAPI",

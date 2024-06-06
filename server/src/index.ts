@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { default as searchRouter } from "./routes/search";
 import { default as userRouter } from "./routes/users";
+import { default as authRouter } from "./routes/auth";
 import { CONNECTION, PORT } from "./constants";
 
 dotenv.config();
@@ -37,3 +38,4 @@ mongoose
 
 app.use("/api/search", searchRouter);
 app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);

@@ -3,24 +3,41 @@ import LoginUserSchema from "../../schemas/login";
 import InputField from "./InputField";
 import { Button } from "../ui/button";
 import { LoaderCircle } from "lucide-react";
-import { loginUser } from "../../api/auth";
+import { useLoginMutation } from "@/app/features/auth/authApiSlice";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/app/features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const handleSubmit = (
-    { email, password }: any,
-    { setSubmitting, setStatus }: FormikHelpers<any>
+  const [login] = useLoginMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLoginSubmit = (
+    value: any,
+    { setSubmitting }: FormikHelpers<any>
   ) => {
     setTimeout(async () => {
-      try {
-        const response = await loginUser(email, password);
-        // TODO: Navigate user to the Homepage.
-        console.log(response);
+      setSubmitting(true);
+      const response = await login(value);
+      if (response) {
+        const data = response.data;
+        dispatch(
+          setCredentials({
+            accessToken: data.gqeRxt3B9mZ2i.ks23kfm,
+            user: {
+              userid: data.userid,
+              firstname: data.firstname,
+              lastname: data.lastname,
+            },
+          })
+        );
         setSubmitting(false);
-      } catch (error) {
-        console.error(error);
+        navigate("/test");
+      } else {
         setSubmitting(false);
       }
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -31,7 +48,7 @@ const LoginForm = () => {
           password: "",
         }}
         validationSchema={LoginUserSchema}
-        onSubmit={handleSubmit}
+        onSubmit={handleLoginSubmit}
       >
         {({ isSubmitting, status }: FormikProps<any>) => (
           <FormikForm>

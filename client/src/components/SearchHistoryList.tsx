@@ -8,7 +8,7 @@ import {
   useGetAllRecentHistoryQuery,
   useDeleteOneRecentHistoryMutation,
   useDeleteAllRecentHistoryMutation,
-} from "@/redux/features/search/searchAPI";
+} from "@/app/features/search/searchAPI";
 
 const SearchHistoryList = () => {
   const userid = "6651c9017d25ff4478471968";

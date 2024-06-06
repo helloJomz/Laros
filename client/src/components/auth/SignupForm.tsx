@@ -1,33 +1,36 @@
 import { Formik, Form as FormikForm, FormikProps, FormikHelpers } from "formik";
 import SignupUserSchema from "../../schemas/signup";
-import { createUser } from "../../api/auth";
 import InputField from "./InputField";
 import { Button } from "../ui/button";
 import { LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCreateNewUserMutation } from "@/app/features/users/userAPI";
+import { useSignupMutation } from "../../app/features/auth/authApiSlice";
 
 const SignupForm = () => {
   const navigate = useNavigate();
+  // const [createNewUser] = useCreateNewUserMutation();
+  const [signup, { data }] = useSignupMutation();
 
-  const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
-    setTimeout(async () => {
-      try {
-        const response: any = await createUser(values);
+  const handleSignUp = async (values: any, actions: FormikHelpers<any>) => {
+    try {
+      const response: any = await signup(values);
 
-        if (response.status === 400) {
-          actions.setSubmitting(false);
-          actions.setFieldError("email", response.data.error);
-        } else {
-          actions.setSubmitting(false);
-          setTimeout(() => {
-            navigate("/auth/login", { state: { success: true } });
-          }, 1000);
-        }
-      } catch (error) {
-        console.error(error);
-        actions.setSubmitting(false);
-      }
-    }, 2000);
+      console.log(response, values);
+
+      // if (response.error && response.error.status === 400) {
+      //   actions.setSubmitting(false);
+      //   actions.setFieldError("email", response.error.data.error);
+      //   return;
+      // }
+
+      // setTimeout(() => {
+      //   actions.setSubmitting(false);
+      //   navigate("/auth/login", { state: { success: true } });
+      // }, 1000);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -41,7 +44,7 @@ const SignupForm = () => {
           cpassword: "",
         }}
         validationSchema={SignupUserSchema}
-        onSubmit={handleSubmit}
+        onSubmit={handleSignUp}
       >
         {({ isSubmitting }: FormikProps<any>) => (
           <FormikForm>
@@ -62,7 +65,7 @@ const SignupForm = () => {
               {isSubmitting && (
                 <LoaderCircle size={16} className="animate-spin" />
               )}
-              <span>{isSubmitting ? "Processing..." : "Sign Up"} </span>
+              <span>{isSubmitting ? "Signing up..." : "Sign Up"} </span>
             </Button>
           </FormikForm>
         )}

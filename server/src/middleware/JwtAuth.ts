@@ -1,9 +1,5 @@
 import * as jwt from "jsonwebtoken";
-import {
-  ACCESS_SECRET,
-  ACCESS_TOKEN_STRING,
-  REFRESH_TOKEN_STRING,
-} from "../constants";
+import { ACCESS_SECRET } from "../constants";
 import { Request, Response, NextFunction } from "express";
 
 export const AuthenticateTokenMiddleware = (
@@ -11,23 +7,13 @@ export const AuthenticateTokenMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const cookies = req.cookies;
-  const accessToken: string = cookies[ACCESS_TOKEN_STRING];
-  const refreshToken: string = cookies[REFRESH_TOKEN_STRING];
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401);
+  const token = authHeader.split(" ")[1];
 
-  if (!accessToken && !refreshToken)
-    return res.status(401).json({ message: "No tokens available." });
-
-  if (!accessToken)
-    return res.status(403).json({ message: "No access token available." });
-
-  jwt.verify(accessToken, ACCESS_SECRET!, (err: any, user: any) => {
-    if (err) {
-      return res
-        .status(403)
-        .json({ message: "Access Denied! Invalid or expired token." });
-    }
-    req.user = user.user;
+  jwt.verify(token, ACCESS_SECRET!, (err: any, decoded: any) => {
+    if (err) return res.status(403).json({ message: "Invalid Token!" }); //invalid token
+    req.user = decoded.user;
     next();
   });
 };

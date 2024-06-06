@@ -14,7 +14,7 @@ import {
   useGetGamesByNameQuery,
   useAddGameToRecentHistoryMutation,
   useGetAllRecentHistoryQuery,
-} from "@/redux/features/search/searchAPI";
+} from "@/app/features/search/searchAPI";
 
 const GameList = () => {
   const { windowWidth, searchQuery } = useNavbarContext();

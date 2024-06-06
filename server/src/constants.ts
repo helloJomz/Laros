@@ -11,5 +11,5 @@ export const SALT: number = 10;
 export const ACCESS_SECRET = process.env.ACCESS_SECRET_TOKEN;
 export const REFRESH_SECRET = process.env.REFRESH_SECRET_TOKEN;
 
-export const ACCESS_TOKEN_STRING = "gqew";
-export const REFRESH_TOKEN_STRING = "sdvn";
+export const ACCESS_TOKEN_STRING = "gqeRxt3B9mZ2i";
+export const REFRESH_TOKEN_STRING = "ui9832mmXk21";

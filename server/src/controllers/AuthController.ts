@@ -9,7 +9,6 @@ import {
 import { generateToken } from "../helpers/index";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 
 export const signupController = async (req: Request, res: Response) => {
   const { firstname, lastname, email, password } = req.body;
@@ -64,36 +63,57 @@ export const loginController = async (req: Request, res: Response) => {
   res.cookie(ACCESS_TOKEN_STRING, accessToken, {
     httpOnly: true,
     secure: true,
-    maxAge: 15 * 1000,
+    maxAge: 30 * 60 * 1000,
   });
 
   res.cookie(REFRESH_TOKEN_STRING, refreshToken, {
     httpOnly: true,
     secure: true,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 24 * 60 * 60 * 1000,
   });
-
-  return res.status(200).json({ message: "Login successfully!" });
-};
-
-export const getUserController = async (req: Request | any, res: Response) => {
-  const user = req.user;
-  console.log("im here at controller");
-
-  if (!user) return res.status(401).json({ message: "Forbidden Access!" });
 
   return res.status(200).json({
-    id: user._id,
+    gqeRxt3B9mZ2i: {
+      ks23kfm: accessToken,
+      sdCXkm122: refreshToken,
+    },
+    userid: user._id,
     firstname: user.firstname,
     lastname: user.lastname,
-    email: user.email,
   });
 };
 
-export const logoutController = async (req: Request | any, res: Response) => {
-  const accessToken: string = ACCESS_TOKEN_STRING!;
-  const refreshToken: string = REFRESH_TOKEN_STRING!;
-  res.clearCookie("gqew");
-  res.clearCookie("sdvn");
-  res.status(200).send("Logged out successfully");
+export const refreshTokenController = async (
+  req: Request | any,
+  res: Response
+) => {
+  const { gqeRxt3B9mZ2i: accessToken, ui9832mmXk21: refreshToken } =
+    req.cookies;
+
+  if (!accessToken || !refreshToken)
+    return res.status(401).json({ message: "Forbidden Access!" });
+
+  jwt.verify(refreshToken!, REFRESH_SECRET!, (err: any, decoded: any) => {
+    if (err) return res.status(401).json({ message: "Forbidden Access!" });
+    const data = decoded.user;
+    const newUserObj = {
+      _id: data._id,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      email: data.email,
+    };
+    const accessToken = generateToken(newUserObj, "access", "30m");
+    return res
+      .status(200)
+      .cookie(ACCESS_TOKEN_STRING, accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 30 * 60 * 1000,
+      })
+      .json({ gqeRxt3B9mZ2i: accessToken });
+  });
+};
+
+export const testController = async (req: Request | any, res: Response) => {
+  return res.status(401).json({ message: "testing" });
 };

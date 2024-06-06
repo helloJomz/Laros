@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { SearchHistoryModel } from "../models/SearchHistory";
-import mongoose from "mongoose";
 import {
   deleteAllRecentHistoryController,
   deleteOneRecentHistoryController,
