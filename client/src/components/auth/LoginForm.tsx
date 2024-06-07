@@ -7,8 +7,10 @@ import { useLoginMutation } from "@/app/features/auth/authApiSlice";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/app/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { useNavbarContext } from "@/context/NavbarContext";
 
 const LoginForm = () => {
+  const { setTriggerAlertFooter } = useNavbarContext();
   const [login] = useLoginMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,7 +35,12 @@ const LoginForm = () => {
           })
         );
         setSubmitting(false);
-        navigate("/test");
+        setTriggerAlertFooter({
+          trigger: "login",
+          title: "Welcome back, Gamer!",
+          desc: "Dive back into the action and connect with your friends!",
+        });
+        navigate("/");
       } else {
         setSubmitting(false);
       }

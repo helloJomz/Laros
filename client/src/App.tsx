@@ -20,22 +20,20 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <NavbarContextProvider>
         <Routes>
-          <Route element={<Navbar />}>
-            <Route path="/" element={<Home />} />
-          </Route>
-
           <Route element={<AnonymousRoute auth={auth} />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
           </Route>
 
-          <Route element={<PrivateRoute auth={auth} />}>
-            <Route element={<Navbar />}>
+          <Route element={<Navbar />}>
+            <Route path="/" element={<Home />} />
+
+            <Route element={<PrivateRoute auth={auth} />}>
               <Route path="/test" element={<Test />} />
             </Route>
-          </Route>
 
-          <Route path="*" element={<PageNotFound />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Route>
         </Routes>
       </NavbarContextProvider>
     </ThemeProvider>

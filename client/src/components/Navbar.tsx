@@ -16,6 +16,7 @@ import { HeaderButtonID } from "../types/enums";
 import MenuSearch from "./MenuSearch";
 import { useNavbarContext } from "../context/NavbarContext";
 import { Outlet } from "react-router-dom";
+import Alerts from "./common/Alerts";
 
 const Navbar = () => {
   // TODO: CLEAN UP THESE MESS! CREATE CUSTOM HOOKS...
@@ -184,7 +185,10 @@ const Navbar = () => {
           )}
         </>
       </nav>
+
       <Outlet />
+
+      <Alerts />
     </>
   );
 };

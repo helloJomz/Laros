@@ -12,6 +12,9 @@ type NavbarContextProps = {
 
   isSearchTyping: boolean;
   setIsSearchTyping: (isTyping: boolean) => void;
+
+  triggerAlertFooter: {};
+  setTriggerAlertFooter: (alerts: {}) => void;
 };
 
 const NavbarContext = createContext<NavbarContextProps | undefined>(undefined);
@@ -24,6 +27,7 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSearchTyping, setIsSearchTyping] = useState<boolean>(false);
+  const [triggerAlertFooter, setTriggerAlertFooter] = useState({});
 
   return (
     <NavbarContext.Provider
@@ -36,6 +40,8 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
         setSearchQuery,
         isSearchTyping,
         setIsSearchTyping,
+        triggerAlertFooter,
+        setTriggerAlertFooter,
       }}
     >
       {children}
