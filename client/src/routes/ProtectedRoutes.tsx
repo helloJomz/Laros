@@ -14,10 +14,14 @@ const AnonymousRoute = ({ auth }: { auth: string }) => {
   return !auth ? <Outlet /> : <Navigate to="/" replace />;
 };
 
+const SetupRoute = ({ auth, isNew }: { auth: string; isNew: boolean }) => {
+  return auth && isNew ? <Outlet /> : <Navigate to="/" replace />;
+};
+
 // const RoleAccess = ({ roles = [], user, redirectTarget }) => {
 //   return !roles.length || roles.includes(user?.role)
 //     ? <Outlet />
 //     : <Navigate to={redirectTarget} replace />;
 // };
 
-export { PrivateRoute, AnonymousRoute };
+export { PrivateRoute, AnonymousRoute, SetupRoute };

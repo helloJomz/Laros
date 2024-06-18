@@ -5,7 +5,7 @@ import {
   getAllRecentHistoryController,
   getGameListByQueryController,
   upsertRecentHistoryController,
-} from "../controllers/searchController";
+} from "../controllers/SearchController";
 
 const router = Router();
 

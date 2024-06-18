@@ -6,7 +6,7 @@ import {
 } from "../components/ui/menubar";
 import { Button } from "./ui/button";
 import AvatarDisplay from "./AvatarDisplay";
-import { LoaderCircle, LogIn, LogOut } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectCurrentUser,
@@ -16,20 +16,21 @@ import { persistor } from "@/app/store";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useNavbarContext } from "@/context/NavbarContext";
+import { useLogoutMutation } from "@/app/features/auth/authApiSlice";
 
 const SideMenu = () => {
   const { setTriggerAlertFooter } = useNavbarContext();
   const [isProcessingLogout, setIsProcessingLogout] = useState<boolean>(false);
+  const [logout] = useLogoutMutation();
 
   const user = useSelector(selectCurrentUser);
-  const fullname = user && user.firstname + " " + user.lastname;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     setIsProcessingLogout(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setTriggerAlertFooter({
         trigger: "logout",
         title: "You have logged out successfully!",
@@ -38,6 +39,7 @@ const SideMenu = () => {
       dispatch(destroyUserSession());
       persistor.flush();
       persistor.purge();
+      await logout(undefined); // clears cookies
       setIsProcessingLogout(false);
     }, 2000);
   };
@@ -52,7 +54,7 @@ const SideMenu = () => {
         <MenubarMenu>
           <MenubarTrigger className="flex justify-center items-center h-fit w-fit p-0 cursor-pointer">
             <AvatarDisplay
-              src="https://play-lh.googleusercontent.com/oyEb6MRmRS6ReoX50Vyengpkkn_LgRYOX2oid9kCq_mzaVvxvmQbPIHmfTmEgWlfXg"
+              src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczhveXdoaDlnbTJjOG0xaGxrdXhiNHZzbDZmenU0YmZxczd0bXgwdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pCGyLbTeliIwqVU9Md/giphy.gif"
               fallback="AN"
               variant="menu"
             />
@@ -68,7 +70,7 @@ const SideMenu = () => {
                   }`}
                 >
                   <img
-                    src="https://play-lh.googleusercontent.com/oyEb6MRmRS6ReoX50Vyengpkkn_LgRYOX2oid9kCq_mzaVvxvmQbPIHmfTmEgWlfXg"
+                    src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczhveXdoaDlnbTJjOG0xaGxrdXhiNHZzbDZmenU0YmZxczd0bXgwdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pCGyLbTeliIwqVU9Md/giphy.gif"
                     alt=""
                     className="rounded-full h-10 w-10 object-cover"
                   />
@@ -78,7 +80,7 @@ const SideMenu = () => {
                         user ? "text-xs" : "text-sm"
                       } lg:text-sm font-semibold`}
                     >
-                      {user ? fullname : "Anonymous"}
+                      {user ? user.displayname : "Anonymous"}
                     </h6>
 
                     {user && (
@@ -89,7 +91,7 @@ const SideMenu = () => {
                   </div>
                 </div>
               </div>
-              {/* TODO: Implement a logout function */}
+
               <Button
                 className="w-full flex gap-x-2 items-center"
                 onClick={user ? handleLogout : handleLogin}
@@ -97,18 +99,15 @@ const SideMenu = () => {
               >
                 {user ? (
                   <div className="flex gap-x-1 items-center">
-                    {isProcessingLogout ? (
+                    {isProcessingLogout && (
                       <LoaderCircle size={20} className="animate-spin" />
-                    ) : (
-                      <LogOut size={20} />
                     )}
                     <span>
-                      {isProcessingLogout ? "Logging out..." : "Log Out"}
+                      {isProcessingLogout ? "Logging Out..." : "Log Out"}
                     </span>
                   </div>
                 ) : (
                   <div className="flex gap-x-1 items-center">
-                    <LogIn size={20} />
                     <span>Log In</span>
                   </div>
                 )}

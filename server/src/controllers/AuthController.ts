@@ -11,26 +11,48 @@ import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 
 export const signupController = async (req: Request, res: Response) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { displayname, email, password } = req.body;
   try {
-    const isExistingUser = await UserModel.findOne({ email: email });
-
-    if (isExistingUser)
-      return res.status(400).json({ error: "Email is already taken." });
-
     const hashedPassword = await bcrypt.hash(password, SALT);
 
     const newUser = {
-      firstname: firstname,
-      lastname: lastname,
+      displayname: displayname,
       email: email,
       password: hashedPassword,
     };
 
-    await UserModel.create(newUser);
-    return res
-      .status(200)
-      .json({ message: "Successfully registered an account." });
+    const user = await UserModel.create(newUser);
+
+    if (user) {
+      const userObj = {
+        _id: user._id,
+        displayname: user.displayname,
+        email: user.email,
+      };
+
+      const accessToken = generateToken(userObj, "access", "30m");
+      const refreshToken = generateToken(userObj, "refresh", "1d");
+
+      res.cookie(ACCESS_TOKEN_STRING, accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 30 * 60 * 1000,
+      });
+
+      res.cookie(REFRESH_TOKEN_STRING, refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      return res.status(200).json({
+        gqeRxt3B9mZ2i: {
+          ks23kfm: accessToken,
+          sdCXkm122: refreshToken,
+        },
+        userObj,
+      });
+    }
   } catch (error) {
     console.error(error);
   }
@@ -52,8 +74,7 @@ export const loginController = async (req: Request, res: Response) => {
 
   const userObj = {
     _id: user._id,
-    firstname: user.firstname,
-    lastname: user.lastname,
+    displayname: user.displayname,
     email: user.email,
   };
 
@@ -77,10 +98,51 @@ export const loginController = async (req: Request, res: Response) => {
       ks23kfm: accessToken,
       sdCXkm122: refreshToken,
     },
-    userid: user._id,
-    firstname: user.firstname,
-    lastname: user.lastname,
+    userObj,
   });
+};
+
+export const logoutController = async (req: Request, res: Response) => {
+  res.clearCookie("gqeRxt3B9mZ2i");
+  res.clearCookie("ui9832mmXk21");
+  return res.status(200).json({
+    message: "Successfully logged out!",
+  });
+};
+
+export const isEmailExistsController = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const isExistingEmail = await UserModel.findOne({ email: email });
+
+    if (isExistingEmail)
+      return res.status(400).json({ error: "Email is already taken." });
+
+    return res.status(200).json({ success: "Email is available." });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const isDisplayNameExistsController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { displayname } = req.body;
+
+    const isExistingDisplayName = await UserModel.findOne({
+      displayname: displayname,
+    });
+
+    if (isExistingDisplayName)
+      return res.status(400).json({ error: "Display name is already taken." });
+
+    return res.status(200).json({ success: "Display name is available." });
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const refreshTokenController = async (
@@ -98,8 +160,7 @@ export const refreshTokenController = async (
     const data = decoded.user;
     const newUserObj = {
       _id: data._id,
-      firstname: data.firstname,
-      lastname: data.lastname,
+      displayname: data.displayname,
       email: data.email,
     };
     const accessToken = generateToken(newUserObj, "access", "30m");
@@ -112,8 +173,4 @@ export const refreshTokenController = async (
       })
       .json({ gqeRxt3B9mZ2i: accessToken });
   });
-};
-
-export const testController = async (req: Request | any, res: Response) => {
-  return res.status(401).json({ message: "testing" });
 };

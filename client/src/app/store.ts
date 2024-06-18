@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { searchAPI } from "./features/search/searchAPI";
+import { giphyApiSlice } from "./features/giphy/giphySlice";
 import authReducer from "./features/auth/authSlice";
 import { apiSlice } from "./services/api";
 import {
@@ -25,6 +26,7 @@ export const store = configureStore({
   reducer: {
     [searchAPI.reducerPath]: searchAPI.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
+    [giphyApiSlice.reducerPath]: giphyApiSlice.reducer,
     auth: persistedAuthReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -34,11 +36,13 @@ export const store = configureStore({
       },
     })
       .concat(searchAPI.middleware)
-      .concat(apiSlice.middleware),
-  devTools: true,
+      .concat(apiSlice.middleware)
+      .concat(giphyApiSlice.middleware),
   // concat here the other middleware APIs
+  devTools: true,
 });
 
+// TODO: need to remove this and just get the user's info with the cookie.
 export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;

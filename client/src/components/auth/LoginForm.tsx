@@ -10,40 +10,43 @@ import { useNavigate } from "react-router-dom";
 import { useNavbarContext } from "@/context/NavbarContext";
 
 const LoginForm = () => {
-  const { setTriggerAlertFooter } = useNavbarContext();
+  const { setTriggerAlertFooter, windowWidth } = useNavbarContext();
   const [login] = useLoginMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const isLargerScreens = windowWidth >= 1024;
+
   const handleLoginSubmit = (
     value: any,
-    { setSubmitting }: FormikHelpers<any>
+    { setSubmitting, setStatus }: FormikHelpers<any>
   ) => {
     setTimeout(async () => {
       setSubmitting(true);
       const response = await login(value);
-      if (response) {
+      const errorMsg = response.error as { data: { error: string } };
+      if (response.error) {
+        setStatus(errorMsg.data.error);
+      } else {
         const data = response.data;
         dispatch(
           setCredentials({
             accessToken: data.gqeRxt3B9mZ2i.ks23kfm,
             user: {
-              userid: data.userid,
-              firstname: data.firstname,
-              lastname: data.lastname,
+              userid: data.userObj._id,
+              displayname: data.userObj.displayname,
             },
           })
         );
-        setSubmitting(false);
         setTriggerAlertFooter({
           trigger: "login",
           title: "Welcome back, Gamer!",
           desc: "Dive back into the action and connect with your friends!",
         });
+
         navigate("/");
-      } else {
-        setSubmitting(false);
       }
+      setSubmitting(false);
     }, 1500);
   };
 
@@ -59,19 +62,31 @@ const LoginForm = () => {
       >
         {({ isSubmitting, status }: FormikProps<any>) => (
           <FormikForm>
-            {status}
-            <InputField type="text" label="Email" name="email" />
-            <InputField type="password" label="Password" name="password" />
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex gap-x-2 items-center"
+            <div
+              className={`flex flex-col gap-y-5 ${
+                isLargerScreens && "w-[24rem]"
+              }`}
             >
-              {isSubmitting && (
-                <LoaderCircle size={16} className="animate-spin" />
+              {status && (
+                <div className="bg-red-200 rounded p-2 text-red-500 text-sm font-semibold text-center">
+                  <span>{`${status}.`}</span>
+                </div>
               )}
-              <span>{isSubmitting ? "Processing..." : "Login"} </span>
-            </Button>
+
+              <InputField name="email" type="text" label="Email" />
+              <InputField name="password" type="password" label="Password" />
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex gap-x-2 items-center w-full"
+              >
+                {isSubmitting && (
+                  <LoaderCircle size={16} className="animate-spin" />
+                )}
+                <span>{isSubmitting ? "Logging In..." : "Log In"} </span>
+              </Button>
+            </div>
           </FormikForm>
         )}
       </Formik>

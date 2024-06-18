@@ -1,20 +1,19 @@
 import * as yup from "yup";
 
 const SignupUserSchema = yup.object().shape({
-  firstname: yup
+  displayname: yup
     .string()
-    .matches(/^[a-zA-Z]+$/, "First name can only contain letters.")
-    .min(5, "First name must be at least 5 characters long.")
-    .required("First name is required."),
-  lastname: yup
-    .string()
-    .matches(/^[a-zA-Z]+$/, "Last name can only contain letters.")
-    .min(2, "Last name must be at least 2 characters long.")
-    .required("Last name is required."),
+    .matches(/^[a-zA-Z]+$/, "Display name can only contain letters.")
+    .min(5, "Display name must be at least 5 characters long.")
+    .required("Display name is required."),
   email: yup
     .string()
     .email("Invalid email address.")
-    .required("Email is required."),
+    .required("Email is required.")
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email address."
+    ),
   password: yup
     .string()
     .required("Password is required.")

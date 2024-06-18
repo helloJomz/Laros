@@ -1,7 +1,7 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import AlertToast from "../AlertToast";
 import { Hand, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const Alerts = () => {
   const { triggerAlertFooter, setTriggerAlertFooter } = useNavbarContext();
@@ -10,6 +10,10 @@ const Alerts = () => {
   const icons: any = {
     logout: <LogOut />,
     login: <Hand />,
+  };
+
+  const handeCloseToast = () => {
+    setTriggerAlertFooter({});
   };
 
   useEffect(() => {
@@ -21,7 +25,12 @@ const Alerts = () => {
   return (
     <>
       {Object.keys(triggerAlertFooter).length > 0 && (
-        <AlertToast title={title} desc={desc} icon={icons[trigger]} />
+        <AlertToast
+          title={title}
+          desc={desc}
+          icon={icons[trigger]}
+          onClick={handeCloseToast}
+        />
       )}
     </>
   );

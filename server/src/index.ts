@@ -4,8 +4,9 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { default as searchRouter } from "./routes/search";
-import { default as userRouter } from "./routes/users";
 import { default as authRouter } from "./routes/auth";
+import { default as giphyRouter } from "./routes/giphy";
+import { default as uploadRouter } from "./routes/upload";
 import { CONNECTION, PORT } from "./constants";
 
 dotenv.config();
@@ -37,5 +38,6 @@ mongoose
   });
 
 app.use("/api/search", searchRouter);
-app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/giphy", giphyRouter);
+app.use("/api/upload", uploadRouter);

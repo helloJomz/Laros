@@ -1,9 +1,7 @@
 import { ACCESS_SECRET, REFRESH_SECRET } from "../constants";
 import * as jwt from "jsonwebtoken";
 import { User, TokenType } from "./types";
-import { Types } from "mongoose";
-import { TokenModel } from "../models/Tokens";
-import { Response } from "express";
+import { verifiedGiphyGameChannels } from "./array";
 
 export const generateToken = (
   user: User,
@@ -15,4 +13,11 @@ export const generateToken = (
   if (expiry) options.expiresIn = expiry;
   const accessToken = jwt.sign({ user }, secretType, options);
   return accessToken;
+};
+
+export const randomVerifiedGiphyGameChannelsGif = () => {
+  const randomIndex = Math.floor(
+    Math.random() * verifiedGiphyGameChannels.length
+  );
+  return verifiedGiphyGameChannels[randomIndex];
 };

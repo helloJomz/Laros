@@ -18,7 +18,7 @@ import {
 
 const GameList = () => {
   const { windowWidth, searchQuery } = useNavbarContext();
-  const debouncedSearch = useDebounce(searchQuery);
+  const { debouncedValue: debouncedSearch } = useDebounce(searchQuery);
 
   const userid = "6651c9017d25ff4478471968";
   const validSearchQuery = debouncedSearch.length <= 1 ? null : debouncedSearch;

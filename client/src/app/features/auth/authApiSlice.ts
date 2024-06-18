@@ -19,14 +19,35 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    test: builder.mutation<any, void>({
+    logout: builder.mutation({
       query: () => ({
-        url: "/users/test",
+        url: "/auth/logout",
         method: "POST",
+      }),
+    }),
+
+    checkIfEmailExists: builder.mutation({
+      query: (email: any) => ({
+        url: "/auth/checkemailexists",
+        method: "POST",
+        body: { email },
+      }),
+    }),
+
+    checkIfDisplayNameExists: builder.mutation({
+      query: (displayname: any) => ({
+        url: "/auth/checkdisplaynameexists",
+        method: "POST",
+        body: { displayname },
       }),
     }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation, useTestMutation } =
-  authApiSlice;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useLogoutMutation,
+  useCheckIfDisplayNameExistsMutation,
+  useCheckIfEmailExistsMutation,
+} = authApiSlice;
