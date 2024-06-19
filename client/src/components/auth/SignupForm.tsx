@@ -125,7 +125,9 @@ const SignupForm = () => {
             await handleSignUp(values);
             resetForm();
             setSubmitting(false);
-            navigate("/upload/avatar", { state: { isNew: true } });
+            navigate("/upload/avatar", {
+              state: { from: "/signup", isNew: true },
+            });
           }, 2000);
         }}
       >
@@ -137,7 +139,7 @@ const SignupForm = () => {
           values,
         }: FormikProps<any>) => (
           <FormikForm>
-            <div className="flex flex-col gap-y-5">
+            <div className="flex flex-col gap-y-5 ">
               <div className="relative flex flex-col gap-y-2">
                 <InputField
                   name="email"

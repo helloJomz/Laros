@@ -5,16 +5,12 @@ import { Routes, Route } from "react-router-dom";
 import PageNotFound from "./pages/PageNotFound";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import {
-  PrivateRoute,
-  AnonymousRoute,
-  SetupRoute,
-} from "./routes/ProtectedRoutes";
+import { PrivateRoute, AnonymousRoute } from "./routes/ProtectedRoutes";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "@/app/features/auth/authSlice";
 import Home from "./components/Home";
-import SetupUploadPicture from "./pages/SetupUploadPicture";
-import { useLocation } from "react-router-dom";
+import UploadAvatar from "./pages/UploadAvatar";
+import ProfilePage from "./pages/ProfilePage";
 
 document.title = "Laros | Where the gamers connect Easily!";
 
@@ -34,7 +30,8 @@ function App() {
             <Route path="/" element={<Home />} />
 
             <Route element={<PrivateRoute auth={auth} />}>
-              <Route path="/upload/avatar" element={<SetupUploadPicture />} />
+              <Route path="/upload/avatar" element={<UploadAvatar />} />
+              <Route path="/:displayname" element={<ProfilePage />} />
             </Route>
 
             <Route path="*" element={<PageNotFound />} />

@@ -5,7 +5,6 @@ import { FC, useState } from "react";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useLocation } from "react-router-dom";
 import { BsBracesAsterisk } from "react-icons/bs";
-import { FaCheckDouble } from "react-icons/fa";
 
 type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;

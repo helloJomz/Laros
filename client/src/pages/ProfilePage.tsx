@@ -1,10 +1,11 @@
-import { Button } from "../components/ui/button";
+import { useParams } from "react-router-dom";
 
 const ProfilePage = () => {
+  const { displayname } = useParams();
+
   return (
-    <div className="text-white">
-      <h1></h1>
-      <Button>Test</Button>
+    <div>
+      <h1>{displayname}</h1>
     </div>
   );
 };

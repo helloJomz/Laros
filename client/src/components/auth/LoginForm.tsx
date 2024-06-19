@@ -43,7 +43,7 @@ const LoginForm = () => {
           title: "Welcome back, Gamer!",
           desc: "Dive back into the action and connect with your friends!",
         });
-
+        localStorage.removeItem("anonUuid");
         navigate("/");
       }
       setSubmitting(false);

@@ -13,20 +13,36 @@ import {
   destroyUserSession,
 } from "@/app/features/auth/authSlice";
 import { persistor } from "@/app/store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { useLogoutMutation } from "@/app/features/auth/authApiSlice";
+import { v4 } from "uuid";
 
 const SideMenu = () => {
+  const user = useSelector(selectCurrentUser);
   const { setTriggerAlertFooter } = useNavbarContext();
   const [isProcessingLogout, setIsProcessingLogout] = useState<boolean>(false);
+
+  const [anonUuid, _setAnonUuid] = useState<string>((): string => {
+    const tempId = localStorage.getItem("anon_uuid");
+    let finalAnonId: string = "";
+    if (tempId) {
+      finalAnonId = tempId;
+    } else {
+      const randomString: string = v4();
+      const explodedRandomString: string = randomString.replace(/-/g, "");
+      const slicedRandomString: string = explodedRandomString.slice(0, 12);
+      finalAnonId = slicedRandomString;
+      localStorage.setItem("anon_uuid", slicedRandomString);
+    }
+    return finalAnonId;
+  });
+
   const [logout] = useLogoutMutation();
-
-  const user = useSelector(selectCurrentUser);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     setIsProcessingLogout(true);
@@ -48,6 +64,10 @@ const SideMenu = () => {
     navigate("/login");
   };
 
+  const handleRedirectToProfile = () => {
+    navigate(`/${user.displayname}`, { state: { from: location.pathname } });
+  };
+
   return (
     <div>
       <Menubar className="border-none ps-2 relative">
@@ -60,8 +80,11 @@ const SideMenu = () => {
             />
           </MenubarTrigger>
           <MenubarContent className="absolute top-[-0.1rem] right-[-3.5rem] ">
-            <div className="w-[15rem] h-[18rem] p-2 flex flex-col justify-between ">
-              <div className="flex flex-col gap-y-2">
+            <div className="w-[15rem] h-[18rem] p-2 flex flex-col justify-between">
+              <div
+                className="flex flex-col gap-y-2"
+                onClick={handleRedirectToProfile}
+              >
                 <div
                   className={`flex gap-x-3 p-2 bg-secondary rounded items-center ${
                     user
@@ -80,14 +103,12 @@ const SideMenu = () => {
                         user ? "text-xs" : "text-sm"
                       } lg:text-sm font-semibold`}
                     >
-                      {user ? user.displayname : "Anonymous"}
+                      {user ? user.displayname : `user${anonUuid}`}
                     </h6>
 
-                    {user && (
-                      <span className="text-xs lg:text-xs text-muted-foreground">
-                        Dedicated Poster
-                      </span>
-                    )}
+                    <span className="text-xs lg:text-xs text-muted-foreground">
+                      {user ? "Dedicated Poster" : "Guest user"}
+                    </span>
                   </div>
                 </div>
               </div>

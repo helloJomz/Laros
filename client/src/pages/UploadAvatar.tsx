@@ -3,19 +3,21 @@ import { Button } from "@/components/ui/button";
 import { CircleDashed } from "lucide-react";
 import { IoMdPhotos } from "react-icons/io";
 import { useNavbarContext } from "@/context/NavbarContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const SetupUploadPicture: React.FC = () => {
+const UploadAvatar: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [isError, setIsError] = useState<boolean>(true);
   const [isImageHovered, setIsImageHovered] = useState<boolean>(false);
   const [isIconHovered, setIsIconHovered] = useState<boolean>(false);
+  const [storedFile, setStoredFile] = useState<File | null>();
 
   const location = useLocation();
   const isNewUser = location.state && location.state.isNew;
 
-  const { windowWidth } = useNavbarContext();
+  const navigate = useNavigate();
+
+  const { windowWidth, setTriggerAlertFooter } = useNavbarContext();
 
   const handleButtonClick = () => {
     if (fileInputRef.current) {
@@ -23,12 +25,23 @@ const SetupUploadPicture: React.FC = () => {
     }
   };
 
+  // HANDLES THE PREVIEW OF THE IMAGE
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-
-    console.log(file);
-
     if (file) {
+      if (file.size > 5_242_880) {
+        setTriggerAlertFooter({
+          trigger: "error",
+          title: "Image Size Exceeds Limit",
+          desc: "Please select an image smaller than 5 MB.",
+        });
+        // Clear the value of the file input element
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return null;
+      }
+      setStoredFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -37,27 +50,42 @@ const SetupUploadPicture: React.FC = () => {
       setIsImageHovered(false);
     } else {
       setPreview(null);
+      setStoredFile(null);
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsError(false);
-    }, 5000);
-  }, [isError]);
+  const handleUploadAvatar = () => {
+    if (!storedFile) {
+      setTriggerAlertFooter({
+        trigger: "error",
+        title: "No Image Selected",
+        desc: "Please choose an image before submitting.",
+      });
+      return null;
+    }
+
+    const blob = storedFile.slice(0, storedFile.size, storedFile.type);
+  };
+
+  const handleSkipOrCancelButton = () => {
+    if (location.state && location.state.from === "/signup") {
+      navigate("/");
+    }
+    navigate(location.state.from);
+  };
 
   return (
     <>
-      <div className="flex flex-col items-center gap-y-8 min-h-screen justify-center pt-12 lg:pt-6">
+      <div className="flex flex-col items-center gap-y-8 h-screen justify-center pt-12">
         <div className="text-white text-center font-semibold">
-          <h1 className="text-lg lg:text-2xl">Upload your Avatar</h1>
+          <h1 className="text-lg md:text-2xl">Upload your Avatar</h1>
           <span className="text-muted-foreground text-xs ">
             Click the image to start uploading your avatar
           </span>
         </div>
 
         <div className="flex flex-col gap-y-8">
-          <div className="border-dotted border-2 border-primary w-[20rem] h-[20rem] lg:w-[26rem] lg:h-[26rem] rounded-full flex justify-center items-center">
+          <div className="border-dotted border-2 border-primary w-[20rem] h-[20rem] md:w-[26rem] md:h-[26rem] rounded-full flex justify-center items-center">
             <div className="relative">
               <img
                 src={
@@ -80,7 +108,7 @@ const SetupUploadPicture: React.FC = () => {
                   setIsImageHovered(false);
                   setIsIconHovered(true);
                 }}
-                className={`rounded-full w-[18rem] h-[18rem] lg:w-[24rem] lg:h-[24rem] object-cover object-center shadow-md cursor-pointer hover:opacity-60 ${
+                className={`rounded-full w-[18rem] h-[18rem] md:w-[24rem] md:h-[24rem] object-cover object-center shadow-md cursor-pointer hover:opacity-60 ${
                   isIconHovered ? "opacity-60" : ""
                 }`}
               />
@@ -102,7 +130,10 @@ const SetupUploadPicture: React.FC = () => {
 
           <div className="flex gap-x-2 justify-center">
             <div>
-              <Button className="bg-white text-black hover:bg-secondary hover:text-white">
+              <Button
+                className="bg-white text-black hover:bg-secondary hover:text-white"
+                onClick={handleSkipOrCancelButton}
+              >
                 {!isNewUser
                   ? "Cancel"
                   : windowWidth >= 1024
@@ -112,7 +143,7 @@ const SetupUploadPicture: React.FC = () => {
             </div>
 
             <div>
-              <Button>Upload Avatar</Button>
+              <Button onClick={handleUploadAvatar}>Upload Avatar</Button>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -124,9 +155,7 @@ const SetupUploadPicture: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-y-3 items-center">
-            <span className="text-xs lg:text-sm">
-              Accepted image extensions
-            </span>
+            <span className="text-xs md:text-sm">Allowed image extensions</span>
             <div className="flex gap-x-2 items-center text-xs font-semibold">
               <span>JPEG</span>
               <CircleDashed size={8} />
@@ -139,4 +168,4 @@ const SetupUploadPicture: React.FC = () => {
   );
 };
 
-export default SetupUploadPicture;
+export default UploadAvatar;

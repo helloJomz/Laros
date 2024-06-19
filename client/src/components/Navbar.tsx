@@ -79,7 +79,7 @@ const Navbar = () => {
       <nav className="fixed w-full top-0 px-4 py-2 lg:px-8 border-b-2 bg-background">
         <>
           {/* -------- For Larger Screen -------- */}
-          <div className="hidden justify-between items-center lg:flex">
+          <div className="hidden justify-between items-center lg:flex ">
             <Logo icon={<Swords size={30} className="text-primary" />} />
 
             {!isSearchOpen ? (
@@ -157,7 +157,7 @@ const Navbar = () => {
 
           {/* -------- For Mobile Screen -------- */}
           {!isMobileSearchOpen ? (
-            <div className="flex justify-between items-center lg:hidden">
+            <div className="flex justify-between items-center lg:hidden ">
               <Logo icon={<Swords size={30} className="text-primary" />} />
               <div className="flex justify-end flex-1 ">
                 <ButtonIcon

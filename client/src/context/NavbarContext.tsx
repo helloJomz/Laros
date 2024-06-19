@@ -1,33 +1,41 @@
 import { createContext, useContext, useState, FC } from "react";
 
-type NavbarContextProps = {
-  searchBoxType: string;
-  setSearchBoxType: (type: "Games" | "Users") => void;
-
-  setWindowWidth: (width: number) => void;
+interface NavbarContextType {
+  setSearchBoxType: React.Dispatch<React.SetStateAction<"Games" | "Users">>;
+  searchBoxType: "Games" | "Users";
   windowWidth: number;
-
+  setWindowWidth: React.Dispatch<React.SetStateAction<number>>;
   searchQuery: string;
-  setSearchQuery: (search: string) => void;
-
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   isSearchTyping: boolean;
-  setIsSearchTyping: (isTyping: boolean) => void;
+  setIsSearchTyping: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerAlertFooter: null | { trigger: string; title: string; desc: string };
+  setTriggerAlertFooter: React.Dispatch<
+    React.SetStateAction<null | {
+      trigger: string;
+      title: string;
+      desc: string;
+    }>
+  >;
+}
 
-  triggerAlertFooter: {};
-  setTriggerAlertFooter: (alerts: {}) => void;
-};
-
-const NavbarContext = createContext<NavbarContextProps | undefined>(undefined);
+const NavbarContext = createContext<undefined | NavbarContextType>(undefined);
 
 const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   // State
-  const [searchBoxType, setSearchBoxType] = useState<string>("Games");
+  const [searchBoxType, setSearchBoxType] = useState<"Games" | "Users">(
+    "Games"
+  );
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSearchTyping, setIsSearchTyping] = useState<boolean>(false);
-  const [triggerAlertFooter, setTriggerAlertFooter] = useState({});
+  const [triggerAlertFooter, setTriggerAlertFooter] = useState<null | {
+    trigger: string;
+    title: string;
+    desc: string;
+  }>(null);
 
   return (
     <NavbarContext.Provider

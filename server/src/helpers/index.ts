@@ -2,6 +2,7 @@ import { ACCESS_SECRET, REFRESH_SECRET } from "../constants";
 import * as jwt from "jsonwebtoken";
 import { User, TokenType } from "./types";
 import { verifiedGiphyGameChannels } from "./array";
+import { v4 } from "uuid";
 
 export const generateToken = (
   user: User,
@@ -20,4 +21,9 @@ export const randomVerifiedGiphyGameChannelsGif = () => {
     Math.random() * verifiedGiphyGameChannels.length
   );
   return verifiedGiphyGameChannels[randomIndex];
+};
+
+export const generateUniqueAvatarId = (filename: string): string => {
+  const uniqueString = v4();
+  return uniqueString + "-" + filename;
 };
