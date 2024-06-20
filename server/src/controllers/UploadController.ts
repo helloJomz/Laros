@@ -1,9 +1,10 @@
 import { Request, Response, json } from "express";
 import axios from "axios";
 import { Storage } from "@google-cloud/storage";
+import { GOOGLE_STORAGE_KEY, GOOGLE_STORAGE_PROJECT_ID } from "../constants";
 
-let projectId = "ancient-sunspot-426802-r0";
-let keyFilename = "cloudkey.json";
+const projectId = GOOGLE_STORAGE_PROJECT_ID;
+const keyFilename = GOOGLE_STORAGE_KEY;
 
 const storage = new Storage({
   projectId,
