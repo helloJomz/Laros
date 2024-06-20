@@ -1,7 +1,7 @@
 import { ThemeProvider } from "./components/ThemeProvider";
-import Navbar from "./components/Navbar";
+import MainLayout from "./components/layout/MainLayout";
 import { NavbarContextProvider } from "./context/NavbarContext";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import PageNotFound from "./pages/PageNotFound";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -16,6 +16,7 @@ document.title = "Laros | Where the gamers connect Easily!";
 
 function App() {
   const auth = useSelector(selectCurrentToken);
+  const { pathname: location } = useLocation();
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -26,7 +27,7 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
           </Route>
 
-          <Route element={<Navbar />}>
+          <Route element={<MainLayout currentLocation={location} />}>
             <Route path="/" element={<Home />} />
 
             <Route element={<PrivateRoute auth={auth} />}>

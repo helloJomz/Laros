@@ -4,6 +4,8 @@ import { CircleDashed } from "lucide-react";
 import { IoMdPhotos } from "react-icons/io";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUploadAvatarMutation } from "@/app/features/upload/uploadAPI";
+import { generateAvatarRandomString } from "@/utils/utils";
 
 const UploadAvatar: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -11,6 +13,7 @@ const UploadAvatar: React.FC = () => {
   const [isImageHovered, setIsImageHovered] = useState<boolean>(false);
   const [isIconHovered, setIsIconHovered] = useState<boolean>(false);
   const [storedFile, setStoredFile] = useState<File | null>();
+  const [uploadAvatar] = useUploadAvatarMutation();
 
   const location = useLocation();
   const isNewUser = location.state && location.state.isNew;
@@ -34,6 +37,7 @@ const UploadAvatar: React.FC = () => {
           trigger: "error",
           title: "Image Size Exceeds Limit",
           desc: "Please select an image smaller than 5 MB.",
+          alertType: "error",
         });
         // Clear the value of the file input element
         if (fileInputRef.current) {
@@ -54,17 +58,27 @@ const UploadAvatar: React.FC = () => {
     }
   };
 
-  const handleUploadAvatar = () => {
+  const handleUploadAvatar = async () => {
     if (!storedFile) {
       setTriggerAlertFooter({
         trigger: "error",
         title: "No Image Selected",
         desc: "Please choose an image before submitting.",
+        alertType: "error",
       });
       return null;
     }
 
     const blob = storedFile.slice(0, storedFile.size, storedFile.type);
+    const newFile = new File(
+      [blob],
+      generateAvatarRandomString(storedFile.name),
+      { type: storedFile.type }
+    );
+    const formData = new FormData();
+    formData.append("imgfile", newFile);
+
+    await uploadAvatar(formData);
   };
 
   const handleSkipOrCancelButton = () => {
@@ -76,16 +90,16 @@ const UploadAvatar: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-y-8 h-screen justify-center pt-12">
+      <div className="flex flex-col items-center gap-y-8 justify-center h-full ">
         <div className="text-white text-center font-semibold">
           <h1 className="text-lg md:text-2xl">Upload your Avatar</h1>
-          <span className="text-muted-foreground text-xs ">
+          <span className="text-muted-foreground text-xs text-slate-200">
             Click the image to start uploading your avatar
           </span>
         </div>
 
         <div className="flex flex-col gap-y-8">
-          <div className="border-dotted border-2 border-primary w-[20rem] h-[20rem] md:w-[26rem] md:h-[26rem] rounded-full flex justify-center items-center">
+          <div className="border-dotted border-white border-2 border-primary w-[20rem] h-[20rem] md:w-[26rem] md:h-[26rem] rounded-full flex justify-center items-center">
             <div className="relative">
               <img
                 src={

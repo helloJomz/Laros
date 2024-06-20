@@ -9,12 +9,18 @@ interface NavbarContextType {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   isSearchTyping: boolean;
   setIsSearchTyping: React.Dispatch<React.SetStateAction<boolean>>;
-  triggerAlertFooter: null | { trigger: string; title: string; desc: string };
+  triggerAlertFooter: null | {
+    trigger: string;
+    title: string;
+    desc: string;
+    alertType?: "default" | "error" | "success";
+  };
   setTriggerAlertFooter: React.Dispatch<
     React.SetStateAction<null | {
       trigger: string;
       title: string;
       desc: string;
+      alertType?: "default" | "error" | "success";
     }>
   >;
 }
@@ -35,6 +41,7 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
     trigger: string;
     title: string;
     desc: string;
+    alertType?: "default" | "error" | "success";
   }>(null);
 
   return (

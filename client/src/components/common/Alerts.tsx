@@ -7,7 +7,7 @@ import { MdError } from "react-icons/md";
 const Alerts = () => {
   const { triggerAlertFooter, setTriggerAlertFooter } = useNavbarContext();
 
-  const { trigger, title, desc }: any = triggerAlertFooter || {};
+  const { trigger, title, desc, alertType }: any = triggerAlertFooter || {};
 
   const icons: any = {
     logout: <LogOut />,
@@ -37,6 +37,7 @@ const Alerts = () => {
           desc={desc}
           icon={icons[trigger]}
           onClick={handeCloseToast}
+          alertType={alertType}
         />
       )}
     </>

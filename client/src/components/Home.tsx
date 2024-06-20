@@ -3,10 +3,14 @@ import { selectCurrentUser } from "@/app/features/auth/authSlice";
 
 const Home = () => {
   const user = useSelector(selectCurrentUser);
+  const displayname = user
+    ? user.displayname
+    : `user${localStorage.getItem("anon_uuid")}`;
+
   return (
-    <div>
-      {user ? `Hi, ${user.firstname} ${user.lastname}!` : "Welcome to Laros!"}
-    </div>
+    <>
+      <div className="p-2">{displayname}</div>
+    </>
   );
 };
 

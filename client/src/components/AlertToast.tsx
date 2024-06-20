@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 type AlertToastProps = React.HTMLAttributes<HTMLDivElement> & {
   title: string;
   desc: string;
+  alertType?: "default" | "error" | "success";
   icon: React.ReactNode;
 };
 
@@ -13,6 +14,7 @@ const AlertToast = ({
   desc,
   icon,
   className,
+  alertType = "default",
   ...props
 }: AlertToastProps) => {
   const { windowWidth } = useNavbarContext();
@@ -27,16 +29,15 @@ const AlertToast = ({
           className,
           {
             "w-[24rem]": cutTheAlert,
+            "bg-red-600": alertType === "error",
+            "bg-green-600": alertType === "success",
           }
         )}
         {...props}
       >
         <div className="text-3xl md:text-5xl">{icon}</div>
         <div>
-          <AlertTitle
-            className="text-xs lg:text-sm font-bold
-          "
-          >
+          <AlertTitle className="text-xs lg:text-sm font-bold">
             {title}
           </AlertTitle>
           <AlertDescription className="text-pretty w-full text-xs lg:text-sm">

@@ -76,7 +76,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed w-full top-0 px-4 py-2 lg:px-8 border-b-2 bg-background">
+      <nav className="static w-full px-4 py-2 lg:px-8 border-b-2 bg-background">
         <>
           {/* -------- For Larger Screen -------- */}
           <div className="hidden justify-between items-center lg:flex ">
@@ -185,10 +185,6 @@ const Navbar = () => {
           )}
         </>
       </nav>
-
-      <Outlet />
-
-      <Alerts />
     </>
   );
 };
