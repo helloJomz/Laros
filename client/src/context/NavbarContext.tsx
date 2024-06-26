@@ -1,4 +1,6 @@
+import { selectCurrentUser } from "@/app/features/auth/authSlice";
 import { createContext, useContext, useState, FC } from "react";
+import { useSelector } from "react-redux";
 
 interface NavbarContextType {
   setSearchBoxType: React.Dispatch<React.SetStateAction<"Games" | "Users">>;
@@ -23,6 +25,8 @@ interface NavbarContextType {
       alertType?: "default" | "error" | "success";
     }>
   >;
+  showPromptToLogin: boolean;
+  setShowPromptToLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NavbarContext = createContext<undefined | NavbarContextType>(undefined);
@@ -43,6 +47,7 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
     desc: string;
     alertType?: "default" | "error" | "success";
   }>(null);
+  const [showPromptToLogin, setShowPromptToLogin] = useState<boolean>(false);
 
   return (
     <NavbarContext.Provider
@@ -57,6 +62,8 @@ const NavbarContextProvider: FC<{ children: React.ReactNode }> = ({
         setIsSearchTyping,
         triggerAlertFooter,
         setTriggerAlertFooter,
+        showPromptToLogin,
+        setShowPromptToLogin,
       }}
     >
       {children}

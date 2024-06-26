@@ -49,13 +49,13 @@ const SignupForm = () => {
     try {
       const response = await signup(values);
       const data = response.data;
-
       dispatch(
         setCredentials({
           accessToken: data.gqeRxt3B9mZ2i.ks23kfm,
           user: {
             userid: data.userObj._id,
             displayname: data.userObj.displayname,
+            imgURL: data.userObj.imgURL,
           },
         })
       );

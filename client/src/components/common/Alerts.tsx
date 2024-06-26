@@ -3,6 +3,7 @@ import AlertToast from "../AlertToast";
 import { Hand, LogOut } from "lucide-react";
 import { useEffect } from "react";
 import { MdError } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
 
 const Alerts = () => {
   const { triggerAlertFooter, setTriggerAlertFooter } = useNavbarContext();
@@ -13,6 +14,7 @@ const Alerts = () => {
     logout: <LogOut />,
     login: <Hand />,
     error: <MdError />,
+    success: <FaCheckCircle />,
   };
 
   const handeCloseToast = () => {

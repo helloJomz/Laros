@@ -20,3 +20,5 @@ export const GIPHY_APIKEY2: string = process.env.GIPHY_API_KEY2!;
 export const GOOGLE_STORAGE_PROJECT_ID: string =
   process.env.GOOGLE_STORAGE_PROJECT_ID!;
 export const GOOGLE_STORAGE_KEY: string = process.env.GOOGLE_STORAGE_KEY!;
+export const GOOGLE_STORAGE_BUCKET_NAME: string =
+  process.env.GOOGLE_STORAGE_BUCKET_NAME!;

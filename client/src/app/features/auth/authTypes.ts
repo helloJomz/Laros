@@ -1,12 +1,18 @@
 // # authSlice.ts
 
+interface ShapeOfUser {
+  displayname: string | null;
+  userid: string | null;
+  imgURL?: string | null;
+}
+
 export interface IState {
-  user: any;
+  user: ShapeOfUser;
   token: string | null;
 }
 
 export interface CredentialsPayload {
-  user: any; // Replace `any` with your user type if you have one
+  user: ShapeOfUser;
   accessToken: string;
 }
 

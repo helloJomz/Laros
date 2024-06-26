@@ -15,12 +15,11 @@ import { useClickOutside } from "../hooks/useClickedOutside";
 import { HeaderButtonID } from "../types/enums";
 import MenuSearch from "./MenuSearch";
 import { useNavbarContext } from "../context/NavbarContext";
-import { Outlet } from "react-router-dom";
-import Alerts from "./common/Alerts";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/features/auth/authSlice";
 
 const Navbar = () => {
-  // TODO: CLEAN UP THESE MESS! CREATE CUSTOM HOOKS...
-
   // Context
   const {
     // searchAPI,
@@ -30,6 +29,7 @@ const Navbar = () => {
     setSearchQuery,
     isSearchTyping,
     setIsSearchTyping,
+    setShowPromptToLogin,
   } = useNavbarContext();
 
   // State
@@ -38,6 +38,7 @@ const Navbar = () => {
   );
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);
+  const { userid } = useSelector(selectCurrentUser);
 
   // Ref
   const searchBoxRef = useRef<HTMLDivElement>(null);
@@ -51,6 +52,10 @@ const Navbar = () => {
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSearchTyping(true);
     setSearchQuery(e.target.value);
+  };
+
+  const handleCloseSearchBoxOnMobile = () => {
+    setIsMobileSearchOpen(false);
   };
 
   // Effects
@@ -93,9 +98,11 @@ const Navbar = () => {
                         ? "text-primary bg-secondary"
                         : ""
                     }
-                    onClick={() =>
-                      setActiveHeaderButton(HeaderButtonID.Friends)
-                    }
+                    onClick={() => {
+                      !userid
+                        ? setShowPromptToLogin(true)
+                        : setActiveHeaderButton(HeaderButtonID.Friends);
+                    }}
                   >
                     <Users />
                   </ButtonIcon>
@@ -173,9 +180,12 @@ const Navbar = () => {
             </div>
           ) : (
             <div
-              className="flex flex-1 w-full relative lg:hidden"
+              className="flex flex-1 w-full relative items-center gap-x-2 lg:hidden"
               ref={searchBoxRef}
             >
+              <div onClick={handleCloseSearchBoxOnMobile} className="text-xl">
+                <IoMdArrowRoundBack />
+              </div>
               <SearchBox
                 className="w-full"
                 onChange={handleSearchInputChange}

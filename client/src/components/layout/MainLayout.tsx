@@ -1,21 +1,25 @@
 import Navbar from "../Navbar";
 import RightSideBar from "../RightSideBar";
 import LeftSideBar from "../LeftSideBar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import Alerts from "../common/Alerts";
+import PromptToLogin from "../common/PromptToLogin";
 
 interface MainLayoutProps {
   currentLocation: string;
 }
 
 const MainLayout = ({ currentLocation }: MainLayoutProps) => {
-  const noSideBarEndpoints = ["/upload/avatar"];
+  const { displayname } = useParams();
+  const noSideBarEndpoints = ["/upload/avatar", `/${displayname}`];
 
   if (noSideBarEndpoints.includes(currentLocation))
     return (
       <>
         <div className="flex flex-col h-screen">
           <Navbar />
+          <PromptToLogin />
+          <PromptToLogin />
           <div className="flex-grow h-full overflow-y-auto">
             <Outlet />
           </div>
@@ -28,12 +32,13 @@ const MainLayout = ({ currentLocation }: MainLayoutProps) => {
     <>
       <div className="flex flex-col h-screen">
         <Navbar />
-        <div className="flex-grow grid grid-cols-[20%,60%,20%] overflow-y-hidden h-full">
-          <LeftSideBar />
-          <div className="overflow-y-auto h-full">
+        <PromptToLogin />
+        <div className="flex-grow lg:grid lg:grid-cols-[25%,50%,25%] overflow-y-hidden h-full">
+          <LeftSideBar className="hidden md:block" />
+          <div className="overflow-y-auto h-full bg-gray-900">
             <Outlet />
           </div>
-          <RightSideBar />
+          <RightSideBar className="hidden lg:block" />
         </div>
         <Alerts />
       </div>

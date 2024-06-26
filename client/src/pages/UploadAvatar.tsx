@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CircleDashed } from "lucide-react";
 import { IoMdPhotos } from "react-icons/io";
@@ -6,22 +6,31 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUploadAvatarMutation } from "@/app/features/upload/uploadAPI";
 import { generateAvatarRandomString } from "@/utils/utils";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/features/auth/authSlice";
+import { LoaderCircle } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setUpdateImgURL } from "@/app/features/auth/authSlice";
 
-const UploadAvatar: React.FC = () => {
+const UploadAvatar = () => {
+  const { userid, imgURL } = useSelector(selectCurrentUser);
+  const { windowWidth, setTriggerAlertFooter } = useNavbarContext();
+  const location = useLocation();
+  const isNewUser = location.state && location.state.isNew;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const [isImageHovered, setIsImageHovered] = useState<boolean>(false);
   const [isIconHovered, setIsIconHovered] = useState<boolean>(false);
   const [storedFile, setStoredFile] = useState<File | null>();
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState<boolean>(false);
   const [uploadAvatar] = useUploadAvatarMutation();
+  const [preview, setPreview] = useState<string | null>(
+    imgURL || localStorage.getItem("anon_avatar")
+  );
 
-  const location = useLocation();
-  const isNewUser = location.state && location.state.isNew;
-
-  const navigate = useNavigate();
-
-  const { windowWidth, setTriggerAlertFooter } = useNavbarContext();
-
+  // HANDLE THE INPUT FILE BUTTON
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -58,6 +67,7 @@ const UploadAvatar: React.FC = () => {
     }
   };
 
+  // HANDLE THE UPLOADING OF AVATAR
   const handleUploadAvatar = async () => {
     if (!storedFile) {
       setTriggerAlertFooter({
@@ -69,23 +79,51 @@ const UploadAvatar: React.FC = () => {
       return null;
     }
 
-    const blob = storedFile.slice(0, storedFile.size, storedFile.type);
-    const newFile = new File(
-      [blob],
-      generateAvatarRandomString(storedFile.name),
-      { type: storedFile.type }
-    );
-    const formData = new FormData();
-    formData.append("imgfile", newFile);
+    setIsUploadingAvatar(true);
 
-    await uploadAvatar(formData);
+    setTimeout(async () => {
+      const blob = storedFile.slice(0, storedFile.size, storedFile.type);
+      const newFile = new File(
+        [blob],
+        generateAvatarRandomString(storedFile.name),
+        { type: storedFile.type }
+      );
+      const formData = new FormData();
+      formData.append("imgfile", newFile);
+      formData.append("uid", userid);
+
+      const { data } = await uploadAvatar(formData);
+
+      console.log(data);
+
+      if (data) {
+        setTriggerAlertFooter({
+          title: "Successfully Uploaded an Avatar",
+          desc: "Flaunt now your new Avatar!",
+          trigger: "success",
+          alertType: "success",
+        });
+        dispatch(
+          setUpdateImgURL({
+            imgURL: data.imgURL,
+          })
+        );
+      }
+      setIsUploadingAvatar(false);
+    }, 1500);
   };
 
+  // HANDLE CANCEL OR SKIP BUTTON
   const handleSkipOrCancelButton = () => {
-    if (location.state && location.state.from === "/signup") {
+    if (
+      // USERS' CLICKED SKIP BUTTON
+      location.state &&
+      location.state.from === "/signup" &&
+      location.state.isNew
+    ) {
       navigate("/");
     }
-    navigate(location.state.from);
+    navigate(location.state && location.state.from ? location.state.from : "/");
   };
 
   return (
@@ -99,13 +137,10 @@ const UploadAvatar: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-y-8">
-          <div className="border-dotted border-white border-2 border-primary w-[20rem] h-[20rem] md:w-[26rem] md:h-[26rem] rounded-full flex justify-center items-center">
+          <div className="border-dotted border-b-primary border-2 border-primary w-[20rem] h-[20rem] md:w-[26rem] md:h-[26rem] rounded-full flex justify-center items-center">
             <div className="relative">
               <img
-                src={
-                  preview ||
-                  "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczhveXdoaDlnbTJjOG0xaGxrdXhiNHZzbDZmenU0YmZxczd0bXgwdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pCGyLbTeliIwqVU9Md/giphy.gif"
-                }
+                src={preview || imgURL}
                 alt="Preview"
                 onClick={handleButtonClick}
                 onMouseOver={() => setIsImageHovered(true)}
@@ -147,8 +182,9 @@ const UploadAvatar: React.FC = () => {
               <Button
                 className="bg-white text-black hover:bg-secondary hover:text-white"
                 onClick={handleSkipOrCancelButton}
+                disabled={isUploadingAvatar}
               >
-                {!isNewUser
+                {!isNewUser || imgURL
                   ? "Cancel"
                   : windowWidth >= 1024
                   ? "Skip for now"
@@ -157,7 +193,16 @@ const UploadAvatar: React.FC = () => {
             </div>
 
             <div>
-              <Button onClick={handleUploadAvatar}>Upload Avatar</Button>
+              <Button onClick={handleUploadAvatar} disabled={isUploadingAvatar}>
+                {!isUploadingAvatar ? (
+                  "Upload Avatar"
+                ) : (
+                  <div className="flex gap-x-2 items-center">
+                    <LoaderCircle size={14} className="animate-spin" />
+                    Uploading...
+                  </div>
+                )}
+              </Button>
               <input
                 type="file"
                 ref={fileInputRef}

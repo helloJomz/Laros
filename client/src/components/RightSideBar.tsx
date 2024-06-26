@@ -1,9 +1,14 @@
-import React from "react";
+import { FC } from "react";
 
-const RightSideBar = () => {
+type RightSideBarProps = React.HTMLAttributes<HTMLDivElement>;
+
+const RightSideBar: FC<RightSideBarProps> = (className) => {
   return (
     <>
-      <div className="bg-gray-900 ps-4 py-4 h-full overflow-auto"></div>
+      <div
+        className="bg-background ps-4 py-4 h-full overflow-auto"
+        {...className}
+      ></div>
     </>
   );
 };

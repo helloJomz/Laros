@@ -18,25 +18,41 @@ import { useState } from "react";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { useLogoutMutation } from "@/app/features/auth/authApiSlice";
 import { v4 } from "uuid";
+import { generateRandomAvatarGifsForAnon } from "@/utils/utils";
 
 const SideMenu = () => {
-  const user = useSelector(selectCurrentUser);
-  const { setTriggerAlertFooter } = useNavbarContext();
+  const { displayname, userid, imgURL } = useSelector(selectCurrentUser);
+  const { setTriggerAlertFooter, setShowPromptToLogin } = useNavbarContext();
   const [isProcessingLogout, setIsProcessingLogout] = useState<boolean>(false);
 
-  const [anonUuid, _setAnonUuid] = useState<string>((): string => {
+  const [anonObject, _setAnonObject] = useState<{
+    anon_uuid: string;
+    anon_avatar: string;
+  }>(() => {
     const tempId = localStorage.getItem("anon_uuid");
+    const tempAvatar = localStorage.getItem("anon_avatar");
+
     let finalAnonId: string = "";
-    if (tempId) {
+    let finalAvatar: string = "";
+
+    if (tempId && tempAvatar) {
       finalAnonId = tempId;
+      finalAvatar = tempAvatar;
     } else {
       const randomString: string = v4();
       const explodedRandomString: string = randomString.replace(/-/g, "");
       const slicedRandomString: string = explodedRandomString.slice(0, 12);
       finalAnonId = slicedRandomString;
       localStorage.setItem("anon_uuid", slicedRandomString);
+
+      const randomGif: string = generateRandomAvatarGifsForAnon();
+      finalAvatar = randomGif;
+      localStorage.setItem("anon_avatar", randomGif);
     }
-    return finalAnonId;
+    return {
+      anon_uuid: finalAnonId,
+      anon_avatar: finalAvatar,
+    };
   });
 
   const [logout] = useLogoutMutation();
@@ -64,8 +80,13 @@ const SideMenu = () => {
     navigate("/login");
   };
 
+  const handlePromptToLogin = () => {
+    setShowPromptToLogin(true);
+  };
+
   const handleRedirectToProfile = () => {
-    navigate(`/${user.displayname}`, { state: { from: location.pathname } });
+    setShowPromptToLogin(false);
+    navigate(`/${displayname}`, { state: { from: location.pathname } });
   };
 
   return (
@@ -74,7 +95,7 @@ const SideMenu = () => {
         <MenubarMenu>
           <MenubarTrigger className="flex justify-center items-center h-fit w-fit p-0 cursor-pointer">
             <AvatarDisplay
-              src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczhveXdoaDlnbTJjOG0xaGxrdXhiNHZzbDZmenU0YmZxczd0bXgwdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pCGyLbTeliIwqVU9Md/giphy.gif"
+              src={imgURL || anonObject.anon_avatar}
               fallback="AN"
               variant="menu"
             />
@@ -83,31 +104,25 @@ const SideMenu = () => {
             <div className="w-[15rem] h-[18rem] p-2 flex flex-col justify-between">
               <div
                 className="flex flex-col gap-y-2"
-                onClick={handleRedirectToProfile}
+                onClick={userid ? handleRedirectToProfile : handlePromptToLogin}
               >
-                <div
-                  className={`flex gap-x-3 p-2 bg-secondary rounded items-center ${
-                    user
-                      ? "cursor-pointer hover:bg-slate-700"
-                      : "cursor-default"
-                  }`}
-                >
+                <div className="flex gap-x-3 p-2 bg-secondary rounded items-center cursor-pointer hover:bg-slate-700">
                   <img
-                    src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczhveXdoaDlnbTJjOG0xaGxrdXhiNHZzbDZmenU0YmZxczd0bXgwdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pCGyLbTeliIwqVU9Md/giphy.gif"
-                    alt=""
+                    src={imgURL || anonObject.anon_avatar}
+                    alt={`${displayname}_picture` || anonObject.anon_uuid}
                     className="rounded-full h-10 w-10 object-cover"
                   />
                   <div className="flex flex-col mb-1 ">
                     <h6
                       className={` ${
-                        user ? "text-xs" : "text-sm"
+                        userid ? "text-xs" : "text-sm"
                       } lg:text-sm font-semibold`}
                     >
-                      {user ? user.displayname : `user${anonUuid}`}
+                      {displayname || `user${anonObject.anon_uuid}`}
                     </h6>
 
                     <span className="text-xs lg:text-xs text-muted-foreground">
-                      {user ? "Dedicated Poster" : "Guest user"}
+                      {userid ? "Dedicated Poster" : "Guest user"}
                     </span>
                   </div>
                 </div>
@@ -115,10 +130,10 @@ const SideMenu = () => {
 
               <Button
                 className="w-full flex gap-x-2 items-center"
-                onClick={user ? handleLogout : handleLogin}
+                onClick={userid ? handleLogout : handleLogin}
                 disabled={isProcessingLogout}
               >
-                {user ? (
+                {userid ? (
                   <div className="flex gap-x-1 items-center">
                     {isProcessingLogout && (
                       <LoaderCircle size={20} className="animate-spin" />

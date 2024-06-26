@@ -35,6 +35,7 @@ const LoginForm = () => {
             user: {
               userid: data.userObj._id,
               displayname: data.userObj.displayname,
+              ...(data.userObj.imgURL && { imgURL: data.userObj.imgURL }),
             },
           })
         );
