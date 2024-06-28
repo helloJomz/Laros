@@ -44,7 +44,7 @@ const GameList = () => {
   return (
     <div
       className={cn(
-        "w-full bg-secondary absolute z-10 px-4 pt-2 pb-8 top-[2.35rem] lg:top-[2.5rem] overflow-hidden rounded shadow-md h-[28rem] lg:h-[38rem]"
+        "w-full  bg-secondary absolute z-10 px-4 pt-2 pb-8 top-[2.35rem] lg:top-[2.5rem] overflow-hidden rounded h-[28rem] lg:h-[38rem]"
       )}
     >
       <div className="text-sm pt-2 pb-4 lg:pb-2 px-2 lg:text-base flex gap-x-2  items-center font-semibold">

@@ -15,6 +15,9 @@ export const getUserByDisplayNameController = async (
       displayname: user.displayname,
       email: user.email,
       imgURL: user.imgURL,
+      heartcount: user.heartcount.length,
+      follower: user.follower.length,
+      following: user.following.length,
     };
 
     return res.status(200).json({ ...userObj });

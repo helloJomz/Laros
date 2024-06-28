@@ -9,6 +9,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: { displayname },
       }),
     }),
+
+    // updateHeartCount: builder.mutation({
+    //   query: (increment: string) => ({
+    //     url: "/user/getuserbydisplayname",
+    //     method: "POST",
+    //     body: { displayname },
+    //   }),
+    // })
   }),
 });
 

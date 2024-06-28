@@ -17,6 +17,25 @@ export const UserSchema = new Schema({
     type: String,
     required: false,
   },
+  bio: {
+    type: String,
+    required: false,
+  },
+  follower: [
+    {
+      uid: Schema.Types.ObjectId,
+    },
+  ],
+  following: [
+    {
+      uid: Schema.Types.ObjectId,
+    },
+  ],
+  heartcount: [
+    {
+      uid: Schema.Types.ObjectId,
+    },
+  ],
 });
 
 export const UserModel = model("users", UserSchema);
