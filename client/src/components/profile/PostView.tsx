@@ -2,16 +2,14 @@ import { capitalizeFirstLetter } from "@/utils/utils";
 import { BsThreeDots } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import { useProfileContext } from "@/context/ProfileContext";
 
-interface PostViewProps {
-  userid: string;
-  imgURL: string;
-  displayname: string;
-}
-
-const PostView = ({ imgURL, displayname }: PostViewProps) => {
+const PostView = () => {
   //TODO: Put Comments and Reactions on the design
   // Need backend
+
+  const { userProfileObject } = useProfileContext();
+  const { userid, imgURL, displayname } = userProfileObject || {};
 
   return (
     <>

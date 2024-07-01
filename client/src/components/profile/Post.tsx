@@ -1,17 +1,15 @@
+import { useProfileContext } from "@/context/ProfileContext";
 import CreatePost from "./CreatePost";
 import PostView from "./PostView";
-import { type UserProfileObject } from "@/types/Profile";
 
-type PostProps = React.HTMLAttributes<HTMLDivElement> & {
-  user: UserProfileObject;
-};
+type PostProps = React.HTMLAttributes<HTMLDivElement>;
 
-const Post = ({ user, className, ...rest }: PostProps) => {
+const Post = ({ className, ...rest }: PostProps) => {
   return (
     <>
       <div className={className} {...rest}>
-        <CreatePost {...user} />
-        <PostView {...user} />
+        <CreatePost />
+        <PostView />
       </div>
     </>
   );

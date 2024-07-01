@@ -1,4 +1,4 @@
-export type UserProfileObject = {
+export type UserObject = {
   userid: string;
   displayname: string;
   email: string;

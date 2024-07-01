@@ -1,15 +1,12 @@
-import { UserProfileObject } from "@/types/Profile";
 import FavoriteGame from "./FavoriteGame";
 import { useNavbarContext } from "@/context/NavbarContext";
 import Bio from "./Bio";
 import Genre from "./Genre";
+import { useProfileContext } from "@/context/ProfileContext";
 
-type IntroProps = React.HTMLAttributes<HTMLDivElement> & {
-  user: UserProfileObject;
-};
+type IntroProps = React.HTMLAttributes<HTMLDivElement>;
 
-const Intro = ({ user, className, ...rest }: IntroProps) => {
-  const { userid } = user;
+const Intro = ({ className, ...rest }: IntroProps) => {
   const { windowWidth } = useNavbarContext();
   return (
     <>
@@ -21,7 +18,7 @@ const Intro = ({ user, className, ...rest }: IntroProps) => {
           <Genre />
         </div>
 
-        {windowWidth <= 1023 && <FavoriteGame userid={userid} />}
+        {windowWidth <= 1023 && <FavoriteGame />}
       </div>
     </>
   );

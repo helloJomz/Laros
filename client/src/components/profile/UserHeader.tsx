@@ -2,25 +2,24 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import Photo from "./Photo";
-import { type UserProfileObject } from "@/types/Profile";
 import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
-import { CircleDashed } from "lucide-react";
+import { useProfileContext } from "@/context/ProfileContext";
 
-type UserHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  user: UserProfileObject;
-};
+type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
-const UserHeader = ({ user, className, ...rest }: UserHeaderProps) => {
-  const { displayname, userid } = user;
+const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
   const { windowWidth } = useNavbarContext();
+
+  const { userProfileObject } = useProfileContext();
+  const { displayname, following: followingCount } = userProfileObject || {};
 
   return (
     <>
       {/* User Header (DISPLAY PHOTO, USER DISPLAYNAME, TITLE) */}
       <div className={className} {...rest}>
         {/* Display Photo */}
-        <Photo variant="display" user={{ ...user }} />
+        <Photo variant="display" />
 
         {/* User's Basic Info */}
         <div
@@ -51,20 +50,24 @@ const UserHeader = ({ user, className, ...rest }: UserHeaderProps) => {
               </div>
 
               <div className="flex items-center gap-x-2 ">
-                <span className="text-muted-foreground text-[0.7rem] md:text-sm hover:underline cursor-pointer">
-                  467 posts
-                </span>
-                <CircleDashed size={8} />
-                <span className="text-muted-foreground text-[0.7rem] md:text-sm hover:underline cursor-pointer">
-                  1k following
-                </span>
+                <div className="flex gap-x-1  text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+                  <span className="font-semibold text-slate-300">467 </span>
+                  <span className="text-muted-foreground">posts</span>
+                </div>
+
+                <div className="flex gap-x-1 text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+                  <span className="font-semibold text-slate-300">
+                    {followingCount}
+                  </span>
+                  <span className="text-muted-foreground ">following</span>
+                </div>
               </div>
             </div>
 
-            <FollowLikeButton variant={"large"} count={{ ...user }} />
+            <FollowLikeButton variant={"large"} />
           </div>
 
-          {windowWidth >= 1024 && <FavoriteGame userid={userid} />}
+          {windowWidth >= 1024 && <FavoriteGame />}
         </div>
       </div>
     </>

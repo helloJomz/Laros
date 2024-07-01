@@ -1,6 +1,4 @@
-import { selectCurrentUser } from "@/app/features/auth/authSlice";
 import { createContext, useContext, useState, FC } from "react";
-import { useSelector } from "react-redux";
 
 interface NavbarContextType {
   setSearchBoxType: React.Dispatch<React.SetStateAction<"Games" | "Users">>;

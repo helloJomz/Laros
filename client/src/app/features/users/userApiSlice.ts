@@ -10,14 +10,32 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    // updateHeartCount: builder.mutation({
-    //   query: (increment: string) => ({
-    //     url: "/user/getuserbydisplayname",
-    //     method: "POST",
-    //     body: { displayname },
-    //   }),
-    // })
+    getUserById: builder.mutation({
+      query: (uid: string) => ({
+        url: "/user/getuserbyid",
+        method: "POST",
+        body: { uid },
+      }),
+    }),
+
+    incrementAndDecrementHeartCount: builder.mutation({
+      query: ({
+        yourUID,
+        otherUserUID,
+      }: {
+        yourUID: string;
+        otherUserUID: string;
+      }) => ({
+        url: "/user/incrementanddecrementheartcount",
+        method: "POST",
+        body: { yourUID, otherUserUID },
+      }),
+    }),
   }),
 });
 
-export const { useGetUserByDisplayNameMutation } = authApiSlice;
+export const {
+  useGetUserByDisplayNameMutation,
+  useGetUserByIdMutation,
+  useIncrementAndDecrementHeartCountMutation,
+} = authApiSlice;

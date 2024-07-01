@@ -1,12 +1,10 @@
+import { useProfileContext } from "@/context/ProfileContext";
 import { capitalizeFirstLetter } from "@/utils/utils";
 
-interface CreatePostProps {
-  userid: string;
-  imgURL: string;
-  displayname: string;
-}
+const CreatePost = () => {
+  const { userProfileObject } = useProfileContext();
+  const { userid, imgURL, displayname } = userProfileObject || {};
 
-const CreatePost = ({ imgURL, displayname }: CreatePostProps) => {
   return (
     <>
       <div className="bg-secondary rounded ps-2 pe-4 py-2 flex items-center gap-x-4">

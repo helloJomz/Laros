@@ -2,12 +2,10 @@ import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { FiMoreVertical } from "react-icons/fi";
 
-type FavoriteGameProps = React.HTMLAttributes<HTMLDivElement> & {
-  userid: string;
-};
+type FavoriteGameProps = React.HTMLAttributes<HTMLDivElement>;
 
-const FavoriteGame = ({ userid, className }: FavoriteGameProps) => {
-  // TODO: Backend
+const FavoriteGame = ({ className }: FavoriteGameProps) => {
+  // TODO: Backend //userid
   return (
     <>
       <div

@@ -1,15 +1,15 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
 import FollowLikeButton from "./FollowLikeButton";
-import { type UserProfileObject } from "@/types/Profile";
+import { useProfileContext } from "@/context/ProfileContext";
 
 type PhotoProps = {
-  user: UserProfileObject;
   variant: "display" | "cover";
 };
 
-const Photo = ({ user, variant }: PhotoProps) => {
-  const { imgURL, displayname } = user;
+const Photo = ({ variant }: PhotoProps) => {
+  const { userProfileObject } = useProfileContext();
+  const { imgURL, displayname } = userProfileObject || {};
   const { windowWidth } = useNavbarContext();
 
   if (variant === "cover")
@@ -19,9 +19,9 @@ const Photo = ({ user, variant }: PhotoProps) => {
           <img
             src={imgURL}
             alt={`${displayname}_coverphoto`}
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-50 pointer-events-none"
           />
-          <FollowLikeButton variant="small" count={{ ...user }} />
+          <FollowLikeButton variant="small" />
         </div>
       </>
     );
@@ -39,7 +39,7 @@ const Photo = ({ user, variant }: PhotoProps) => {
         <img
           src={imgURL}
           alt={`${displayname}_picture`}
-          className="w-full h-full rounded-full object-cover hover:brightness-150 cursor-pointer"
+          className="w-full h-full rounded-full object-cover hover:brightness-150 cursor-pointer pointer-events-none"
         />
       </div>
     );

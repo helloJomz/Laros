@@ -6,14 +6,15 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUploadAvatarMutation } from "@/app/features/upload/uploadAPI";
 import { generateAvatarRandomString } from "@/utils/utils";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/features/auth/authSlice";
 import { LoaderCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setUpdateImgURL } from "@/app/features/auth/authSlice";
+import { useUserContext } from "@/context/UserContext";
 
 const UploadAvatar = () => {
-  const { userid, imgURL } = useSelector(selectCurrentUser);
+  const { authenticatedUserObject } = useUserContext();
+  const { imgURL, userid } = authenticatedUserObject;
+
   const { windowWidth, setTriggerAlertFooter } = useNavbarContext();
   const location = useLocation();
   const isNewUser = location.state && location.state.isNew;
