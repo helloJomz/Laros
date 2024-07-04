@@ -1,12 +1,12 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { FaUserAstronaut } from "react-icons/fa6";
 import {
-  useGetUserByIdMutation,
   useIncrementAndDecrementHeartCountMutation,
-} from "@/app/features/users/userApiSlice";
+  useIncrementAndDecrementFollowCountMutation,
+} from "@/app/features/profile/profileApiSlice";
 import { Button } from "../ui/button";
 import { useUserContext } from "@/context/UserContext";
 import { useProfileContext } from "@/context/ProfileContext";
@@ -21,59 +21,41 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
   const { authenticatedUserObject } = useUserContext();
   const { userid: yourUID } = authenticatedUserObject;
 
-  const { userProfileObject, isAuthProfile } = useProfileContext();
+  const { userProfileObject, isAuthProfile, isHeartUser, isFollowingUser } =
+    useProfileContext();
+
   const {
     userid: otherUserUID,
     heartcount: heartCountFromAPI,
     follower: followerCountFromAPI,
   } = userProfileObject || {};
 
-  // const [
-  //   getUserById,
-  //   // { isLoading: isLoadingGettingUserInfo, data: visitedUserData },
-  // ] = useGetUserByIdMutation();
+  const [incrementAndDecrementHeartCount, { isLoading: isHeartCountLoading }] =
+    useIncrementAndDecrementHeartCountMutation();
 
   const [
-    incrementAndDecrementHeartCount,
-    { isLoading: isHeartCountLoading, data },
-  ] = useIncrementAndDecrementHeartCountMutation();
+    incrementAndDecrementFollowCount,
+    { isLoading: isFollowCountLoading },
+  ] = useIncrementAndDecrementFollowCountMutation();
 
   // TODO:
   // HAVE AN API THAT CHECKS IF THE USERID OF THIS PROFILE IS IN YOUR HEARTCOUNT
-  const [isHeartClicked, setIsHeartClicked] = useState<boolean>(false);
-  const [isFollowClicked, setIsFollowClicked] = useState<boolean>(false);
+  const [isHeartClicked, setIsHeartClicked] = useState<boolean>(isHeartUser);
+  const [isFollowClicked, setIsFollowClicked] =
+    useState<boolean>(isFollowingUser);
 
   const [heartCount, setHeartCount] = useState<number>(heartCountFromAPI || 0);
   const [followerCount, setFollowerCount] = useState<number>(
     followerCountFromAPI || 0
   );
 
-  // useEffect(() => {
-  //   const getVisitedUserProfileInfo = async (uid: string) => {
-  //     const user = await getUserById(uid);
-  //     if (user) {
-  //       const userHeartCount = user.data?.heartcount;
-  //       const userFollowerCount = user.data?.follower;
-
-  //       // Count States
-  //       setHeartCount(userHeartCount);
-  //       setFollowerCount(userFollowerCount);
-
-  //       // Click States
-  //       //TODO: Create an api to verify if i am following to this person.
-
-  //       // setIsHeartClicked(userHeartCoun);
-  //     }
-  //   };
-  //   if (userid) getVisitedUserProfileInfo(userid);
-  // }, []);
-
   const handleHeartClick = async () => {
     setIsHeartClicked((click: boolean) => !click);
-    setHeartCount((heart: number) => heart + 1);
+    setHeartCount((heart: number) => (isHeartClicked ? heart - 1 : heart + 1));
+
     await incrementAndDecrementHeartCount({
       yourUID: yourUID,
-      otherUserUID: otherUserUID || "",
+      otherUserUID: otherUserUID ? otherUserUID : "",
     });
   };
 
@@ -82,11 +64,10 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
     setFollowerCount((follow: number) =>
       !isFollowClicked ? follow + 1 : follow - 1
     );
-    if (isFollowClicked) {
-      // Increment in the database
-    } else {
-      // Decrement in the database
-    }
+    await incrementAndDecrementFollowCount({
+      yourUID: yourUID,
+      otherUserUID: otherUserUID ? otherUserUID : "",
+    });
   };
 
   // FOR MOBILE SCREEN AND SMALLER
@@ -106,16 +87,18 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
               <div className="flex flex-col items-center gap-y-2 w-14 ">
                 <span className="text-base font-bold">{heartCount}</span>
                 {!isAuthProfile && (
-                  <div
-                    className="cursor-pointer text-center"
+                  <Button
+                    className="cursor-pointer text-center bg-transparent hover:bg-transparent"
+                    variant={"ghost"}
                     onClick={handleHeartClick}
+                    disabled={isHeartCountLoading}
                   >
                     <FaHeart
                       className={`text-3xl ${
                         isHeartClicked ? "text-red-500" : "text-white"
                       }`}
                     />
-                  </div>
+                  </Button>
                 )}
 
                 <span className="text-xs bg-red-500 py-0.5 px-1 rounded">
@@ -126,16 +109,18 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
               <div className="flex flex-col items-center gap-y-2 w-14 ">
                 <span className="text-base font-bold">{followerCount}</span>
                 {!isAuthProfile && (
-                  <div
-                    className="cursor-pointer text-center"
+                  <Button
+                    className="cursor-pointer text-center bg-transparent hover:bg-transparent"
+                    variant={"ghost"}
                     onClick={handleFollowClick}
+                    disabled={isFollowCountLoading}
                   >
                     <FaUserAstronaut
                       className={`text-3xl ${
                         isFollowClicked ? "text-emerald-500" : "text-white"
                       }`}
                     />
-                  </div>
+                  </Button>
                 )}
                 <span className="text-xs bg-emerald-500 py-0.5 px-1 rounded">
                   {isAuthProfile
@@ -157,7 +142,7 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
       <>
         <div
           className={cn(
-            "hidden flex-col pe-2 py-1 shadow-sm w-fit gap-y-1 items-center justify-center text-2xl",
+            "hidden flex-col pe-2 pt-4 pb-1 shadow-sm w-fit gap-y-2 items-center justify-center text-2xl",
             {
               flex: windowWidth > 500,
             }
@@ -183,13 +168,16 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
                 />
               </Button>
             ) : (
-              <span className="text-xs bg-red-500 px-1 py-0.5 rounded w-14 text-center">
+              <span
+                className="text-xs bg-red-500
+               px-1 py-0.5 rounded w-14 text-center"
+              >
                 {isAuthProfile ? "Likes" : isHeartClicked ? "Liked" : "Like"}
               </span>
             )}
           </div>
 
-          <div className="w-full border-dotted border-t-2 border-muted" />
+          <div className="w-full border-b border-slate-600" />
 
           <div
             className={cn("flex items-center gap-x-1", {
@@ -198,16 +186,18 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
           >
             <span className="text-base font-bold">{followerCount}</span>
             {!isAuthProfile ? (
-              <div
-                className="cursor-pointer hover:text-emerald-500 rounded-full hover:bg-muted p-2 text-center"
+              <Button
+                variant={"ghost"}
+                className="cursor-pointer hover:text-emerald-500 rounded-full hover:bg-muted p-2 flex justify-center items-center"
                 onClick={handleFollowClick}
+                disabled={isFollowCountLoading}
               >
                 <FaUserAstronaut
                   className={`text-2xl ${
                     isFollowClicked ? "text-emerald-500" : "text-white"
                   }`}
                 />
-              </div>
+              </Button>
             ) : (
               <span className="text-xs bg-emerald-500 px-1 py-0.5 rounded">
                 {isAuthProfile

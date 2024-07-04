@@ -19,23 +19,44 @@ export const UserSchema = new Schema({
   },
   bio: {
     type: String,
+    default: "",
+  },
+  genre: {
+    type: [String],
     required: false,
   },
   follower: [
     {
-      uid: Schema.Types.ObjectId,
+      uid: {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
+      },
     },
   ],
   following: [
     {
-      uid: Schema.Types.ObjectId,
+      uid: {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
+      },
     },
   ],
-  heartcount: [
+  heart: [
     {
-      uid: Schema.Types.ObjectId,
+      uid: {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    },
+  ],
+  post: [
+    {
+      uid: {
+        type: Schema.Types.ObjectId,
+        ref: "Posts",
+      },
     },
   ],
 });
 
-export const UserModel = model("users", UserSchema);
+export const UserModel = model("Users", UserSchema);

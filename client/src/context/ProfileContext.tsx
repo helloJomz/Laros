@@ -3,12 +3,15 @@ import { useParams } from "react-router-dom";
 import { useUserContext } from "./UserContext";
 import { type UserObject } from "@/types/Profile";
 import { useGetUserByDisplayNameMutation } from "@/app/features/users/userApiSlice";
+import { useCheckProfileRelationshipStatusQuery } from "@/app/features/profile/profileApiSlice";
 import { capitalizeFirstLetter, delay } from "@/utils/utils";
 
 interface ProfileContextType {
   isAuthProfile: boolean;
   isProfileError: boolean;
   isProfileLoading: boolean;
+  isHeartUser: boolean;
+  isFollowingUser: boolean;
   profileEndpoint: string;
   userProfileObject: UserObject | undefined;
   setUserProfileObject: (user: UserObject | undefined) => void;
@@ -32,13 +35,23 @@ const ProfileContextProvider = ({
     UserObject | undefined
   >(undefined);
 
-  console.log(userProfileObject);
-
   // API
   const [getUserByDisplayName, { isLoading, isError }] =
     useGetUserByDisplayNameMutation();
 
-  // STATES
+  const { data: relationshipStatus, isLoading: isRelationshipStatusLoading } =
+    useCheckProfileRelationshipStatusQuery(
+      {
+        yourUID: authenticatedUserObject.userid,
+        otherUserUID: userProfileObject ? userProfileObject.userid : "",
+      },
+      {
+        skip:
+          userProfileObject === undefined ||
+          profileEndpoint === authDisplayName,
+      }
+    );
+
   const [isProfileFetching, setIsProfileFetching] = useState<boolean>(false);
 
   // RE-RENDER THE PAGE WITH USER'S OBJECT BASED ON THE URL ENDPOINT OF THE PROFILE
@@ -60,12 +73,19 @@ const ProfileContextProvider = ({
   // CHANGING OF TAB NAME OF BROWSER
   useEffect(() => {
     document.title = `Laros | ${capitalizeFirstLetter(displayNameFromURL!)}`;
-  }, [displayNameFromURL]);
+  }, [profileEndpoint]);
 
   // ERROR HANDLERS
   const isAuthProfile: boolean = displayNameFromURL === authDisplayName;
-  const isProfileError: boolean = isError && !userProfileObject;
-  const isProfileLoading: boolean = isLoading || isProfileFetching;
+  const isProfileError: boolean = isError;
+  const isProfileLoading: boolean =
+    isLoading ||
+    isProfileFetching ||
+    isRelationshipStatusLoading ||
+    !userProfileObject;
+  const isHeartUser: boolean = relationshipStatus && relationshipStatus.heart;
+  const isFollowingUser: boolean =
+    relationshipStatus && relationshipStatus.following;
 
   return (
     <ProfileContext.Provider
@@ -76,6 +96,8 @@ const ProfileContextProvider = ({
         setUserProfileObject,
         userProfileObject,
         profileEndpoint,
+        isHeartUser,
+        isFollowingUser,
       }}
     >
       {children}

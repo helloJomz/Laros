@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { useProfileContext } from "@/context/ProfileContext";
+import { useAddBioMutation } from "@/app/features/profile/profileApiSlice";
+import { useUserContext } from "@/context/UserContext";
 
 const Bio = () => {
-  const testBio = "";
-
-  const [editBio, setEditBio] = useState<boolean>(false);
+  const [openAddBio, setOpenAddBio] = useState<boolean>(false);
   const [content, setContent] = useState("");
 
-  // FIXME: Should handle the button should not be seen if you are not the user profile.
+  const { authenticatedUserObject } = useUserContext();
+  const { userid } = authenticatedUserObject;
 
-  if (testBio.length > 0)
-    return (
-      <>
-        <div className="text-sm text-center border-b border-muted-foreground pb-2">
-          <span>{testBio}</span>
-        </div>
-      </>
-    );
+  const { isAuthProfile, userProfileObject } = useProfileContext();
 
-  if (editBio)
+  const bio = (userProfileObject && userProfileObject.bio) || "";
+
+  const [addBio] = useAddBioMutation();
+
+  // TODO: Continue the backend of this
+  const handleSaveBio = async () => {
+    await addBio({ yourUID: userid, bio: content });
+    setOpenAddBio(false);
+    // Should cliently show the content so that it does need to refresh the page.
+  };
+
+  if (isAuthProfile && openAddBio)
     return (
       <>
         <div>
@@ -34,12 +40,16 @@ const Bio = () => {
           </div>
           <div className="flex gap-x-2 justify-end mt-2">
             <Button
-              onClick={() => setEditBio(false)}
+              onClick={() => setOpenAddBio(false)}
               className="bg-slate-200 text-black px-3 text-sm hover:text-white"
             >
               Cancel
             </Button>
-            <Button disabled={content.length <= 2} className="px-3 text-sm">
+            <Button
+              disabled={content.length <= 2}
+              className="px-3 text-sm"
+              onClick={handleSaveBio}
+            >
               Save
             </Button>
           </div>
@@ -47,13 +57,34 @@ const Bio = () => {
       </>
     );
 
-  return (
-    <>
-      <Button className="w-full" onClick={() => setEditBio(true)}>
-        Add Bio
-      </Button>
-    </>
-  );
+  if (isAuthProfile && bio.length === 0)
+    return (
+      <>
+        <Button
+          className="w-full text-xs h-8 md:text-sm"
+          onClick={() => setOpenAddBio(true)}
+        >
+          Add Bio
+        </Button>
+      </>
+    );
+
+  if (userProfileObject && bio.length > 0)
+    return (
+      <>
+        <div className="text-sm text-center border-b border-slate-600 pb-2 w-full">
+          <span className="break-all">{bio}</span>
+        </div>
+        {isAuthProfile && (
+          <Button
+            className="w-full text-xs h-8 md:text-sm"
+            onClick={() => setOpenAddBio(true)}
+          >
+            Edit Bio
+          </Button>
+        )}
+      </>
+    );
 };
 
 export default Bio;

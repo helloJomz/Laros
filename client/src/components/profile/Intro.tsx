@@ -11,7 +11,7 @@ const Intro = ({ className, ...rest }: IntroProps) => {
   return (
     <>
       <div className={className} {...rest}>
-        <h4 className="font-bold mb-4">Intro</h4>
+        <h4 className="font-bold mb-4">About</h4>
 
         <div className="flex flex-col gap-y-4">
           <Bio />

@@ -1,6 +1,6 @@
 import { apiSlice } from "../../services/api";
 
-export const authApiSlice = apiSlice.injectEndpoints({
+export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUserByDisplayName: builder.mutation({
       query: (displayname: string) => ({
@@ -17,25 +17,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: { uid },
       }),
     }),
-
-    incrementAndDecrementHeartCount: builder.mutation({
-      query: ({
-        yourUID,
-        otherUserUID,
-      }: {
-        yourUID: string;
-        otherUserUID: string;
-      }) => ({
-        url: "/user/incrementanddecrementheartcount",
-        method: "POST",
-        body: { yourUID, otherUserUID },
-      }),
-    }),
   }),
 });
 
-export const {
-  useGetUserByDisplayNameMutation,
-  useGetUserByIdMutation,
-  useIncrementAndDecrementHeartCountMutation,
-} = authApiSlice;
+export const { useGetUserByDisplayNameMutation, useGetUserByIdMutation } =
+  userApiSlice;

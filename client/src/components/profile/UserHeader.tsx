@@ -12,7 +12,11 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
   const { windowWidth } = useNavbarContext();
 
   const { userProfileObject } = useProfileContext();
-  const { displayname, following: followingCount } = userProfileObject || {};
+  const {
+    displayname,
+    following: followingCount,
+    post: postCount,
+  } = userProfileObject || {};
 
   return (
     <>
@@ -44,22 +48,27 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                   {/* User Title */}
                   Professional Gamer
                 </span>
+
                 <h1 className=" text-2xl lg:text-4xl font-bold">
                   {displayname && capitalizeFirstLetter(displayname)}
                 </h1>
               </div>
 
               <div className="flex items-center gap-x-2 ">
-                <div className="flex gap-x-1  text-[0.7rem] md:text-sm hover:underline cursor-pointer">
-                  <span className="font-semibold text-slate-300">467 </span>
-                  <span className="text-muted-foreground">posts</span>
+                <div className="text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+                  <span className="font-semibold text-slate-300">
+                    {postCount}
+                  </span>
+                  <span className="text-muted-foreground ps-1">
+                    {postCount && postCount > 1 ? "posts" : "post"}
+                  </span>
                 </div>
 
-                <div className="flex gap-x-1 text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+                <div className="text-[0.7rem] md:text-sm hover:underline cursor-pointer">
                   <span className="font-semibold text-slate-300">
                     {followingCount}
                   </span>
-                  <span className="text-muted-foreground ">following</span>
+                  <span className="text-muted-foreground ps-1">following</span>
                 </div>
               </div>
             </div>

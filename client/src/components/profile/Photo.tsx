@@ -8,7 +8,8 @@ type PhotoProps = {
 };
 
 const Photo = ({ variant }: PhotoProps) => {
-  const { userProfileObject } = useProfileContext();
+  const { userProfileObject, isProfileLoading, isProfileError } =
+    useProfileContext();
   const { imgURL, displayname } = userProfileObject || {};
   const { windowWidth } = useNavbarContext();
 

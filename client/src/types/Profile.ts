@@ -3,7 +3,9 @@ export type UserObject = {
   displayname: string;
   email: string;
   imgURL: string;
+  bio: string;
   heartcount: number;
   follower: number;
   following: number;
+  post: number;
 };

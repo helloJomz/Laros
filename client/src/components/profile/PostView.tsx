@@ -3,13 +3,54 @@ import { BsThreeDots } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useProfileContext } from "@/context/ProfileContext";
+import { useNavbarContext } from "@/context/NavbarContext";
+import { GiHappySkull } from "react-icons/gi";
 
 const PostView = () => {
   //TODO: Put Comments and Reactions on the design
   // Need backend
 
-  const { userProfileObject } = useProfileContext();
-  const { userid, imgURL, displayname } = userProfileObject || {};
+  const { windowWidth } = useNavbarContext();
+
+  const {
+    userProfileObject,
+    isAuthProfile,
+    profileEndpoint: visitedUserDisplayName,
+  } = useProfileContext();
+  const {
+    userid,
+    imgURL,
+    displayname,
+    post: postCount,
+  } = userProfileObject || {};
+
+  if (postCount === 0)
+    return (
+      <>
+        <div className="flex gap-x-4 items-center">
+          <h4 className="font-bold">Posts</h4>
+          <div className="border-dotted border-t-2 border-muted w-full mt-1" />
+        </div>
+
+        <div className="flex flex-col gap-y-4 text-center text-muted-foreground m-0 md:mt-8">
+          <span className="text-sm md:text-base">
+            {isAuthProfile ? (
+              "You haven't posted anything yet!"
+            ) : (
+              <>
+                <strong className="pe-1">
+                  {capitalizeFirstLetter(visitedUserDisplayName)}
+                </strong>
+                hasn't shared any posts yet.
+              </>
+            )}
+          </span>
+          <div className="flex justify-center font-semibold">
+            <GiHappySkull size={windowWidth <= 768 ? 80 : 200} />
+          </div>
+        </div>
+      </>
+    );
 
   return (
     <>

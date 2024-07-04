@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { searchAPI } from "./features/search/searchAPI";
 import { giphyApiSlice } from "./features/giphy/giphySlice";
+import { userApiSlice } from "./features/users/userApiSlice";
 import authReducer from "./features/auth/authSlice";
 import { apiSlice } from "./services/api";
 import {
