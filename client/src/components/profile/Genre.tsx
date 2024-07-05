@@ -8,12 +8,12 @@ const Genre = () => {
 
   const [editGenre, setEditGenre] = useState<boolean>(false);
 
-  const { isAuthProfile } = useProfileContext();
+  const { isAuthProfile, setShowProfileModal } = useProfileContext();
 
   if (genre.length !== 0)
     return (
       <>
-        <div className="flex flex-wrap gap-y-2 gap-x-2 text-sm justify-center w-full px-8 md:px-0">
+        <div className="flex flex-wrap gap-y-2 gap-x-2 text-xs md:text-sm justify-center w-full px-8 md:px-0">
           {genre.map((item) => (
             <Badge key={item} className="bg-sky-800 cursor-pointer">
               {item}
@@ -23,7 +23,9 @@ const Genre = () => {
         {isAuthProfile && (
           <Button
             className="w-full text-xs h-8 md:text-sm"
-            onClick={() => setEditGenre(true)}
+            onClick={() => {
+              setShowProfileModal("genre");
+            }}
           >
             Edit Genre
           </Button>
@@ -42,7 +44,12 @@ const Genre = () => {
   if (isAuthProfile && genre.length === 0)
     return (
       <>
-        <Button className="w-full" onClick={() => setEditGenre(true)}>
+        <Button
+          className="w-full"
+          onClick={() => {
+            setShowProfileModal("genre");
+          }}
+        >
           Add Genre
         </Button>
       </>

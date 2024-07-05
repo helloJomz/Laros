@@ -28,7 +28,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
         {/* User's Basic Info */}
         <div
           className={cn(
-            "absolute top-20 flex flex-col gap-y-6 lg:top-24 w-full",
+            "absolute top-20 flex flex-col gap-y-8 lg:top-24 w-full",
             {
               "top-14": windowWidth <= 500,
             }
@@ -54,8 +54,8 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                 </h1>
               </div>
 
-              <div className="flex items-center gap-x-2 ">
-                <div className="text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+              <div className="flex items-center gap-x-2 text-xs md:text-sm">
+                <div className="hover:underline cursor-pointer">
                   <span className="font-semibold text-slate-300">
                     {postCount}
                   </span>
@@ -64,7 +64,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                   </span>
                 </div>
 
-                <div className="text-[0.7rem] md:text-sm hover:underline cursor-pointer">
+                <div className=" hover:underline cursor-pointer">
                   <span className="font-semibold text-slate-300">
                     {followingCount}
                   </span>

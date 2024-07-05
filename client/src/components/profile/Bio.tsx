@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { useProfileContext } from "@/context/ProfileContext";
 import { useAddBioMutation } from "@/app/features/profile/profileApiSlice";
@@ -44,7 +44,7 @@ const Bio = () => {
         <div>
           <div>
             <textarea
-              className="w-full bg-muted-foreground rounded resize-none focus:border-none p-2 text-sm"
+              className="w-full bg-slate-600 rounded resize-none focus:border-none p-2 text-sm"
               onChange={(e) => setContent(e.target.value)}
               value={content}
               maxLength={50}
@@ -56,11 +56,14 @@ const Bio = () => {
           <div className="flex gap-x-2 justify-end mt-2">
             <Button
               onClick={() => setOpenAddBio(false)}
-              className="bg-slate-200 text-black px-3 text-sm hover:text-white"
+              className="bg-slate-200 text-black px-3 py-1 text-xs md:text-sm hover:text-white"
             >
               Cancel
             </Button>
-            <Button className="px-3 text-sm" onClick={handleSaveBio}>
+            <Button
+              className="px-3 py-1 text-xs md:text-sm"
+              onClick={handleSaveBio}
+            >
               Save
             </Button>
           </div>
