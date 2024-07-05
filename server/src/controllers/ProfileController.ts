@@ -103,9 +103,18 @@ export const incrementFollowerCountOnProfileController = async (
 
 export const addBioController = async (req: Request, res: Response) => {
   try {
-    const { yourUID, bio } = req.params;
-    if (yourUID && bio) {
-      console.log(yourUID, bio);
+    const { yourUID, bio } = req.body;
+
+    if (yourUID) {
+      const transformedYourUID =
+        mongoose.Types.ObjectId.createFromHexString(yourUID);
+
+      const user = await UserModel.updateOne(
+        { _id: transformedYourUID },
+        { $set: { bio: bio } }
+      );
+
+      if (user) return res.status(200).json({ bio: bio });
     } else {
       return res
         .status(400)
