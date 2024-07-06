@@ -11,7 +11,8 @@ type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
   const { windowWidth } = useNavbarContext();
 
-  const { userProfileObject } = useProfileContext();
+  const { userProfileObject, isAuthProfile, setShowProfileModal } =
+    useProfileContext();
   const {
     displayname,
     following: followingCount,
@@ -31,6 +32,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
             "absolute top-20 flex flex-col gap-y-8 lg:top-24 w-full",
             {
               "top-14": windowWidth <= 500,
+              "gap-y-2": !isAuthProfile,
             }
           )}
         >
@@ -55,7 +57,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
               </div>
 
               <div className="flex items-center gap-x-2 text-xs md:text-sm">
-                <div className="hover:underline cursor-pointer">
+                <div>
                   <span className="font-semibold text-slate-300">
                     {postCount}
                   </span>
@@ -64,11 +66,16 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                   </span>
                 </div>
 
-                <div className=" hover:underline cursor-pointer">
-                  <span className="font-semibold text-slate-300">
+                <div
+                  className="cursor-pointer bg-gray-700 px-1 rounded hover:bg-gray-500"
+                  onClick={() => setShowProfileModal("following")}
+                >
+                  <span className="font-semibold text-white">
                     {followingCount}
                   </span>
-                  <span className="text-muted-foreground ps-1">following</span>
+                  <span className="text-muted-foreground ps-1 text-white">
+                    following
+                  </span>
                 </div>
               </div>
             </div>

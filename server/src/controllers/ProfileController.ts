@@ -114,11 +114,40 @@ export const addBioController = async (req: Request, res: Response) => {
         { $set: { bio: bio } }
       );
 
-      if (user) return res.status(200).json({ bio: bio });
+      if (user) {
+        return res.status(200).json({ bio: bio });
+      } else {
+        return res.status(400).json({ message: "Error adding bio." });
+      }
+    } else {
+      return res.status(400).json({ message: "Cannot proceed on adding bio." });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const addGenreController = async (req: Request, res: Response) => {
+  try {
+    const { yourUID, genre } = req.body;
+
+    if (yourUID) {
+      const transformedYourUID =
+        mongoose.Types.ObjectId.createFromHexString(yourUID);
+
+      const user = await UserModel.findByIdAndUpdate(transformedYourUID, {
+        genre: genre,
+      });
+
+      if (user) {
+        return res.status(200).json({ message: "Successfully updated genre." });
+      } else {
+        return res.status(200).json({ message: "Error adding genre!" });
+      }
     } else {
       return res
         .status(400)
-        .json({ message: "Cannot proceed on adding your bio." });
+        .json({ message: "Cannot proceed on adding genre." });
     }
   } catch (error) {
     console.error(error);

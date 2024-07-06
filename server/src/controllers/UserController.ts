@@ -17,6 +17,7 @@ export const getUserByDisplayNameController = async (
       email: user.email,
       imgURL: user.imgURL,
       bio: user.bio,
+      genre: [...[user.genre]],
       heartcount: user.heart.length,
       follower: user.follower.length,
       following: user.following.length,

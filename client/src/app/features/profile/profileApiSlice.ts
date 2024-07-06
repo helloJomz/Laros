@@ -47,6 +47,14 @@ const profileApiSlice = apiSlice.injectEndpoints({
         body: { yourUID, bio },
       }),
     }),
+
+    addGenre: builder.mutation({
+      query: ({ yourUID, genre }: { yourUID: string; genre: string[] }) => ({
+        url: "/profile/addgenre",
+        method: "POST",
+        body: { yourUID, genre },
+      }),
+    }),
   }),
 });
 
@@ -55,4 +63,5 @@ export const {
   useIncrementAndDecrementFollowCountMutation,
   useCheckProfileRelationshipStatusQuery,
   useAddBioMutation,
+  useAddGenreMutation,
 } = profileApiSlice;

@@ -4,6 +4,7 @@ export type UserObject = {
   email: string;
   imgURL: string;
   bio: string;
+  genre: string[];
   heartcount: number;
   follower: number;
   following: number;

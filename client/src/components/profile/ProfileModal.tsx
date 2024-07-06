@@ -1,6 +1,6 @@
-import React from "react";
 import EditGenre from "./modals/EditGenre";
 import { useProfileContext } from "@/context/ProfileContext";
+import Following from "./modals/Following";
 
 const WrapperComponent = ({ children }: { children: React.ReactNode }) => {
   const { showProfileModal } = useProfileContext();
@@ -17,11 +17,11 @@ const WrapperComponent = ({ children }: { children: React.ReactNode }) => {
 const ProfileModal = () => {
   const { showProfileModal } = useProfileContext();
 
-  console.log(showProfileModal);
-
   if (showProfileModal === "genre") return <EditGenre />;
 
-  return null; // Add return null if condition isn't met
+  if (showProfileModal === "following") return <Following />;
+
+  return null;
 };
 
 const ProfileModalWithWrapper = () => {
