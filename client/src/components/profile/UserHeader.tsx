@@ -5,6 +5,7 @@ import Photo from "./Photo";
 import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
 import { useProfileContext } from "@/context/ProfileContext";
+import { FaChevronRight } from "react-icons/fa";
 
 type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -29,17 +30,18 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
         {/* User's Basic Info */}
         <div
           className={cn(
-            "absolute top-20 flex flex-col gap-y-8 lg:top-24 w-full",
+            "absolute top-20 lg:top-24 flex flex-col gap-y-8 w-full",
             {
               "top-14": windowWidth <= 500,
-              "gap-y-2": !isAuthProfile,
+              "gap-y-6 top-[4.5rem] lg:top-20":
+                windowWidth > 500 && !isAuthProfile,
             }
           )}
         >
-          <div className="flex justify-between pe-4">
+          <div className="flex justify-between pe-2 :pe-2 lg:pe-0">
             <div
               className={cn(
-                "flex flex-col justify-center gap-y-2 ml-56 lg:ml-[20rem]",
+                "flex flex-col justify-center gap-y-2 md:gap-y-3 ml-56 lg:ml-[20rem]",
                 {
                   "ml-48": windowWidth <= 500,
                 }
@@ -67,7 +69,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                 </div>
 
                 <div
-                  className="cursor-pointer bg-gray-700 px-1 rounded hover:bg-gray-500"
+                  className="cursor-pointer bg-gray-700 px-1 rounded hover:bg-gray-500 "
                   onClick={() => setShowProfileModal("following")}
                 >
                   <span className="font-semibold text-white">

@@ -32,7 +32,7 @@ const PostView = () => {
           <div className="border-dotted border-t-2 border-muted w-full mt-1" />
         </div>
 
-        <div className="flex flex-col gap-y-4 text-center text-muted-foreground m-0 md:mt-8">
+        <div className="flex flex-col gap-y-4 text-center text-muted-foreground m-0 md:mt-4 py-10 lg:py-8">
           <span className="text-sm md:text-base">
             {isAuthProfile ? (
               "You haven't posted anything yet!"

@@ -36,7 +36,7 @@ const Following = () => {
 
   return (
     <>
-      <div className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg ps-4 pe-2 md:pe-4 pt-3 pb-8  flex flex-col gap-y-4">
+      <div className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg px-4 pt-3 pb-8  flex flex-col gap-y-4">
         <div>
           <div className="flex justify-between items-center">
             <h1 className="text-base lg:text-lg font-semibold">Following</h1>

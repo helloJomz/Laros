@@ -14,7 +14,7 @@ const CreatePost = () => {
           className="w-10 h-10 rounded-full object-cover pointer-events-none"
         />
 
-        <div className="bg-gray-500 hover:bg-gray-400 w-full rounded py-1 px-4 cursor-pointer h-10 flex flex-col justify-center text-slate-300 hover:text-slate-100">
+        <div className="bg-gray-500 hover:bg-gray-400 w-full rounded py-1 px-4 cursor-pointer h-8 flex flex-col justify-center text-slate-300 hover:text-slate-100">
           <span className="text-xs md:text-sm ">{`Hi ${
             displayname && capitalizeFirstLetter(displayname)
           }, share something!`}</span>

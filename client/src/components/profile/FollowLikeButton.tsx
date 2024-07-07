@@ -71,6 +71,7 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
   };
 
   // FOR MOBILE SCREEN AND SMALLER
+  //FIXME: Make the text background sort of grayish/blackish to indicate that they have not followed/liked the user.
   if (variant === "small")
     return (
       <>
