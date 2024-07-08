@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 
-const Genre = () => {
+const Genre = ({ getProps }: { getProps: (prop: boolean) => void }) => {
   const {
     isAuthProfile,
     setShowProfileModal,
@@ -30,13 +30,19 @@ const Genre = () => {
     }
   }, [showProfileModal]);
 
-  //TODO: Continue this!
+  useEffect(() => {
+    getProps(genre.length === 0 ? true : false);
+  }, [genre, getProps]);
+
   if (genre.length !== 0)
     return (
       <>
         <div className="flex flex-wrap gap-y-2 gap-x-2 text-xs md:text-sm justify-center w-full px-8 md:px-0">
           {genre.map((item) => (
-            <Badge key={item} className="text-xs bg-sky-800 cursor-pointer">
+            <Badge
+              key={item}
+              className="text-xs text-center bg-sky-800 cursor-pointer"
+            >
               {item}
             </Badge>
           ))}

@@ -71,6 +71,7 @@ const SideMenu = () => {
       dispatch(destroyUserSession());
       persistor.flush();
       persistor.purge();
+      localStorage.removeItem("temp_genre");
       await logout(undefined); // clears cookies
       setIsProcessingLogout(false);
     }, 2000);

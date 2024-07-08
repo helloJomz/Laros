@@ -5,6 +5,8 @@ import {
   incrementFollowerCountOnProfileController,
   addBioController,
   addGenreController,
+  getUserFollowingController,
+  unfollowUserController,
 } from "../controllers/ProfileController";
 
 const router = Router();
@@ -17,5 +19,7 @@ router.get(
   "/:yourUID/:otherUserUID/relationship",
   checkProfileRelationshipStatusController
 );
+router.get("/getfollowing", getUserFollowingController);
+router.post("/unfollow", unfollowUserController);
 
 export default router;

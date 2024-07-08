@@ -1,86 +1,136 @@
-import { Button } from "@/components/ui/button";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { useProfileContext } from "@/context/ProfileContext";
 import { Snail } from "lucide-react";
-import { IoClose } from "react-icons/io5";
+import React from "react";
+import CloseButton from "./CloseButton";
+import {
+  useGetUserFollowingQuery,
+  useUnfollowUserMutation,
+} from "@/app/features/profile/profileApiSlice";
+import { Link } from "react-router-dom";
+import { capitalizeFirstLetter } from "@/utils/utils";
+import { useUserContext } from "@/context/UserContext";
 
 const Following = () => {
   const { windowWidth } = useNavbarContext();
-  const { userProfileObject, setShowProfileModal } = useProfileContext();
 
-  const followingCount: number = userProfileObject
-    ? userProfileObject.following
-    : 0;
+  const { authenticatedUserObject } = useUserContext();
 
-  const testImg =
-    "https://www.icegif.com/wp-content/uploads/2023/04/icegif-673.gif";
+  const { userProfileObject, isAuthProfile, setShowProfileModal } =
+    useProfileContext();
 
-  const ten: any[] = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "10",
-    "10",
-    "10",
-    "10",
-  ];
+  const displayname: string = userProfileObject
+    ? userProfileObject.displayname
+    : "";
+  const uid: string = userProfileObject ? userProfileObject.userid : "";
 
-  //TODO: Put Backend of this!
+  const {
+    data: followListArray,
+    isLoading,
+    isError,
+    refetch: refetchFollowingList,
+  } = useGetUserFollowingQuery(
+    isAuthProfile ? authenticatedUserObject.userid : uid
+  );
 
-  return (
-    <>
-      <div className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg px-4 pt-3 pb-8  flex flex-col gap-y-4">
-        <div>
-          <div className="flex justify-between items-center">
+  const finalFollowListArray = followListArray && followListArray;
+
+  const [unfollowUser] = useUnfollowUserMutation();
+
+  const handleUnfollowClick = async (targetUID: string) => {
+    const { error } = await unfollowUser({
+      yourUID: uid,
+      otherUserUID: targetUID,
+    });
+    if (!error) {
+      refetchFollowingList();
+    }
+  };
+
+  const FollowingWrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <>
+        <div className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg px-4 pt-3 pb-8  flex flex-col gap-y-4">
+          {children}
+        </div>
+      </>
+    );
+  };
+
+  const FollowingContentComponent = () => {
+    return (
+      <>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col ">
             <h1 className="text-base lg:text-lg font-semibold">Following</h1>
-            <Button
-              variant={"ghost"}
-              className="rounded-full hover:bg-slate-600 p-3"
-              onClick={() => setShowProfileModal("")}
-            >
-              <IoClose size={20} />
-            </Button>
+            <div className="mt-[-0.2rem] ">
+              <span className="text-xs text-muted-foreground">
+                {finalFollowListArray.length === 0 &&
+                  isAuthProfile &&
+                  "You are not following anyone."}
+
+                {finalFollowListArray.length === 0 &&
+                  !isAuthProfile &&
+                  `${capitalizeFirstLetter(
+                    displayname
+                  )} is not following anyone.`}
+
+                {finalFollowListArray.length >= 1 &&
+                  isAuthProfile &&
+                  `You are following ${finalFollowListArray.length} gamer${
+                    finalFollowListArray.length > 1 ? "s" : ""
+                  }`}
+
+                {finalFollowListArray.length >= 1 &&
+                  !isAuthProfile &&
+                  `${capitalizeFirstLetter(displayname)} is following ${
+                    finalFollowListArray.length
+                  } gamer${finalFollowListArray.length > 1 ? "s" : ""}`}
+              </span>
+            </div>
           </div>
-          <div className="mt-[-0.5rem] ">
-            <span className="text-xs text-muted-foreground">
-              {`You are following ${followingCount} gamer${
-                followingCount > 1 ? "s" : ""
-              }`}
-            </span>
-          </div>
+
+          <CloseButton />
         </div>
 
-        {ten.length > 0 ? (
+        {followListArray.length > 0 ? (
           <>
-            <div className="flex-grow grid grid-cols-1 lg:grid-cols-2 justify-center gap-y-2 gap-x-2 overflow-y-auto pe-2">
-              {ten.map(() => (
-                <>
-                  <div className="flex items-center justify-between py-2 ps-2 pe-4 bg-slate-700 w-full rounded">
+            <div className="flex-grow flex flex-col lg:grid lg:grid-cols-2 lg:justify-center  gap-y-2 gap-x-2 overflow-y-auto pe-2">
+              {followListArray.map((item: any, index: number) => (
+                <React.Fragment key={index}>
+                  <div className="flex items-center justify-between py-2 ps-2 pe-4 h-fit bg-slate-700 w-full rounded">
                     <div className="flex gap-x-2">
                       <img
-                        src={testImg}
-                        alt=""
+                        src={item.imgURL}
+                        alt={`photo_${item.displayname}`}
                         className="rounded-full w-12 h-12 object-cover"
                       />
                       <div className="flex flex-col justify-center">
-                        <h1>Kittymin</h1>
-                        <span className="text-xs text-muted-foreground mt-[-0.1rem]">
-                          Honorary Poster
-                        </span>
+                        <Link
+                          to={`/${item.displayname}`}
+                          className="font-semibold hover:underline"
+                          onClick={() => setShowProfileModal("")}
+                        >
+                          {capitalizeFirstLetter(item.displayname)}
+                        </Link>
+
+                        {isAuthProfile && (
+                          <span className="text-xs text-muted-foreground mt-[-0.1rem]">
+                            {item.isMutual ? "Friends" : "Following"}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <span className="bg-gray-900 text-xs py-1 px-2 rounded cursor-pointer hover:bg-gray-800">
-                      Unfollow
-                    </span>
+                    {isAuthProfile && (
+                      <span
+                        className="bg-gray-900 text-xs py-1 px-2 rounded cursor-pointer hover:bg-gray-800"
+                        onClick={() => handleUnfollowClick(item._id)}
+                      >
+                        Unfollow
+                      </span>
+                    )}
                   </div>
-                </>
+                </React.Fragment>
               ))}
             </div>
           </>
@@ -92,12 +142,43 @@ const Following = () => {
                 className="text-muted-foreground"
               />
               <span className="text-xs md:text-sm text-muted-foreground">
-                Oops! You are currently not following anyone.
+                {followListArray.length === 0 && isAuthProfile
+                  ? "Oops! You are currently not following anyone."
+                  : `Oops! ${capitalizeFirstLetter(
+                      displayname
+                    )} is not following anyone.`}
               </span>
             </div>
           </>
         )}
-      </div>
+      </>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        <FollowingWrapper>
+          <span>Loading...</span>
+        </FollowingWrapper>
+      </>
+    );
+  }
+
+  if (isError)
+    return (
+      <>
+        <FollowingWrapper>
+          <span>error...</span>
+        </FollowingWrapper>
+      </>
+    );
+
+  return (
+    <>
+      <FollowingWrapper>
+        <FollowingContentComponent />
+      </FollowingWrapper>
     </>
   );
 };

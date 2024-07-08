@@ -5,7 +5,6 @@ import Photo from "./Photo";
 import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
 import { useProfileContext } from "@/context/ProfileContext";
-import { FaChevronRight } from "react-icons/fa";
 
 type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -14,6 +13,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
 
   const { userProfileObject, isAuthProfile, setShowProfileModal } =
     useProfileContext();
+
   const {
     displayname,
     following: followingCount,
@@ -33,12 +33,12 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
             "absolute top-20 lg:top-24 flex flex-col gap-y-8 w-full",
             {
               "top-14": windowWidth <= 500,
-              "gap-y-6 top-[4.5rem] lg:top-20":
+              "gap-y-6 top-[4.5rem] lg:top-24":
                 windowWidth > 500 && !isAuthProfile,
             }
           )}
         >
-          <div className="flex justify-between pe-2 :pe-2 lg:pe-0">
+          <div className="flex justify-between pe-2 lg:pe-0">
             <div
               className={cn(
                 "flex flex-col justify-center gap-y-2 md:gap-y-3 ml-56 lg:ml-[20rem]",
@@ -53,7 +53,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                   Professional Gamer
                 </span>
 
-                <h1 className=" text-2xl lg:text-4xl font-bold">
+                <h1 className="text-2xl lg:text-4xl font-bold">
                   {displayname && capitalizeFirstLetter(displayname)}
                 </h1>
               </div>

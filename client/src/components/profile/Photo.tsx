@@ -20,7 +20,7 @@ const Photo = ({ variant }: PhotoProps) => {
           <img
             src={imgURL}
             alt={`${displayname}_coverphoto`}
-            className="w-full h-full object-cover opacity-50 pointer-events-none"
+            className="w-full h-full object-cover opacity-35 pointer-events-none"
           />
           <FollowLikeButton variant="small" />
         </div>

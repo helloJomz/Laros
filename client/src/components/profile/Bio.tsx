@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useProfileContext } from "@/context/ProfileContext";
 import { useAddBioMutation } from "@/app/features/profile/profileApiSlice";
 import { useUserContext } from "@/context/UserContext";
 
-const Bio = () => {
+const Bio = ({ getProps }: { getProps: (prop: boolean) => void }) => {
   const [openAddBio, setOpenAddBio] = useState<boolean>(false);
   const [bioPlaceholder, setBioPlaceholder] = useState<string>("");
 
@@ -37,6 +37,10 @@ const Bio = () => {
       }
     }
   };
+
+  useEffect(() => {
+    getProps(isEmpty);
+  }, [isEmpty, getProps]);
 
   if (isAuthProfile && openAddBio)
     return (

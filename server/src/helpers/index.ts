@@ -3,6 +3,7 @@ import * as jwt from "jsonwebtoken";
 import { User, TokenType } from "./types";
 import { arrayOfRandomAvatarGifs, verifiedGiphyGameChannels } from "./array";
 import { v4 } from "uuid";
+import mongoose from "mongoose";
 
 export const generateToken = (
   user: User,
@@ -33,4 +34,8 @@ export function generateRandomAvatarGifs() {
     Math.random() * arrayOfRandomAvatarGifs.length
   );
   return arrayOfRandomAvatarGifs[randomIndex];
+}
+
+export function stringToObjectId(uid: string) {
+  return mongoose.Types.ObjectId.createFromHexString(uid);
 }

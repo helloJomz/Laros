@@ -17,6 +17,7 @@ interface ProfileContextType {
   setUserProfileObject: (user: UserObject | undefined) => void;
   showProfileModal: string;
   setShowProfileModal: (triggerFrom: string) => void;
+  refetchRelationshipStatus: () => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -43,18 +44,20 @@ const ProfileContextProvider = ({
   const [getUserByDisplayName, { isLoading, isError }] =
     useGetUserByDisplayNameMutation();
 
-  const { data: relationshipStatus, isLoading: isRelationshipStatusLoading } =
-    useCheckProfileRelationshipStatusQuery(
-      {
-        yourUID: authenticatedUserObject.userid,
-        otherUserUID: userProfileObject ? userProfileObject.userid : "",
-      },
-      {
-        skip:
-          userProfileObject === undefined ||
-          profileEndpoint === authDisplayName,
-      }
-    );
+  const {
+    data: relationshipStatus,
+    isLoading: isRelationshipStatusLoading,
+    refetch: refetchRelationshipStatus,
+  } = useCheckProfileRelationshipStatusQuery(
+    {
+      yourUID: authenticatedUserObject.userid,
+      otherUserUID: userProfileObject ? userProfileObject.userid : "",
+    },
+    {
+      skip:
+        userProfileObject === undefined || profileEndpoint === authDisplayName,
+    }
+  );
 
   const [isProfileFetching, setIsProfileFetching] = useState<boolean>(false);
 
@@ -104,6 +107,7 @@ const ProfileContextProvider = ({
         isFollowingUser,
         showProfileModal,
         setShowProfileModal,
+        refetchRelationshipStatus,
       }}
     >
       {children}

@@ -55,6 +55,24 @@ const profileApiSlice = apiSlice.injectEndpoints({
         body: { yourUID, genre },
       }),
     }),
+
+    getUserFollowing: builder.query({
+      query: (uid: string) => `profile/getfollowing?uid=${uid}`,
+    }),
+
+    unfollowUser: builder.mutation({
+      query: ({
+        yourUID,
+        otherUserUID,
+      }: {
+        yourUID: string;
+        otherUserUID: string;
+      }) => ({
+        url: "/profile/unfollow",
+        method: "POST",
+        body: { yourUID, otherUserUID },
+      }),
+    }),
   }),
 });
 
@@ -64,4 +82,6 @@ export const {
   useCheckProfileRelationshipStatusQuery,
   useAddBioMutation,
   useAddGenreMutation,
+  useGetUserFollowingQuery,
+  useUnfollowUserMutation,
 } = profileApiSlice;
