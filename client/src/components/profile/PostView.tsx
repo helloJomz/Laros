@@ -28,8 +28,9 @@ const PostView = () => {
     return (
       <>
         <div className="flex gap-x-4 items-center">
-          <h4 className="font-bold">Posts</h4>
-          <div className="border-dotted border-t-2 border-muted w-full mt-1" />
+          <h4 className="font-bold">Post </h4>
+
+          <div className="flex-1 border-dotted border-t-2 border-muted w-full mt-1" />
         </div>
 
         <div className="flex flex-col gap-y-4 text-center text-muted-foreground m-0 md:mt-4 py-10 lg:py-8">

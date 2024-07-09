@@ -57,7 +57,7 @@ const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
       <>
         <div
           className={cn(
-            "hidden flex-col pe-2 pt-4 pb-1 shadow-sm w-fit gap-y-4 items-center justify-center text-2xl",
+            "hidden flex-col pe-2 pt-4 pb-1 shadow-sm w-fit gap-y-2 lg:gap-y-4 items-center justify-center text-2xl",
             {
               flex: windowWidth > 500,
             }

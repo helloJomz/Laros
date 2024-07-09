@@ -1,6 +1,6 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import { useProfileContext } from "@/context/ProfileContext";
-import { Snail } from "lucide-react";
+import { Cat, Dog } from "lucide-react";
 import React from "react";
 import CloseButton from "./CloseButton";
 import {
@@ -104,7 +104,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
         ) : (
           <>
             <div className="flex-grow flex flex-col justify-center items-center gap-y-2 md:pb-12">
-              <Snail
+              <Dog
                 size={windowWidth <= 640 ? 180 : 200}
                 className="text-muted-foreground"
               />
@@ -170,7 +170,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
         ) : (
           <>
             <div className="flex-grow flex flex-col justify-center items-center gap-y-2 md:pb-12">
-              <Snail
+              <Cat
                 size={windowWidth <= 640 ? 180 : 200}
                 className="text-muted-foreground"
               />

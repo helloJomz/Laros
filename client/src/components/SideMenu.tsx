@@ -19,6 +19,7 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { useLogoutMutation } from "@/app/features/auth/authApiSlice";
 import { v4 } from "uuid";
 import { generateRandomAvatarGifsForAnon } from "@/utils/utils";
+import { capitalizeFirstLetter } from "@/utils/utils";
 
 const SideMenu = () => {
   const { displayname, userid, imgURL } = useSelector(selectCurrentUser);
@@ -119,7 +120,8 @@ const SideMenu = () => {
                         userid ? "text-xs" : "text-sm"
                       } lg:text-sm font-semibold`}
                     >
-                      {displayname || `user${anonObject.anon_uuid}`}
+                      {capitalizeFirstLetter(displayname || "") ||
+                        `user${anonObject.anon_uuid}`}
                     </h6>
 
                     <span className="text-xs lg:text-xs text-muted-foreground">

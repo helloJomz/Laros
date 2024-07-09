@@ -37,7 +37,7 @@ const Genre = () => {
           {genre.map((item) => (
             <Badge
               key={item}
-              className="text-xs text-center bg-sky-800 cursor-pointer"
+              className="text-xs text-center bg-gradient-to-tr from-sky-500 to-indigo-600 cursor-pointer"
             >
               {item}
             </Badge>

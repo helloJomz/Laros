@@ -56,17 +56,8 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
               </div>
 
               <div className="flex items-center gap-x-2 text-xs md:text-sm">
-                <div>
-                  <span className="font-semibold text-slate-300">
-                    {postCount}
-                  </span>
-                  <span className="text-muted-foreground ps-1">
-                    {postCount && postCount > 1 ? "posts" : "post"}
-                  </span>
-                </div>
-
                 <div
-                  className="cursor-pointer bg-gray-700 px-1 rounded hover:bg-gray-500 "
+                  className="cursor-pointer bg-sky-500 px-1 text-xs rounded hover:bg-sky-400 "
                   onClick={() => setShowProfileModal("following")}
                 >
                   <span className="font-semibold text-white">
