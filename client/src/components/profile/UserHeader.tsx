@@ -5,6 +5,7 @@ import Photo from "./Photo";
 import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
 import { useProfileContext } from "@/context/ProfileContext";
+import { MdVerified } from "react-icons/md";
 
 type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -13,6 +14,8 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
 
   const { userProfileObject, isAuthProfile, setShowProfileModal } =
     useProfileContext();
+
+  const isVerified: boolean = true;
 
   const {
     displayname,
@@ -50,14 +53,17 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
                   Professional Gamer
                 </span>
 
-                <h1 className="text-2xl lg:text-4xl font-bold">
-                  {displayname && capitalizeFirstLetter(displayname)}
-                </h1>
+                <div className="flex items-end ">
+                  <h1 className="text-2xl lg:text-4xl font-bold ">
+                    {displayname && capitalizeFirstLetter(displayname)}
+                  </h1>
+                  <MdVerified className="ms-2 text-lg mb-1 lg:text-2xl lg:mb-[0.15rem] text-sky-400" />
+                </div>
               </div>
 
               <div className="flex items-center gap-x-2 text-xs md:text-sm">
                 <div
-                  className="cursor-pointer bg-sky-500 px-1 text-xs rounded hover:bg-sky-400 "
+                  className="cursor-pointer bg-primary px-1 py-0.5 text-xs rounded hover:brightness-110 "
                   onClick={() => setShowProfileModal("following")}
                 >
                   <span className="font-semibold text-white">
