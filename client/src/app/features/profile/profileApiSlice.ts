@@ -2,7 +2,7 @@ import { apiSlice } from "../../services/api";
 
 const profileApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    incrementAndDecrementHeartCount: builder.mutation({
+    addHeart: builder.mutation({
       query: ({
         yourUID,
         otherUserUID,
@@ -10,13 +10,13 @@ const profileApiSlice = apiSlice.injectEndpoints({
         yourUID: string;
         otherUserUID: string;
       }) => ({
-        url: "/profile/update-heartcount",
+        url: "/profile/addHeart",
         method: "POST",
         body: { yourUID, otherUserUID },
       }),
     }),
 
-    incrementAndDecrementFollowCount: builder.mutation({
+    minusHeart: builder.mutation({
       query: ({
         yourUID,
         otherUserUID,
@@ -24,10 +24,46 @@ const profileApiSlice = apiSlice.injectEndpoints({
         yourUID: string;
         otherUserUID: string;
       }) => ({
-        url: "/profile/update-followercount",
+        url: "/profile/minusHeart",
         method: "POST",
         body: { yourUID, otherUserUID },
       }),
+    }),
+
+    getAllHeartList: builder.query({
+      query: (uid: string) => `/profile/heart?uid=${uid}`,
+    }),
+
+    addFollow: builder.mutation({
+      query: ({
+        yourUID,
+        otherUserUID,
+      }: {
+        yourUID: string;
+        otherUserUID: string;
+      }) => ({
+        url: "/profile/addFollow",
+        method: "POST",
+        body: { yourUID, otherUserUID },
+      }),
+    }),
+
+    minusFollow: builder.mutation({
+      query: ({
+        yourUID,
+        otherUserUID,
+      }: {
+        yourUID: string;
+        otherUserUID: string;
+      }) => ({
+        url: "/profile/minusFollow",
+        method: "POST",
+        body: { yourUID, otherUserUID },
+      }),
+    }),
+
+    getAllFollowerList: builder.query({
+      query: (uid: string) => `/profile/follow?uid=${uid}`,
     }),
 
     checkProfileRelationshipStatus: builder.query({
@@ -77,8 +113,12 @@ const profileApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useIncrementAndDecrementHeartCountMutation,
-  useIncrementAndDecrementFollowCountMutation,
+  useAddHeartMutation,
+  useMinusHeartMutation,
+  useGetAllHeartListQuery,
+  useAddFollowMutation,
+  useMinusFollowMutation,
+  useGetAllFollowerListQuery,
   useCheckProfileRelationshipStatusQuery,
   useAddBioMutation,
   useAddGenreMutation,

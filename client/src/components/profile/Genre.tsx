@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 
-const Genre = ({ getProps }: { getProps: (prop: boolean) => void }) => {
+const Genre = () => {
   const {
     isAuthProfile,
     setShowProfileModal,
@@ -29,10 +29,6 @@ const Genre = ({ getProps }: { getProps: (prop: boolean) => void }) => {
       setGenre(genre);
     }
   }, [showProfileModal]);
-
-  useEffect(() => {
-    getProps(genre.length === 0 ? true : false);
-  }, [genre, getProps]);
 
   if (genre.length !== 0)
     return (

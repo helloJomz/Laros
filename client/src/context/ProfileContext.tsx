@@ -17,7 +17,6 @@ interface ProfileContextType {
   setUserProfileObject: (user: UserObject | undefined) => void;
   showProfileModal: string;
   setShowProfileModal: (triggerFrom: string) => void;
-  refetchRelationshipStatus: () => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -44,20 +43,18 @@ const ProfileContextProvider = ({
   const [getUserByDisplayName, { isLoading, isError }] =
     useGetUserByDisplayNameMutation();
 
-  const {
-    data: relationshipStatus,
-    isLoading: isRelationshipStatusLoading,
-    refetch: refetchRelationshipStatus,
-  } = useCheckProfileRelationshipStatusQuery(
-    {
-      yourUID: authenticatedUserObject.userid,
-      otherUserUID: userProfileObject ? userProfileObject.userid : "",
-    },
-    {
-      skip:
-        userProfileObject === undefined || profileEndpoint === authDisplayName,
-    }
-  );
+  const { data: relationshipStatus, isLoading: isRelationshipStatusLoading } =
+    useCheckProfileRelationshipStatusQuery(
+      {
+        yourUID: authenticatedUserObject.userid,
+        otherUserUID: userProfileObject ? userProfileObject.userid : "",
+      },
+      {
+        skip:
+          userProfileObject === undefined ||
+          profileEndpoint === authDisplayName,
+      }
+    );
 
   const [isProfileFetching, setIsProfileFetching] = useState<boolean>(false);
 
@@ -65,7 +62,7 @@ const ProfileContextProvider = ({
   useEffect(() => {
     const executeGetUserByDisplayNameProfile = async () => {
       setIsProfileFetching(true);
-      await delay(1500);
+      await delay(1000);
       const { data, error } = await getUserByDisplayName(profileEndpoint || "");
       setUserProfileObject(!error ? { ...data } : undefined);
       setIsProfileFetching(false);
@@ -107,7 +104,6 @@ const ProfileContextProvider = ({
         isFollowingUser,
         showProfileModal,
         setShowProfileModal,
-        refetchRelationshipStatus,
       }}
     >
       {children}

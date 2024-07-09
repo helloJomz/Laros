@@ -1,8 +1,12 @@
 import { Router } from "express";
 import {
   checkProfileRelationshipStatusController,
-  incrementHeartCountOnProfileController,
-  incrementFollowerCountOnProfileController,
+  addHeartController,
+  minusHeartController,
+  getAllHeartController,
+  addFollowController,
+  minusFollowController,
+  getAllFollowersController,
   addBioController,
   addGenreController,
   getUserFollowingController,
@@ -11,8 +15,14 @@ import {
 
 const router = Router();
 
-router.post("/update-heartcount", incrementHeartCountOnProfileController);
-router.post("/update-followercount", incrementFollowerCountOnProfileController);
+router.post("/addHeart", addHeartController);
+router.post("/minusHeart", minusHeartController);
+router.get("/heart", getAllHeartController);
+
+router.post("/addFollow", addFollowController);
+router.post("/minusFollow", minusFollowController);
+router.get("/follow", getAllFollowersController);
+
 router.post("/addbio", addBioController);
 router.post("/addgenre", addGenreController);
 router.get(

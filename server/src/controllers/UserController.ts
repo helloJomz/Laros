@@ -18,7 +18,7 @@ export const getUserByDisplayNameController = async (
       imgURL: user.imgURL,
       bio: user.bio,
       genre: [...[user.genre]],
-      heartcount: user.heart.length,
+      heartcount: user.heart?.received.length,
       follower: user.follower.length,
       following: user.following.length,
       post: user.post.length,
@@ -45,7 +45,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
         displayname: user.displayname,
         email: user.email,
         imgURL: user.imgURL,
-        heartcount: user.heart.length,
+        heartcount: user.heart?.received.length,
         follower: user.follower.length,
         following: user.following.length,
       };

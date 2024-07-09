@@ -1,10 +1,13 @@
 import {
-  useIncrementAndDecrementFollowCountMutation,
-  useIncrementAndDecrementHeartCountMutation,
+  useAddHeartMutation,
+  useMinusHeartMutation,
+  useAddFollowMutation,
+  useMinusFollowMutation,
 } from "@/app/features/profile/profileApiSlice";
 import { useProfileContext } from "@/context/ProfileContext";
 import { useUserContext } from "@/context/UserContext";
 import { cn } from "@/lib/utils";
+import e from "cors";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { FaHeart, FaUserAstronaut } from "react-icons/fa";
@@ -31,7 +34,7 @@ const ComponentFollowLikeButton = ({
     userProfileObject,
     isHeartUser,
     isFollowingUser,
-    refetchRelationshipStatus,
+    setShowProfileModal,
   } = useProfileContext();
 
   const {
@@ -49,33 +52,50 @@ const ComponentFollowLikeButton = ({
     followerCountFromAPI || 0
   );
 
-  useEffect(() => {
-    setIsHeartClicked(isHeartUser);
-    setIsFollowClicked(isFollowingUser);
-  }, [isFollowingUser, isHeartUser]);
+  const [addHeart] = useAddHeartMutation();
+  const [minusHeart] = useMinusHeartMutation();
 
-  const [incrementAndDecrementHeartCount] =
-    useIncrementAndDecrementHeartCountMutation();
-
-  const [incrementAndDecrementFollowCount] =
-    useIncrementAndDecrementFollowCountMutation();
+  const [addFollow] = useAddFollowMutation();
+  const [minusFollow] = useMinusFollowMutation();
 
   const handleHeartClick = async () => {
     setHeartCount((heart) => (isHeartClicked ? heart - 1 : heart + 1));
-    await incrementAndDecrementHeartCount({
-      yourUID: yourUID,
-      otherUserUID: otherUserUID ? otherUserUID : "",
-    });
-    refetchRelationshipStatus();
+    setIsHeartClicked((heart) => !heart);
+    if (!isHeartClicked) {
+      await addHeart({
+        yourUID: yourUID,
+        otherUserUID: otherUserUID ? otherUserUID : "",
+      });
+    } else {
+      await minusHeart({
+        yourUID: yourUID,
+        otherUserUID: otherUserUID ? otherUserUID : "",
+      });
+    }
   };
 
   const handleFollowClick = async () => {
     setFollowerCount((follow) => (isFollowClicked ? follow - 1 : follow + 1));
-    await incrementAndDecrementFollowCount({
-      yourUID: yourUID,
-      otherUserUID: otherUserUID ? otherUserUID : "",
-    });
-    refetchRelationshipStatus();
+    setIsFollowClicked((follow) => !follow);
+    if (!isFollowClicked) {
+      await addFollow({
+        yourUID: yourUID,
+        otherUserUID: otherUserUID ? otherUserUID : "",
+      });
+    } else {
+      await minusFollow({
+        yourUID: yourUID,
+        otherUserUID: otherUserUID ? otherUserUID : "",
+      });
+    }
+  };
+
+  const handleSeeAllHeartClick = async () => {
+    setShowProfileModal("heart");
+  };
+
+  const handleSeeAllFollowClick = async () => {
+    setShowProfileModal("follow");
   };
 
   const IconList: ButtonIcons = {
@@ -105,7 +125,16 @@ const ComponentFollowLikeButton = ({
   if (variant === "small")
     return (
       <>
-        <div className="flex gap-x-2 items-center w-14">
+        <div
+          className="flex gap-x-2 items-center w-14"
+          onClick={
+            !isAuthProfile
+              ? undefined
+              : type === "heart"
+              ? handleSeeAllHeartClick
+              : handleSeeAllFollowClick
+          }
+        >
           <span className="text-sm font-bold">
             {type === "heart" ? heartCount : followerCount}
           </span>
@@ -113,7 +142,13 @@ const ComponentFollowLikeButton = ({
           {!isAuthProfile ? (
             <div
               className="relative flex"
-              onClick={type === "heart" ? handleHeartClick : handleFollowClick}
+              onClick={
+                isAuthProfile
+                  ? undefined
+                  : type === "heart"
+                  ? handleHeartClick
+                  : handleFollowClick
+              }
             >
               <span className="rounded-full bg-slate-800 p-2">
                 {IconList[type]}
@@ -144,9 +179,16 @@ const ComponentFollowLikeButton = ({
     return (
       <>
         <div
-          className={cn("flex items-center gap-x-1 pe-1", {
-            "gap-x-2": isAuthProfile,
+          className={cn("flex items-center gap-x-1 pe-1 cursor-pointer", {
+            "gap-x-2 hover:underline": isAuthProfile,
           })}
+          onClick={
+            !isAuthProfile
+              ? undefined
+              : type === "heart"
+              ? handleSeeAllHeartClick
+              : handleSeeAllFollowClick
+          }
         >
           <div
             className={`relative ${!isAuthProfile ? "cursor-pointer" : ""}`}

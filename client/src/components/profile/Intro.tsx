@@ -8,21 +8,15 @@ type IntroProps = React.HTMLAttributes<HTMLDivElement>;
 
 const Intro = ({ className, ...rest }: IntroProps) => {
   const { windowWidth } = useNavbarContext();
-  const [isBioEmpty, setIsBioEmpty] = useState<boolean>();
-  const [isGenreEmpty, setIsGenreEmpty] = useState<boolean>(false);
-
-  const isBothComponentEmpty = isBioEmpty && isGenreEmpty;
 
   return (
     <>
       <div className={className} {...rest}>
-        <h4 className={`font-bold ${!isBothComponentEmpty ? "mb-4" : ""}`}>
-          About
-        </h4>
+        <h4 className={`font-bold mb-4`}>About</h4>
 
         <div className="flex flex-col gap-y-4">
-          <Bio getProps={setIsBioEmpty} />
-          <Genre getProps={setIsGenreEmpty} />
+          <Bio />
+          <Genre />
         </div>
 
         {windowWidth <= 1023 && <FavoriteGame />}

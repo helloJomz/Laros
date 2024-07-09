@@ -1,6 +1,7 @@
 import EditGenre from "./modals/EditGenre";
 import { useProfileContext } from "@/context/ProfileContext";
 import Following from "./modals/Following";
+import HeartAndFollow from "./modals/HeartAndFollow";
 
 const WrapperComponent = ({ children }: { children: React.ReactNode }) => {
   const { showProfileModal } = useProfileContext();
@@ -20,6 +21,10 @@ const ProfileModal = () => {
   if (showProfileModal === "genre") return <EditGenre />;
 
   if (showProfileModal === "following") return <Following />;
+
+  if (showProfileModal === "heart") return <HeartAndFollow type="heart" />;
+
+  if (showProfileModal === "follow") return <HeartAndFollow type="follow" />;
 
   return null;
 };

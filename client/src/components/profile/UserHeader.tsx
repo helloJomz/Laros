@@ -29,14 +29,11 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
 
         {/* User's Basic Info */}
         <div
-          className={cn(
-            "absolute top-20 lg:top-24 flex flex-col gap-y-8 w-full",
-            {
-              "top-14": windowWidth <= 500,
-              "gap-y-6 top-[4.5rem] lg:top-24":
-                windowWidth > 500 && !isAuthProfile,
-            }
-          )}
+          className={cn("absolute top-20 flex flex-col gap-y-8 w-full", {
+            "top-14": windowWidth <= 500,
+            "gap-y-6 top-[4.5rem] lg:top-[5.5rem]":
+              windowWidth > 500 && !isAuthProfile,
+          })}
         >
           <div className="flex justify-between pe-2 lg:pe-0">
             <div

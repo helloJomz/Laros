@@ -41,14 +41,24 @@ export const UserSchema = new Schema({
       },
     },
   ],
-  heart: [
-    {
-      uid: {
-        type: Schema.Types.ObjectId,
-        ref: "Users",
+  heart: {
+    given: [
+      {
+        uid: {
+          type: Schema.Types.ObjectId,
+          ref: "Users",
+        },
       },
-    },
-  ],
+    ],
+    received: [
+      {
+        uid: {
+          type: Schema.Types.ObjectId,
+          ref: "Users",
+        },
+      },
+    ],
+  },
   post: [
     {
       uid: {
