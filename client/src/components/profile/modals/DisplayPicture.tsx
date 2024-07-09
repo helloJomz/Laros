@@ -14,7 +14,7 @@ const DisplayPicture = () => {
         <img
           src={imgURL || ""}
           alt={`photo_${displayname}`}
-          className="rounded-full object-cover w-[18rem] h-[18rem] md:w-[20rem] md:h-[20rem] lg:w-[25rem] lg:h-[25rem] "
+          className="rounded-full object-cover w-[18rem] h-[18rem] md:w-[20rem] md:h-[20rem] lg:w-[25rem] lg:h-[25rem] pointer-events-none"
         />
         <div className="flex flex-col gap-y-4 ">
           <Button onClick={() => navigate("/upload/avatar")}>

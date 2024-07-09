@@ -31,7 +31,7 @@ const Photo = ({ variant }: PhotoProps) => {
     return (
       <div
         className={cn(
-          "absolute left-2 lg:left-0 border-4 border-background rounded-full shadow-lg w-48 h-48 lg:w-72 lg:h-72 z-[50] cursor-pointer",
+          "absolute left-2 lg:left-0 border-4 border-background rounded-full shadow-lg w-48 h-48 lg:w-72 lg:h-72 z-[50] cursor-pointer hover:brightness-150",
           {
             "w-40 h-40": windowWidth <= 500,
           }
@@ -45,7 +45,7 @@ const Photo = ({ variant }: PhotoProps) => {
         <img
           src={imgURL}
           alt={`${displayname}_picture`}
-          className="w-full h-full rounded-full object-cover hover:brightness-150  pointer-events-none"
+          className="w-full h-full rounded-full object-cover pointer-events-none"
         />
       </div>
     );
