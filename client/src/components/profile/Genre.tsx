@@ -2,6 +2,8 @@ import { useProfileContext } from "@/context/ProfileContext";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
+import { useDispatch } from "react-redux";
+import { setModal } from "@/app/features/profile/profileSlice";
 
 const Genre = () => {
   const {
@@ -10,6 +12,8 @@ const Genre = () => {
     showProfileModal,
     userProfileObject,
   } = useProfileContext();
+
+  const dispatch = useDispatch();
 
   const [genre, setGenre] = useState<string[]>(() => {
     const storageItem = localStorage.getItem("temp_genre");
@@ -46,9 +50,7 @@ const Genre = () => {
         {isAuthProfile && (
           <Button
             className="w-full text-xs md:text-sm h-8"
-            onClick={() => {
-              setShowProfileModal("genre");
-            }}
+            onClick={() => dispatch(setModal({ modal: "genre" }))}
           >
             Edit Genre
           </Button>

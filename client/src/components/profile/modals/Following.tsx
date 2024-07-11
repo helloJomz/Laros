@@ -2,7 +2,7 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { useProfileContext } from "@/context/ProfileContext";
 import { Snail } from "lucide-react";
 import React from "react";
-import CloseButton from "./CloseButton";
+import CloseButton from "../../common/CloseButton";
 import {
   useGetUserFollowingQuery,
   useUnfollowUserMutation,
@@ -10,14 +10,17 @@ import {
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
+import { useDispatch } from "react-redux";
+import { setModal } from "@/app/features/profile/profileSlice";
 
 const Following = () => {
   const { windowWidth } = useNavbarContext();
 
+  const dispatch = useDispatch();
+
   const { authenticatedUserObject } = useUserContext();
 
-  const { userProfileObject, isAuthProfile, setShowProfileModal } =
-    useProfileContext();
+  const { userProfileObject, isAuthProfile } = useProfileContext();
 
   const displayname: string = userProfileObject
     ? userProfileObject.displayname
@@ -109,7 +112,7 @@ const Following = () => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => setShowProfileModal("")}
+                          onClick={() => dispatch(setModal({ modal: null }))}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>

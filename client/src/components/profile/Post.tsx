@@ -5,10 +5,11 @@ import PostView from "./PostView";
 type PostProps = React.HTMLAttributes<HTMLDivElement>;
 
 const Post = ({ className, ...rest }: PostProps) => {
+  const { isAuthProfile } = useProfileContext();
   return (
     <>
       <div className={className} {...rest}>
-        <CreatePost />
+        {isAuthProfile && <CreatePost />}
         <PostView />
       </div>
     </>

@@ -1,51 +1,42 @@
 import EditGenre from "./modals/EditGenre";
-import { useProfileContext } from "@/context/ProfileContext";
 import Following from "./modals/Following";
 import HeartAndFollow from "./modals/HeartAndFollow";
 import DisplayPicture from "./modals/DisplayPicture";
 import { cn } from "@/lib/utils";
+import CreatePost from "../common/modal/CreatePost/CreatePost";
+import { useSelector } from "react-redux";
+import { useModal } from "@/app/features/profile/profileSlice";
 
-const WrapperComponent = ({ children }: { children: React.ReactNode }) => {
-  const { showProfileModal } = useProfileContext();
-
-  return (
-    showProfileModal && (
-      <div
-        className={cn(
-          "fixed w-full h-full overflow-y-hidden bg-opacity-70 bg-black z-[99] flex items-center justify-center pb-32",
-          {
-            "bg-opacity-90": showProfileModal === "displaypicture",
-          }
-        )}
-      >
-        {children}
-      </div>
-    )
-  );
+const componentMap: { [key: string]: React.ComponentType<any> } = {
+  following: Following,
+  genre: EditGenre,
+  heart: () => <HeartAndFollow type="heart" />,
+  follow: () => <HeartAndFollow type="follow" />,
+  displaypicture: DisplayPicture,
+  createpost: CreatePost,
 };
 
 const ProfileModal = () => {
-  const { showProfileModal } = useProfileContext();
+  const ModalType = useSelector(useModal);
 
-  if (showProfileModal === "genre") return <EditGenre />;
+  //TODO: Implement click outside close on every modals
 
-  if (showProfileModal === "following") return <Following />;
+  if (!ModalType) return null;
 
-  if (showProfileModal === "heart") return <HeartAndFollow type="heart" />;
+  const ModalComponent = componentMap[ModalType];
 
-  if (showProfileModal === "follow") return <HeartAndFollow type="follow" />;
-
-  if (showProfileModal === "displaypicture") return <DisplayPicture />;
-
-  return null;
-};
-
-const ProfileModalWithWrapper = () => {
   return (
-    <WrapperComponent>
-      <ProfileModal />
-    </WrapperComponent>
+    <div
+      className={cn(
+        "fixed w-full h-full overflow-y-hidden bg-opacity-70 bg-black z-[99] flex items-center justify-center pb-32",
+        {
+          "bg-opacity-90": ModalType === "displaypicture",
+        }
+      )}
+    >
+      <ModalComponent />
+    </div>
   );
 };
 
-export default ProfileModalWithWrapper;
+export default ProfileModal;

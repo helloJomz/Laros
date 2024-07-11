@@ -7,6 +7,7 @@ import Post from "../components/profile/Post";
 import { useProfileContext } from "@/context/ProfileContext";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import ProfileModal from "@/components/profile/ProfileModal";
+import { ProfileContextProvider } from "@/context/ProfileContext";
 
 const ProfilePage = () => {
   const { windowWidth } = useNavbarContext();
@@ -54,7 +55,6 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-x-6 gap-y-4 px-4">
-              {/* TODO: Remove the pb-4 when there is no contents */}
               <Intro className="bg-secondary rounded px-3 pt-3 pb-4 lg:w-[30%] h-fit" />
               <Post className="flex-1 rounded h-auto md:h-full overflow-y-auto  flex flex-col gap-y-4 pb-4" />
             </div>
@@ -64,4 +64,12 @@ const ProfilePage = () => {
     );
 };
 
-export default ProfilePage;
+const ProfilePageWithContextProvider = () => {
+  return (
+    <ProfileContextProvider>
+      <ProfilePage />
+    </ProfileContextProvider>
+  );
+};
+
+export default ProfilePageWithContextProvider;

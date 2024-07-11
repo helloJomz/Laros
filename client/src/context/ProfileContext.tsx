@@ -15,8 +15,6 @@ interface ProfileContextType {
   profileEndpoint: string;
   userProfileObject: UserObject | undefined;
   setUserProfileObject: (user: UserObject | undefined) => void;
-  showProfileModal: string;
-  setShowProfileModal: (triggerFrom: string) => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -36,8 +34,6 @@ const ProfileContextProvider = ({
   const [userProfileObject, setUserProfileObject] = useState<
     UserObject | undefined
   >(undefined);
-
-  const [showProfileModal, setShowProfileModal] = useState<string>("");
 
   // API
   const [getUserByDisplayName, { isLoading, isError }] =
@@ -102,8 +98,6 @@ const ProfileContextProvider = ({
         profileEndpoint,
         isHeartUser,
         isFollowingUser,
-        showProfileModal,
-        setShowProfileModal,
       }}
     >
       {children}

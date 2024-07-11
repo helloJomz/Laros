@@ -11,6 +11,8 @@ import e from "cors";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { FaHeart, FaUserAstronaut } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { setModal } from "@/app/features/profile/profileSlice";
 
 type ButtonIcons = {
   heart: React.ReactNode;
@@ -28,6 +30,7 @@ const ComponentFollowLikeButton = ({
 }: ComponentFollowLikeButton) => {
   const { authenticatedUserObject } = useUserContext();
   const { userid: yourUID } = authenticatedUserObject;
+  const dispatch = useDispatch();
 
   const {
     isAuthProfile,
@@ -91,11 +94,11 @@ const ComponentFollowLikeButton = ({
   };
 
   const handleSeeAllHeartClick = async () => {
-    setShowProfileModal("heart");
+    dispatch(setModal({ modal: "heart" }));
   };
 
   const handleSeeAllFollowClick = async () => {
-    setShowProfileModal("follow");
+    dispatch(setModal({ modal: "follow" }));
   };
 
   const IconList: ButtonIcons = {

@@ -6,16 +6,17 @@ import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
 import { useProfileContext } from "@/context/ProfileContext";
 import { MdVerified } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { setModal } from "@/app/features/profile/profileSlice";
 
 type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
   const { windowWidth } = useNavbarContext();
 
-  const { userProfileObject, isAuthProfile, setShowProfileModal } =
-    useProfileContext();
+  const { userProfileObject, isAuthProfile } = useProfileContext();
 
-  const isVerified: boolean = true;
+  const dispatch = useDispatch();
 
   const {
     displayname,
@@ -64,7 +65,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
               <div className="flex items-center gap-x-2 text-xs md:text-sm">
                 <div
                   className="cursor-pointer bg-primary px-1 py-0.5 text-xs rounded hover:brightness-110 "
-                  onClick={() => setShowProfileModal("following")}
+                  onClick={() => dispatch(setModal({ modal: "following" }))}
                 >
                   <span className="font-semibold text-white">
                     {followingCount}

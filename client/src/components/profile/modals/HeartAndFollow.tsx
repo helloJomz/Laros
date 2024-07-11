@@ -2,7 +2,7 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { useProfileContext } from "@/context/ProfileContext";
 import { Cat, Dog } from "lucide-react";
 import React from "react";
-import CloseButton from "./CloseButton";
+import CloseButton from "../../common/CloseButton";
 import {
   useGetAllHeartListQuery,
   useGetAllFollowerListQuery,
@@ -10,6 +10,8 @@ import {
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
+import { useDispatch } from "react-redux";
+import { setModal } from "@/app/features/profile/profileSlice";
 
 type HeartAndFollowProps = {
   type: "heart" | "follow";
@@ -18,9 +20,11 @@ type HeartAndFollowProps = {
 const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
   const { windowWidth } = useNavbarContext();
 
+  const dispatch = useDispatch();
+
   const { authenticatedUserObject } = useUserContext();
 
-  const { isAuthProfile, setShowProfileModal } = useProfileContext();
+  const { isAuthProfile } = useProfileContext();
 
   const {
     data: HeartList,
@@ -90,7 +94,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => setShowProfileModal("")}
+                          onClick={() => dispatch(setModal({ modal: null }))}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>
@@ -156,7 +160,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => setShowProfileModal("")}
+                          onClick={() => dispatch(setModal({ modal: null }))}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>

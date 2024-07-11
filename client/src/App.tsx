@@ -12,7 +12,6 @@ import { selectCurrentToken } from "@/app/features/auth/authSlice";
 import Home from "./components/Home";
 import UploadAvatar from "./pages/UploadAvatar";
 import ProfilePage from "./pages/ProfilePage";
-import { ProfileContextProvider } from "./context/ProfileContext";
 
 document.title = "Laros | Where the gamers connect Easily!";
 
@@ -35,14 +34,7 @@ function App() {
 
               <Route element={<PrivateRoute auth={auth} />}>
                 <Route path="/upload/avatar" element={<UploadAvatar />} />
-                <Route
-                  path="/:displayname"
-                  element={
-                    <ProfileContextProvider>
-                      <ProfilePage />
-                    </ProfileContextProvider>
-                  }
-                />
+                <Route path="/:displayname" element={<ProfilePage />} />
               </Route>
 
               <Route path="*" element={<PageNotFound />} />
