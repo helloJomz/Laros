@@ -1,20 +1,20 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
 import FollowLikeButton from "./FollowLikeButton";
-import { useProfileContext } from "@/context/ProfileContext";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useProfile } from "@/hooks/useProfile";
+import { useModal } from "@/hooks/useModal";
 
 type PhotoProps = {
   variant: "display" | "cover";
 };
 
 const Photo = ({ variant }: PhotoProps) => {
-  const dispatch = useDispatch();
-  const { userProfileObject, isAuthProfile, setShowProfileModal } =
-    useProfileContext();
-  const { imgURL, displayname } = userProfileObject || {};
   const { windowWidth } = useNavbarContext();
+
+  const { userObject } = useProfile();
+  const { imgURL, displayname } = userObject || {};
+
+  const { setModalOpen } = useModal();
 
   if (variant === "cover")
     return (
@@ -39,7 +39,7 @@ const Photo = ({ variant }: PhotoProps) => {
             "w-40 h-40": windowWidth <= 500,
           }
         )}
-        onClick={() => dispatch(setModal({ modal: "displaypicture" }))}
+        onClick={() => setModalOpen("displaypicture")}
       >
         <img
           src={imgURL}

@@ -4,25 +4,19 @@ import { capitalizeFirstLetter } from "@/utils/utils";
 import Photo from "./Photo";
 import FavoriteGame from "./FavoriteGame";
 import FollowLikeButton from "./FollowLikeButton";
-import { useProfileContext } from "@/context/ProfileContext";
 import { MdVerified } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useProfile } from "@/hooks/useProfile";
+import { useModal } from "@/hooks/useModal";
 
 type UserHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
   const { windowWidth } = useNavbarContext();
 
-  const { userProfileObject, isAuthProfile } = useProfileContext();
+  const { isAuthProfile, userObject } = useProfile();
+  const { setModalOpen } = useModal();
 
-  const dispatch = useDispatch();
-
-  const {
-    displayname,
-    following: followingCount,
-    post: postCount,
-  } = userProfileObject || {};
+  const { displayname, following: followingCount } = userObject || {};
 
   return (
     <>
@@ -65,7 +59,7 @@ const UserHeader = ({ className, ...rest }: UserHeaderProps) => {
               <div className="flex items-center gap-x-2 text-xs md:text-sm">
                 <div
                   className="cursor-pointer bg-primary px-1 py-0.5 text-xs rounded hover:brightness-110 "
-                  onClick={() => dispatch(setModal({ modal: "following" }))}
+                  onClick={() => setModalOpen("following")}
                 >
                   <span className="font-semibold text-white">
                     {followingCount}

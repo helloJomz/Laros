@@ -1,17 +1,14 @@
-import { useProfileContext } from "@/context/ProfileContext";
+import { useModal } from "@/hooks/useModal";
 import { IoClose } from "react-icons/io5";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
 
 const CloseButton = () => {
-  const { setShowProfileModal } = useProfileContext();
-  const dispatch = useDispatch();
+  const { setModalOpen } = useModal();
 
   return (
     <>
       <div
         className="rounded-full hover:bg-slate-600 p-1 text-end cursor-pointer"
-        onClick={() => dispatch(setModal({ modal: null }))}
+        onClick={() => setModalOpen(null)}
       >
         <IoClose size={20} />
       </div>

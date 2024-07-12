@@ -10,22 +10,17 @@ import {
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 
 const Following = () => {
   const { windowWidth } = useNavbarContext();
-
-  const dispatch = useDispatch();
-
+  const { setModalOpen } = useModal();
   const { authenticatedUserObject } = useUserContext();
+  const { userObject, isAuthProfile } = useProfile();
 
-  const { userProfileObject, isAuthProfile } = useProfileContext();
-
-  const displayname: string = userProfileObject
-    ? userProfileObject.displayname
-    : "";
-  const uid: string = userProfileObject ? userProfileObject.userid : "";
+  const displayname: string = userObject?.displayname;
+  const uid: string = userObject?.displayname;
 
   const {
     data: followListArray,
@@ -35,8 +30,6 @@ const Following = () => {
   } = useGetUserFollowingQuery(
     isAuthProfile ? authenticatedUserObject.userid : uid
   );
-
-  const finalFollowListArray = followListArray && followListArray;
 
   const [unfollowUser] = useUnfollowUserMutation();
 
@@ -68,27 +61,27 @@ const Following = () => {
             <h1 className="text-base lg:text-lg font-semibold">Following</h1>
             <div className="mt-[-0.2rem] ">
               <span className="text-xs text-muted-foreground">
-                {finalFollowListArray.length === 0 &&
+                {followListArray?.length === 0 &&
                   isAuthProfile &&
                   "You are not following anyone."}
 
-                {finalFollowListArray.length === 0 &&
+                {followListArray?.length === 0 &&
                   !isAuthProfile &&
                   `${capitalizeFirstLetter(
                     displayname
                   )} is not following anyone.`}
 
-                {finalFollowListArray.length >= 1 &&
+                {followListArray?.length >= 1 &&
                   isAuthProfile &&
-                  `You are following ${finalFollowListArray.length} gamer${
-                    finalFollowListArray.length > 1 ? "s" : ""
+                  `You are following ${followListArray.length} gamer${
+                    followListArray?.length > 1 ? "s" : ""
                   }`}
 
-                {finalFollowListArray.length >= 1 &&
+                {followListArray?.length >= 1 &&
                   !isAuthProfile &&
                   `${capitalizeFirstLetter(displayname)} is following ${
-                    finalFollowListArray.length
-                  } gamer${finalFollowListArray.length > 1 ? "s" : ""}`}
+                    followListArray?.length
+                  } gamer${followListArray?.length > 1 ? "s" : ""}`}
               </span>
             </div>
           </div>
@@ -112,7 +105,7 @@ const Following = () => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => dispatch(setModal({ modal: null }))}
+                          onClick={() => setModalOpen(null)}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>

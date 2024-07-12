@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { useProfileContext } from "@/context/ProfileContext";
+import { useModal } from "@/hooks/useModal";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
 
 const DisplayPicture = () => {
-  const dispatch = useDispatch();
+  const { setModalOpen } = useModal();
 
   const { userProfileObject, isAuthProfile } = useProfileContext();
 
   const navigate = useNavigate();
+
   const imgURL = userProfileObject?.imgURL;
   const displayname = userProfileObject?.displayname;
 
@@ -27,7 +27,7 @@ const DisplayPicture = () => {
               Change Avatar
             </Button>
             <Button
-              onClick={() => dispatch(setModal({ modal: null }))}
+              onClick={() => setModalOpen(null)}
               className="bg-slate-100 text-black hover:text-white"
             >
               Cancel

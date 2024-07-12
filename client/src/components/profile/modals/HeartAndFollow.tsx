@@ -10,8 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useModal } from "@/hooks/useModal";
 
 type HeartAndFollowProps = {
   type: "heart" | "follow";
@@ -20,7 +19,7 @@ type HeartAndFollowProps = {
 const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
   const { windowWidth } = useNavbarContext();
 
-  const dispatch = useDispatch();
+  const { setModalOpen } = useModal();
 
   const { authenticatedUserObject } = useUserContext();
 
@@ -94,7 +93,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => dispatch(setModal({ modal: null }))}
+                          onClick={() => setModalOpen(null)}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>
@@ -160,7 +159,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
                         <Link
                           to={`/${item.displayname}`}
                           className="font-semibold hover:underline"
-                          onClick={() => dispatch(setModal({ modal: null }))}
+                          onClick={() => setModalOpen(null)}
                         >
                           {capitalizeFirstLetter(item.displayname)}
                         </Link>

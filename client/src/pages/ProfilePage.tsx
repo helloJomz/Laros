@@ -4,14 +4,15 @@ import Intro from "@/components/profile/Intro";
 import Photo from "@/components/profile/Photo";
 import UserHeader from "@/components/profile/UserHeader";
 import Post from "../components/profile/Post";
-import { useProfileContext } from "@/context/ProfileContext";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import ProfileModal from "@/components/profile/ProfileModal";
 import { ProfileContextProvider } from "@/context/ProfileContext";
+import { useProfile } from "@/hooks/useProfile";
 
 const ProfilePage = () => {
   const { windowWidth } = useNavbarContext();
-  const { isProfileError, isProfileLoading } = useProfileContext();
+
+  const { isProfileError, isProfileLoading } = useProfile();
 
   if (isProfileError)
     return (

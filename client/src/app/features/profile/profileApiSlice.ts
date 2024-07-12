@@ -1,6 +1,6 @@
 import { apiSlice } from "../../services/api";
 
-const profileApiSlice = apiSlice.injectEndpoints({
+export const profileApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     addHeart: builder.mutation({
       query: ({

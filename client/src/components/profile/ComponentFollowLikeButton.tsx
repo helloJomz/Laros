@@ -6,13 +6,11 @@ import {
 } from "@/app/features/profile/profileApiSlice";
 import { useProfileContext } from "@/context/ProfileContext";
 import { useUserContext } from "@/context/UserContext";
+import { useModal } from "@/hooks/useModal";
 import { cn } from "@/lib/utils";
-import e from "cors";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { FaHeart, FaUserAstronaut } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
 
 type ButtonIcons = {
   heart: React.ReactNode;
@@ -30,15 +28,11 @@ const ComponentFollowLikeButton = ({
 }: ComponentFollowLikeButton) => {
   const { authenticatedUserObject } = useUserContext();
   const { userid: yourUID } = authenticatedUserObject;
-  const dispatch = useDispatch();
 
-  const {
-    isAuthProfile,
-    userProfileObject,
-    isHeartUser,
-    isFollowingUser,
-    setShowProfileModal,
-  } = useProfileContext();
+  const { setModalOpen } = useModal();
+
+  const { isAuthProfile, userProfileObject, isHeartUser, isFollowingUser } =
+    useProfileContext();
 
   const {
     heartcount: heartCountFromAPI,
@@ -94,11 +88,11 @@ const ComponentFollowLikeButton = ({
   };
 
   const handleSeeAllHeartClick = async () => {
-    dispatch(setModal({ modal: "heart" }));
+    setModalOpen("heart");
   };
 
   const handleSeeAllFollowClick = async () => {
-    dispatch(setModal({ modal: "follow" }));
+    setModalOpen("heart");
   };
 
   const IconList: ButtonIcons = {

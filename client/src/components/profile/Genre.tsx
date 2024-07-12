@@ -2,18 +2,12 @@ import { useProfileContext } from "@/context/ProfileContext";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useModal } from "@/hooks/useModal";
 
 const Genre = () => {
-  const {
-    isAuthProfile,
-    setShowProfileModal,
-    showProfileModal,
-    userProfileObject,
-  } = useProfileContext();
+  const { isAuthProfile, userProfileObject } = useProfileContext();
 
-  const dispatch = useDispatch();
+  const { modalType, setModalOpen } = useModal();
 
   const [genre, setGenre] = useState<string[]>(() => {
     const storageItem = localStorage.getItem("temp_genre");
@@ -32,7 +26,7 @@ const Genre = () => {
       const genre = JSON.parse(storageItem);
       setGenre(genre);
     }
-  }, [showProfileModal]);
+  }, [modalType]);
 
   if (genre.length !== 0)
     return (
@@ -50,7 +44,7 @@ const Genre = () => {
         {isAuthProfile && (
           <Button
             className="w-full text-xs md:text-sm h-8"
-            onClick={() => dispatch(setModal({ modal: "genre" }))}
+            onClick={() => setModalOpen("genre")}
           >
             Edit Genre
           </Button>
@@ -63,9 +57,7 @@ const Genre = () => {
       <>
         <Button
           className="w-full text-xs md:text-sm h-8"
-          onClick={() => {
-            setShowProfileModal("genre");
-          }}
+          onClick={() => setModalOpen("genre")}
         >
           Add Genre
         </Button>

@@ -3,6 +3,8 @@ import { searchAPI } from "./features/search/searchAPI";
 import { giphyApiSlice } from "./features/giphy/giphySlice";
 import authReducer from "./features/auth/authSlice";
 import profileReducer from "./features/profile/profileSlice";
+import userReducer from "./features/users/userSlice";
+import modalReducer from "./features/modal/modalSlice";
 import { apiSlice } from "./services/api";
 import {
   persistReducer,
@@ -30,6 +32,8 @@ export const store = configureStore({
     [giphyApiSlice.reducerPath]: giphyApiSlice.reducer,
     auth: persistedAuthReducer,
     profile: profileReducer,
+    users: userReducer,
+    moda: modalReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

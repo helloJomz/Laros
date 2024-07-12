@@ -5,21 +5,20 @@ import { Button } from "@/components/ui/button";
 import { useProfileContext } from "@/context/ProfileContext";
 import { useAddGenreMutation } from "@/app/features/profile/profileApiSlice";
 import { useUserContext } from "@/context/UserContext";
-import { useDispatch } from "react-redux";
-import { setModal } from "@/app/features/profile/profileSlice";
+import { useModal } from "@/hooks/useModal";
 
 const EditGenre = () => {
   const { authenticatedUserObject } = useUserContext();
-  const yourUID = authenticatedUserObject.userid;
 
-  const dispatch = useDispatch();
+  const { setModalOpen } = useModal();
+
+  const yourUID = authenticatedUserObject.userid;
 
   //FIXME: Selected Genre does not cliently reflect when it has saved.
   // transfer this to redux
 
   const [listOfGenres, setListOfGenres] = useState<string[]>([]);
-  const { userProfileObject, setShowProfileModal, isAuthProfile } =
-    useProfileContext();
+  const { userProfileObject, isAuthProfile } = useProfileContext();
 
   const [selectedGenres, setSelectedGenres] = useState<string[]>(() => {
     const storageItem = localStorage.getItem("temp_genre");
@@ -58,7 +57,7 @@ const EditGenre = () => {
     const jsonString = JSON.stringify(selectedGenres);
     localStorage.setItem("temp_genre", jsonString);
     await addGenre({ yourUID: yourUID, genre: selectedGenres });
-    dispatch(setModal({ modal: null }));
+    setModalOpen(null);
   };
 
   return (
@@ -92,7 +91,7 @@ const EditGenre = () => {
           <div className="flex gap-x-2">
             <Button
               className="text-xs px-4 bg-white text-black"
-              onClick={() => dispatch(setModal({ modal: null }))}
+              onClick={() => setModalOpen(null)}
             >
               Cancel
             </Button>
