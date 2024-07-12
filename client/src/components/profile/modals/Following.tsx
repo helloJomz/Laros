@@ -1,5 +1,4 @@
 import { useNavbarContext } from "@/context/NavbarContext";
-import { useProfileContext } from "@/context/ProfileContext";
 import { Snail } from "lucide-react";
 import React from "react";
 import CloseButton from "../../common/CloseButton";
@@ -20,7 +19,7 @@ const Following = () => {
   const { userObject, isAuthProfile } = useProfile();
 
   const displayname: string = userObject?.displayname;
-  const uid: string = userObject?.displayname;
+  const uid: string = userObject?.userid;
 
   const {
     data: followListArray,

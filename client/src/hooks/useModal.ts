@@ -1,7 +1,4 @@
-import {
-  setModal,
-  useModal as useModalType,
-} from "@/app/features/modal/modalSlice";
+import { setModal, selectModal } from "@/app/features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useModal = () => {
@@ -10,7 +7,7 @@ export const useModal = () => {
   const setModalOpen = (modalType: string | null) =>
     dispatch(setModal({ modal: modalType }));
 
-  const modalType = useSelector(useModalType);
+  const modalType = useSelector(selectModal);
 
   return {
     setModalOpen,

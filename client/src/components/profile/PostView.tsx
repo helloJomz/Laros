@@ -2,9 +2,9 @@ import { capitalizeFirstLetter } from "@/utils/utils";
 import { BsThreeDots } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
-import { useProfileContext } from "@/context/ProfileContext";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { GiHappySkull } from "react-icons/gi";
+import { useProfile } from "@/hooks/useProfile";
 
 const PostView = () => {
   //TODO: Put Comments and Reactions on the design
@@ -12,17 +12,8 @@ const PostView = () => {
 
   const { windowWidth } = useNavbarContext();
 
-  const {
-    userProfileObject,
-    isAuthProfile,
-    profileEndpoint: visitedUserDisplayName,
-  } = useProfileContext();
-  const {
-    userid,
-    imgURL,
-    displayname,
-    post: postCount,
-  } = userProfileObject || {};
+  const { userObject, isAuthProfile, profilePageEndpoint } = useProfile();
+  const { userid, imgURL, displayname, post: postCount } = userObject || {};
 
   if (postCount === 0)
     return (
@@ -40,7 +31,7 @@ const PostView = () => {
             ) : (
               <>
                 <strong className="pe-1">
-                  {capitalizeFirstLetter(visitedUserDisplayName)}
+                  {capitalizeFirstLetter(profilePageEndpoint!)}
                 </strong>
                 hasn't shared any posts yet.
               </>

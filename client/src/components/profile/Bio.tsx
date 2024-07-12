@@ -1,28 +1,20 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { useProfileContext } from "@/context/ProfileContext";
 import { useAddBioMutation } from "@/app/features/profile/profileApiSlice";
 import { useUserContext } from "@/context/UserContext";
+import { useProfile } from "@/hooks/useProfile";
 
 const Bio = () => {
   const [openAddBio, setOpenAddBio] = useState<boolean>(false);
-  const [bioPlaceholder, setBioPlaceholder] = useState<string>("");
 
   const { authenticatedUserObject } = useUserContext();
   const { userid } = authenticatedUserObject;
 
-  const { isAuthProfile, userProfileObject } = useProfileContext();
+  const { userObject, isAuthProfile, setBio, useBio } = useProfile();
+  const bio = userObject?.bio;
 
-  const bio = (userProfileObject && userProfileObject.bio) || "";
-
-  const [content, setContent] = useState<string>(
-    (bioPlaceholder ? bioPlaceholder : bio) || ""
-  );
-
-  const [isEmpty, setIsEmpty] = useState<boolean>(
-    bio || bioPlaceholder ? false : true
-  );
-
+  const [isEmpty, setIsEmpty] = useState<boolean>(bio || useBio ? false : true);
+  const [content, setContent] = useState<string>(bio);
   const [addBio] = useAddBioMutation();
 
   const handleSaveBio = async () => {
@@ -31,8 +23,8 @@ const Bio = () => {
     } else {
       const { data, error } = await addBio({ yourUID: userid, bio: content });
       if (!error) {
-        setBioPlaceholder(data.bio);
         setIsEmpty(data.bio ? false : true);
+        setBio(data?.bio);
         setOpenAddBio(false);
       }
     }
@@ -68,7 +60,7 @@ const Bio = () => {
       </>
     );
 
-  if (isAuthProfile && (!bio || !bioPlaceholder) && isEmpty)
+  if (isAuthProfile && (!bio || !useBio) && isEmpty)
     return (
       <>
         <Button
@@ -82,13 +74,13 @@ const Bio = () => {
 
   return (
     <>
-      {!isEmpty && (bio || bioPlaceholder) && (
+      {!isEmpty && (bio || useBio) && (
         <div className="text-sm text-center border-b border-slate-600 pb-2 w-full">
-          <span className="break-all">{bioPlaceholder || bio}</span>
+          <span className="break-all">{useBio || bio}</span>
         </div>
       )}
 
-      {isAuthProfile && !isEmpty && (bio || bioPlaceholder) && (
+      {isAuthProfile && !isEmpty && (bio || useBio) && (
         <Button
           className="w-full text-xs h-8 md:text-sm"
           onClick={() => setOpenAddBio(true)}

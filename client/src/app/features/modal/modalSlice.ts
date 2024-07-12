@@ -16,6 +16,6 @@ export const modalSlice = createSlice({
 });
 
 export const { setModal } = modalSlice.actions;
-export const useModal = (state: any) => state.profile.modal;
+export const selectModal = (state: any) => state.modal.modal;
 
 export default modalSlice.reducer;

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UserObject } from "@/types/Profile";
 import { userApiSlice } from "./userApiSlice";
+import { profileApiSlice } from "../profile/profileApiSlice";
 
 interface initialStateProps {
   UserObject: UserObject | undefined;
@@ -38,6 +39,14 @@ const userSlice = createSlice({
         (state) => {
           state.isLoading = false;
           state.isError = true;
+        }
+      )
+      .addMatcher(
+        profileApiSlice.endpoints.unfollowUser.matchFulfilled,
+        (state) => {
+          if (state.UserObject) {
+            state.UserObject.following = (state.UserObject.following || 0) - 1;
+          }
         }
       );
   },

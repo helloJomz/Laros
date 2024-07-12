@@ -1,8 +1,8 @@
 import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
-import { useProfileContext } from "@/context/ProfileContext";
 import ComponentFollowLikeButton from "./ComponentFollowLikeButton";
 import React from "react";
+import { useProfile } from "@/hooks/useProfile";
 
 type FollowLikeButtonProps = {
   variant: "small" | "large";
@@ -11,7 +11,7 @@ type FollowLikeButtonProps = {
 const FollowLikeButton = ({ variant }: FollowLikeButtonProps) => {
   const { windowWidth } = useNavbarContext();
 
-  const { isAuthProfile } = useProfileContext();
+  const { isAuthProfile } = useProfile();
 
   const FollowLikeButtons: Array<"heart" | "follow"> = ["heart", "follow"];
 

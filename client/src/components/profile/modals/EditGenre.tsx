@@ -2,40 +2,27 @@ import { useEffect, useState } from "react";
 import genreJson from "../../../utils/genre.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useProfileContext } from "@/context/ProfileContext";
 import { useAddGenreMutation } from "@/app/features/profile/profileApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 
 const EditGenre = () => {
   const { authenticatedUserObject } = useUserContext();
-
+  const yourUID = authenticatedUserObject.userid;
+  const { userObject, setGenre } = useProfile();
   const { setModalOpen } = useModal();
 
-  const yourUID = authenticatedUserObject.userid;
-
-  //FIXME: Selected Genre does not cliently reflect when it has saved.
-  // transfer this to redux
-
   const [listOfGenres, setListOfGenres] = useState<string[]>([]);
-  const { userProfileObject, isAuthProfile } = useProfileContext();
-
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(() => {
-    const storageItem = localStorage.getItem("temp_genre");
-    let genre: string[];
-    if (storageItem && isAuthProfile) {
-      genre = JSON.parse(storageItem);
-    } else {
-      genre = [...(userProfileObject ? userProfileObject.genre[0] : [])];
-    }
-    return genre;
-  });
-
-  const [addGenre] = useAddGenreMutation();
-
   useEffect(() => {
     setListOfGenres(genreJson.genres);
   }, []);
+
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(
+    userObject?.genre || []
+  );
+
+  const [addGenre] = useAddGenreMutation();
 
   const handleSelectGenre = (genre: string) => {
     setSelectedGenres((prevGenres: string[]) => {
@@ -43,19 +30,18 @@ const EditGenre = () => {
         // Remove the genre if it already exists
         return prevGenres.filter((g) => g !== genre);
       } else {
-        // limit reached, return the selected five genres
+        // Limit reached, return the selected five genres
         if (prevGenres.length >= 5) {
           return prevGenres;
         }
-        // add a new selected genre cause it has not reached the limit yet.
+        // Add a new selected genre cause it has not reached the limit yet.
         return [...prevGenres, genre];
       }
     });
   };
 
   const handleSaveGenre = async () => {
-    const jsonString = JSON.stringify(selectedGenres);
-    localStorage.setItem("temp_genre", jsonString);
+    setGenre(selectedGenres);
     await addGenre({ yourUID: yourUID, genre: selectedGenres });
     setModalOpen(null);
   };

@@ -237,7 +237,7 @@ export const addGenreController = async (req: Request, res: Response) => {
       });
 
       if (user) {
-        return res.status(200).json({ message: "Successfully updated genre." });
+        return res.status(200).json(user.genre);
       } else {
         return res.status(200).json({ message: "Error adding genre!" });
       }
@@ -273,6 +273,8 @@ export const checkProfileRelationshipStatusController = async (
       const isFollowing = user?.following.some(
         (f: any) => f.uid.toString() === otherUserUID
       );
+
+      console.log(!!isHeart, isFollowing);
 
       return res.status(200).json({ heart: !!isHeart, following: isFollowing });
     }

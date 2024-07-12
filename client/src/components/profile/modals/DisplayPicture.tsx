@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { useProfileContext } from "@/context/ProfileContext";
 import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 
 const DisplayPicture = () => {
+  const navigate = useNavigate();
   const { setModalOpen } = useModal();
 
-  const { userProfileObject, isAuthProfile } = useProfileContext();
+  const { userObject, isAuthProfile } = useProfile();
 
-  const navigate = useNavigate();
-
-  const imgURL = userProfileObject?.imgURL;
-  const displayname = userProfileObject?.displayname;
+  const imgURL = userObject?.imgURL;
+  const displayname = userObject?.displayname;
 
   return (
     <>
@@ -28,7 +27,7 @@ const DisplayPicture = () => {
             </Button>
             <Button
               onClick={() => setModalOpen(null)}
-              className="bg-slate-100 text-black hover:text-white"
+              className="bg-slate-100 text-black hover:text-white hover:bg-secondary"
             >
               Cancel
             </Button>

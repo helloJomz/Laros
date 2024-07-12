@@ -6,13 +6,27 @@ import UserHeader from "@/components/profile/UserHeader";
 import Post from "../components/profile/Post";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import ProfileModal from "@/components/profile/ProfileModal";
-import { ProfileContextProvider } from "@/context/ProfileContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useEffect } from "react";
+import { useGetUserByDisplayNameMutation } from "@/app/features/users/userApiSlice";
+import { usePageTabName } from "@/hooks/usePageTabName";
 
 const ProfilePage = () => {
   const { windowWidth } = useNavbarContext();
 
-  const { isProfileError, isProfileLoading } = useProfile();
+  const { isProfileError, isProfileLoading, profilePageEndpoint } =
+    useProfile();
+
+  usePageTabName({ tabName: profilePageEndpoint! });
+
+  const [getUserByDisplayName] = useGetUserByDisplayNameMutation();
+
+  useEffect(() => {
+    const execGetUserByDisplayName = async () => {
+      await getUserByDisplayName(profilePageEndpoint!);
+    };
+    execGetUserByDisplayName();
+  }, [profilePageEndpoint]);
 
   if (isProfileError)
     return (
@@ -21,7 +35,6 @@ const ProfilePage = () => {
       </>
     );
 
-  // DISPLAY LOADING ( TODO: SKELETON ON SHACDN UI ) WHEN THE PAGE FIRST LOADS.
   if (isProfileLoading)
     return (
       <>
@@ -65,12 +78,4 @@ const ProfilePage = () => {
     );
 };
 
-const ProfilePageWithContextProvider = () => {
-  return (
-    <ProfileContextProvider>
-      <ProfilePage />
-    </ProfileContextProvider>
-  );
-};
-
-export default ProfilePageWithContextProvider;
+export default ProfilePage;

@@ -1,38 +1,32 @@
-import { useProfileContext } from "@/context/ProfileContext";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 
 const Genre = () => {
-  const { isAuthProfile, userProfileObject } = useProfileContext();
+  const { isAuthProfile, userObject, useGenre } = useProfile();
+  const { modalType } = useModal();
 
-  const { modalType, setModalOpen } = useModal();
+  const { genre } = userObject;
 
-  const [genre, setGenre] = useState<string[]>(() => {
-    const storageItem = localStorage.getItem("temp_genre");
-    let genre: string[];
-    if (storageItem && isAuthProfile) {
-      genre = JSON.parse(storageItem);
-    } else {
-      genre = [...(userProfileObject ? userProfileObject.genre[0] : [])];
-    }
-    return genre;
-  });
+  const [clientGenreList, setClientGenreList] = useState<string[]>(
+    useGenre.length > 0 ? useGenre : genre
+  );
 
   useEffect(() => {
-    const storageItem = localStorage.getItem("temp_genre");
-    if (storageItem && isAuthProfile) {
-      const genre = JSON.parse(storageItem);
-      setGenre(genre);
+    if (useGenre.length > 0) {
+      setClientGenreList(useGenre);
     }
   }, [modalType]);
 
-  if (genre.length !== 0)
+  const { setModalOpen } = useModal();
+
+  if (clientGenreList?.length !== 0)
     return (
       <>
         <div className="flex flex-wrap gap-y-2 gap-x-2 text-xs md:text-sm justify-center w-full px-8 md:px-0">
-          {genre.map((item) => (
+          {clientGenreList.map((item: string) => (
             <Badge
               key={item}
               className="text-xs text-center bg-gradient-to-tr from-sky-500 to-indigo-600 cursor-pointer"
@@ -52,7 +46,7 @@ const Genre = () => {
       </>
     );
 
-  if (isAuthProfile && genre.length === 0)
+  if (isAuthProfile && clientGenreList.length === 0)
     return (
       <>
         <Button

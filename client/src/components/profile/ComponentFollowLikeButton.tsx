@@ -4,9 +4,9 @@ import {
   useAddFollowMutation,
   useMinusFollowMutation,
 } from "@/app/features/profile/profileApiSlice";
-import { useProfileContext } from "@/context/ProfileContext";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -31,18 +31,20 @@ const ComponentFollowLikeButton = ({
 
   const { setModalOpen } = useModal();
 
-  const { isAuthProfile, userProfileObject, isHeartUser, isFollowingUser } =
-    useProfileContext();
+  const {
+    isAuthProfile,
+    userObject,
+    heartStatus,
+    setHeartStatus,
+    followingStatus,
+    setFollowingStatus,
+  } = useProfile();
 
   const {
     heartcount: heartCountFromAPI,
     follower: followerCountFromAPI,
     userid: otherUserUID,
-  } = userProfileObject || {};
-
-  const [isHeartClicked, setIsHeartClicked] = useState<boolean>(isHeartUser);
-  const [isFollowClicked, setIsFollowClicked] =
-    useState<boolean>(isFollowingUser);
+  } = userObject || {};
 
   const [heartCount, setHeartCount] = useState<number>(heartCountFromAPI || 0);
   const [followerCount, setFollowerCount] = useState<number>(
@@ -56,9 +58,9 @@ const ComponentFollowLikeButton = ({
   const [minusFollow] = useMinusFollowMutation();
 
   const handleHeartClick = async () => {
-    setHeartCount((heart) => (isHeartClicked ? heart - 1 : heart + 1));
-    setIsHeartClicked((heart) => !heart);
-    if (!isHeartClicked) {
+    setHeartCount((heart) => (heartStatus ? heart - 1 : heart + 1));
+    setHeartStatus(!heartStatus);
+    if (!heartStatus) {
       await addHeart({
         yourUID: yourUID,
         otherUserUID: otherUserUID ? otherUserUID : "",
@@ -72,9 +74,9 @@ const ComponentFollowLikeButton = ({
   };
 
   const handleFollowClick = async () => {
-    setFollowerCount((follow) => (isFollowClicked ? follow - 1 : follow + 1));
-    setIsFollowClicked((follow) => !follow);
-    if (!isFollowClicked) {
+    setFollowerCount((follow) => (followingStatus ? follow - 1 : follow + 1));
+    setFollowingStatus(!followingStatus);
+    if (!followingStatus) {
       await addFollow({
         yourUID: yourUID,
         otherUserUID: otherUserUID ? otherUserUID : "",
@@ -100,7 +102,7 @@ const ComponentFollowLikeButton = ({
       <FaHeart
         size={variant === "large" ? 30 : 24}
         className={
-          isHeartClicked || isAuthProfile
+          heartStatus || isAuthProfile
             ? "text-red-500 hover:text-white"
             : "text-white hover:text-red-500"
         }
@@ -110,7 +112,7 @@ const ComponentFollowLikeButton = ({
       <FaUserAstronaut
         size={variant === "large" ? 30 : 24}
         className={
-          isFollowClicked || isAuthProfile
+          followingStatus || isAuthProfile
             ? "text-emerald-500 hover:text-white"
             : "text-white hover:text-emerald-500"
         }
@@ -151,13 +153,13 @@ const ComponentFollowLikeButton = ({
                 {IconList[type]}
               </span>
 
-              {type === "heart" && isHeartClicked && (
+              {type === "heart" && heartStatus && (
                 <div className="absolute top-[1.2rem] right-[0.1rem] bg-slate-800 w-4 h-4 flex justify-center items-center rounded-full">
                   <FaCheck size={10} className="text-green-400 font-bold" />
                 </div>
               )}
 
-              {type === "follow" && isFollowClicked && (
+              {type === "follow" && followingStatus && (
                 <div className="absolute top-[1.2rem] right-[0.1rem] bg-slate-800 w-4 h-4 flex justify-center items-center rounded-full">
                   <FaCheck size={10} className="text-green-400 font-bold" />
                 </div>
@@ -205,13 +207,13 @@ const ComponentFollowLikeButton = ({
               <span>{IconList[type]}</span>
             </div>
 
-            {!isAuthProfile && type === "heart" && isHeartClicked && (
+            {!isAuthProfile && type === "heart" && heartStatus && (
               <div className="absolute top-[0.9rem] left-9 right-0 bg-background w-5 h-5 flex justify-center items-center rounded-full">
                 <FaCheck size={10} className="text-green-400 font-bold" />
               </div>
             )}
 
-            {!isAuthProfile && type === "follow" && isFollowClicked && (
+            {!isAuthProfile && type === "follow" && followingStatus && (
               <div className="absolute top-[0.9rem] left-9 right-0 bg-background w-5 h-5 flex justify-center items-center rounded-full">
                 <FaCheck size={10} className="text-green-400 font-bold" />
               </div>

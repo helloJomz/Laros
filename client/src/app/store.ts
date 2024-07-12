@@ -33,7 +33,7 @@ export const store = configureStore({
     auth: persistedAuthReducer,
     profile: profileReducer,
     users: userReducer,
-    moda: modalReducer,
+    modal: modalReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,5 +1,4 @@
 import { useNavbarContext } from "@/context/NavbarContext";
-import { useProfileContext } from "@/context/ProfileContext";
 import { Cat, Dog } from "lucide-react";
 import React from "react";
 import CloseButton from "../../common/CloseButton";
@@ -11,6 +10,7 @@ import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
+import { useProfile } from "@/hooks/useProfile";
 
 type HeartAndFollowProps = {
   type: "heart" | "follow";
@@ -23,7 +23,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
 
   const { authenticatedUserObject } = useUserContext();
 
-  const { isAuthProfile } = useProfileContext();
+  const { isAuthProfile } = useProfile();
 
   const {
     data: HeartList,
