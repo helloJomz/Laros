@@ -1,4 +1,4 @@
-import { Joystick, X } from "lucide-react";
+import { Gamepad, X } from "lucide-react";
 import { useState } from "react";
 
 const GameShowcase = () => {
@@ -14,7 +14,7 @@ const GameShowcase = () => {
           className="bg-slate-700 p-1.5 rounded-full hover:bg-slate-600 cursor-pointer"
           onClick={() => setIsAddGameClicked(!isAddGameClicked)}
         >
-          <Joystick size={18} />
+          <Gamepad size={18} />
         </div>
       </>
     );
@@ -41,7 +41,7 @@ const GameShowcase = () => {
             className="bg-slate-700 p-1.5 rounded-full hover:bg-slate-600 cursor-pointer"
             onClick={() => setIsAddGameClicked(!isAddGameClicked)}
           >
-            <Joystick size={18} />
+            <Gamepad size={18} />
           </div>
         </div>
       </>

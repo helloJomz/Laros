@@ -9,6 +9,7 @@ import { default as giphyRouter } from "./routes/giphy";
 import { default as uploadRouter } from "./routes/upload";
 import { default as userRouter } from "./routes/user";
 import { default as profileRouter } from "./routes/profile";
+import { default as postRouter } from "./routes/post";
 import { CONNECTION, PORT } from "./constants";
 
 dotenv.config();
@@ -45,3 +46,4 @@ app.use("/api/giphy", giphyRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/user", userRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/post", postRouter);

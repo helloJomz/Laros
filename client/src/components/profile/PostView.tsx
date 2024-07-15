@@ -1,21 +1,37 @@
-import { capitalizeFirstLetter } from "@/utils/utils";
+import { capitalizeFirstLetter, formatDateDistanceToNow } from "@/utils/utils";
 import { BsThreeDots } from "react-icons/bs";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { GiHappySkull } from "react-icons/gi";
+import PostType from "../common/post/PostType";
+import PostSkeleton from "./skeletons/PostSkeleton";
+import { usePost } from "@/hooks/usePost";
 import { useProfile } from "@/hooks/useProfile";
 
 const PostView = () => {
   //TODO: Put Comments and Reactions on the design
-  // Need backend
+
+  const { isAuthProfile, profilePageEndpoint } = useProfile();
+  const { postStates, pagination } = usePost();
+
+  const { isLoading, isError, posts, refetch } = postStates;
+  const { setLimit, setOffset } = pagination;
+
+  console.log(posts);
 
   const { windowWidth } = useNavbarContext();
 
-  const { userObject, isAuthProfile, profilePageEndpoint } = useProfile();
-  const { userid, imgURL, displayname, post: postCount } = userObject || {};
+  const handleLoadMore = async () => {
+    setLimit((limit) => limit + 5);
+    setOffset((offset) => offset + 5);
+    await refetch();
+  };
 
-  if (postCount === 0)
+  if (isLoading) return <PostSkeleton />;
+
+  if (isError) return <span>Error...</span>;
+
+  if (!posts)
     return (
       <>
         <div className="flex gap-x-4 items-center">
@@ -55,46 +71,22 @@ const PostView = () => {
       </div>
 
       <div className="flex flex-col gap-y-4">
-        <div className="w-full bg-secondary h-fit p-2 flex flex-col gap-y-4 rounded">
-          <div className="flex gap-x-2 items-center">
-            <img
-              src={imgURL!}
-              alt={`${displayname}_photo`}
-              className="w-10 h-10 rounded-full object-cover pointer-events-none"
-            />
-            <div className="flex flex-col">
-              <Link to={`/${displayname}`}>
-                <span className="font-semibold hover:underline">
-                  {displayname && capitalizeFirstLetter(displayname)}
-                </span>
-              </Link>
+        {posts.map((item: any) => {
+          if (item.postType === "post") {
+            return (
+              <PostType
+                key={item._id}
+                content={item.content ? item.content : undefined}
+                postImgURL={item.imgURL ? item.imgURL : undefined}
+                createDate={formatDateDistanceToNow(item.createdAt)}
+              />
+            );
+          }
+        })}
 
-              <span className="text-muted-foreground text-xs">26/06/2024</span>
-            </div>
-          </div>
-
-          {/* Actual Post */}
-          <div className="bg-pink-500 w-full rounded h-72 p-2"></div>
-        </div>
-
-        <div className="w-full bg-secondary h-fit p-2 flex flex-col gap-y-4 rounded">
-          <div className="flex gap-x-2 items-center">
-            <img
-              src={imgURL!}
-              alt={`${displayname}_photo`}
-              className="w-10 h-10 rounded-full object-cover pointer-events-none"
-            />
-            <div className="flex flex-col">
-              <span className="font-semibold">
-                {displayname && capitalizeFirstLetter(displayname)}
-              </span>
-              <span className="text-muted-foreground text-xs">26/06/2024</span>
-            </div>
-          </div>
-
-          {/* Actual Posts */}
-          <div className="bg-emerald-500 w-full rounded h-72 p-2"></div>
-        </div>
+        {posts.length > 0 && (
+          <Button onClick={handleLoadMore}>Load more</Button>
+        )}
       </div>
     </>
   );

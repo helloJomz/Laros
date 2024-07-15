@@ -95,8 +95,6 @@ const UploadAvatar = () => {
 
       const { data } = await uploadAvatar(formData);
 
-      console.log(data);
-
       if (data) {
         setTriggerAlertFooter({
           title: "Successfully Uploaded an Avatar",

@@ -94,7 +94,7 @@ const ComponentFollowLikeButton = ({
   };
 
   const handleSeeAllFollowClick = async () => {
-    setModalOpen("heart");
+    setModalOpen("follow");
   };
 
   const IconList: ButtonIcons = {

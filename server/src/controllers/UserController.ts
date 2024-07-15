@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/User";
 import mongoose from "mongoose";
+import { PostModel } from "../models/Post";
 
 export const getUserByDisplayNameController = async (
   req: Request,
@@ -21,7 +22,6 @@ export const getUserByDisplayNameController = async (
       heartcount: user.heart?.received.length,
       follower: user.follower.length,
       following: user.following.length,
-      post: user.post.length,
     };
 
     return res.status(200).json({ ...userObj });

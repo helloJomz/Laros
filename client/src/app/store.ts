@@ -5,6 +5,7 @@ import authReducer from "./features/auth/authSlice";
 import profileReducer from "./features/profile/profileSlice";
 import userReducer from "./features/users/userSlice";
 import modalReducer from "./features/modal/modalSlice";
+import postReducer from "./features/post/postSlice";
 import { apiSlice } from "./services/api";
 import {
   persistReducer,
@@ -23,6 +24,12 @@ const persistConfig = {
   storage,
 };
 
+const defaultMiddlewareConfig = {
+  serializableCheck: {
+    ignoredPaths: ["filters.startDate", "filters.endDate"],
+  },
+};
+
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
@@ -34,11 +41,21 @@ export const store = configureStore({
     profile: profileReducer,
     users: userReducer,
     modal: modalReducer,
+    post: postReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,
+          "post/setImage",
+        ],
+        ignoredPaths: ["post.image"],
       },
     })
       .concat(searchAPI.middleware)

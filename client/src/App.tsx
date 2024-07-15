@@ -13,8 +13,6 @@ import Home from "./components/Home";
 import UploadAvatar from "./pages/UploadAvatar";
 import ProfilePage from "./pages/ProfilePage";
 
-document.title = "Laros | Where the gamers connect Easily!";
-
 function App() {
   const auth = useSelector(selectCurrentToken);
   const { pathname: location } = useLocation();

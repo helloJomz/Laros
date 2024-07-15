@@ -1,22 +1,136 @@
 import { useUserContext } from "@/context/UserContext";
 import CloseButton from "../../CloseButton";
-import { capitalizeFirstLetter } from "@/utils/utils";
+import { capitalizeFirstLetter, generatePostRandomString } from "@/utils/utils";
 import GameShowcase from "./GameShowcase";
 import { Button } from "@/components/ui/button";
-import Content from "./Content";
 import { MdOutlineGif } from "react-icons/md";
-import { Images } from "lucide-react";
-import { useState } from "react";
+import { Images, LoaderCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { usePost } from "@/hooks/usePost";
+import Content from "./Content";
+import { useModal } from "@/hooks/useModal";
 
 const CreatePost = () => {
   const { authenticatedUserObject } = useUserContext();
-  const { imgURL, displayname } = authenticatedUserObject;
+  const { imgURL, displayname, userid } = authenticatedUserObject;
 
-  const [contentType, setContentType] = useState<string | null>(null);
+  const {
+    setPreviewImg,
+    usePreviewImg,
+    usePreviewContent,
+    setPreviewContent,
+    savePost,
+    states,
+    postStates,
+  } = usePost();
+
+  const { isPosting, isPostingError } = states;
+  const { refetch } = postStates;
+
+  const { setModalOpen } = useModal();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [selectedFile, setSelectedFile] = useState<File | string | null>(null);
+
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const objectURL = URL.createObjectURL(file);
+      setPreviewImg(objectURL);
+    }
+  };
+
+  const handleSubmitPost = async () => {
+    if (!usePreviewContent && !selectedFile) {
+      //TODO: put error here
+      console.log("error");
+    }
+
+    // FOR SELECTED FILE FROM LOCAL SYSTEM
+    if (selectedFile && typeof selectedFile === "object") {
+      const blob = selectedFile.slice(0, selectedFile.size, selectedFile.type);
+      const newFile = new File(
+        [blob],
+        generatePostRandomString(selectedFile.name),
+        { type: selectedFile.type }
+      );
+      const formData = new FormData();
+
+      const postObject = {
+        uid: userid,
+        file: newFile,
+        content: usePreviewContent || "",
+        //TODO: Implement this object
+        game: "hi",
+      };
+
+      formData.append("uid", postObject.uid);
+      formData.append("file", postObject.file);
+      formData.append("content", postObject.content);
+      formData.append("game", postObject.game);
+
+      await savePost(formData);
+
+      if (!isPosting && !isPostingError) {
+        setPreviewContent("");
+        setPreviewImg("");
+        setModalOpen(null);
+        await refetch();
+      }
+    }
+
+    //For GIF
+    if (typeof selectedFile === "string") {
+      return null;
+    }
+
+    // If no image is selected
+    if (!selectedFile) {
+      if (!usePreviewContent) {
+        //TODO: Error here no content
+        return null;
+      }
+
+      const postObject = {
+        uid: userid,
+        content: usePreviewContent,
+        //TODO: Implement this object
+        game: "hi",
+      };
+
+      await savePost(postObject);
+
+      if (!isPosting && !isPostingError) {
+        //TODO: Refetch the PostView after this executes
+        setPreviewContent("");
+        setPreviewImg("");
+        setModalOpen(null);
+        await refetch();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    if (!usePreviewImg) {
+      setSelectedFile(null);
+    }
+  }, [setPreviewImg, fileInputRef.current]);
 
   return (
     <>
-      <div className="bg-secondary w-[90%] h-fit md:w-1/2 xl:w-[23%] rounded shadow-lg p-4 flex flex-col gap-y-4">
+      <div className="bg-secondary w-[90%] h-fit md:w-1/2 xl:w-[23%] rounded shadow-lg p-4 flex flex-col gap-y-4 justify-center">
         <div className="flex justify-between items-center border border-b-slate-600 pb-2">
           <h1 className="text-base lg:text-lg font-semibold">Create Post</h1>
           <CloseButton />
@@ -37,26 +151,37 @@ const CreatePost = () => {
           <GameShowcase />
         </div>
 
-        <Content contentType={!contentType ? "" : contentType} />
+        <Content />
 
-        {/* TODO: Centralized this by redux, so that the content will be dynamically changed. */}
         <div className="flex justify-end gap-x-2 items-center">
-          <div
-            className="bg-slate-700 p-1.5 rounded-full hover:bg-slate-600 cursor-pointer"
-            onClick={() => setContentType("image")}
-          >
-            <Images size={18} />
-          </div>
+          {!usePreviewImg && (
+            <div
+              className="bg-slate-700 p-1.5 rounded-full hover:bg-slate-600 cursor-pointer"
+              onClick={handleImageClick}
+            >
+              <Images size={18} />
+            </div>
+          )}
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/jpeg, image/gif"
+            hidden
+          />
 
           <div
             className="bg-slate-700 p-1 rounded-full hover:bg-slate-600 cursor-pointer"
-            onClick={() => setContentType("gif")}
+            // onClick={() => setContentType("gif")}
           >
             <MdOutlineGif size={24} />
           </div>
         </div>
 
-        <Button>Post</Button>
+        <Button onClick={handleSubmitPost} disabled={isPosting}>
+          {isPosting ? <LoaderCircle className="animate-spin" /> : "Post"}
+        </Button>
       </div>
     </>
   );
