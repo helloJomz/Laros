@@ -5,6 +5,7 @@ import {
   setPreviewContent as setPreviewContentSlice,
   selectPreviewContent,
   selectPost,
+  setPost as setPostSlice,
 } from "@/app/features/post/postSlice";
 import {
   useGetPostsQuery,
@@ -26,17 +27,14 @@ export const usePost = () => {
   const [savePost, { isLoading: isPosting, isError: isPostingError }] =
     useSavePostMutation();
 
-  const {
-    isLoading: isPostLoading,
-    isError: isPostError,
-    refetch,
-  } = useGetPostsQuery({
+  const { isLoading: isPostLoading, isError: isPostError } = useGetPostsQuery({
     uid: userid,
     offset: offset,
     limit: limit,
   });
 
   const useFetchedPost = useSelector(selectPost);
+  const setPost = (post: any) => dispatch(setPostSlice(post));
 
   const setPreviewImg = (url: string | null) =>
     dispatch(setPreviewImgSlice({ url: url }));
@@ -49,9 +47,9 @@ export const usePost = () => {
   return {
     postStates: {
       posts: useFetchedPost,
+      setPost,
       isLoading: isPostLoading,
       isError: isPostError,
-      refetch,
     },
     pagination: {
       limit,

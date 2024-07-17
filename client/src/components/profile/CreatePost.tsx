@@ -1,4 +1,3 @@
-import { useProfileContext } from "@/context/ProfileContext";
 import { useModal } from "@/hooks/useModal";
 import { useProfile } from "@/hooks/useProfile";
 import { capitalizeFirstLetter } from "@/utils/utils";

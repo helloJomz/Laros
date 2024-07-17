@@ -14,24 +14,20 @@ const PostView = () => {
   const { isAuthProfile, profilePageEndpoint } = useProfile();
   const { postStates, pagination } = usePost();
 
-  const { isLoading, isError, posts, refetch } = postStates;
-  const { setLimit, setOffset } = pagination;
-
-  console.log(posts);
+  const { isLoading, isError, posts } = postStates;
 
   const { windowWidth } = useNavbarContext();
 
-  const handleLoadMore = async () => {
-    setLimit((limit) => limit + 5);
-    setOffset((offset) => offset + 5);
-    await refetch();
-  };
+  // const handleLoadMore = async () => {
+  //   setLimit((limit) => limit + 5);
+  //   setOffset((offset) => offset + 5);
+  // };
 
   if (isLoading) return <PostSkeleton />;
 
   if (isError) return <span>Error...</span>;
 
-  if (!posts)
+  if (posts && posts.length === 0)
     return (
       <>
         <div className="flex gap-x-4 items-center">
@@ -76,17 +72,17 @@ const PostView = () => {
             return (
               <PostType
                 key={item._id}
+                postId={item._id}
                 content={item.content ? item.content : undefined}
                 postImgURL={item.imgURL ? item.imgURL : undefined}
+                comments={item.comment}
                 createDate={formatDateDistanceToNow(item.createdAt)}
               />
             );
           }
         })}
 
-        {posts.length > 0 && (
-          <Button onClick={handleLoadMore}>Load more</Button>
-        )}
+        {posts.length > 5 && <Button>Load more</Button>}
       </div>
     </>
   );

@@ -53,9 +53,9 @@ export const store = configureStore({
           PERSIST,
           PURGE,
           REGISTER,
-          "post/setImage",
+          "post/setPreviewPost",
         ],
-        ignoredPaths: ["post.image"],
+        ignoredPaths: ["post.postPreview"],
       },
     })
       .concat(searchAPI.middleware)

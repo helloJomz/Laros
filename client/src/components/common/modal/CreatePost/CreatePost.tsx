@@ -25,7 +25,8 @@ const CreatePost = () => {
   } = usePost();
 
   const { isPosting, isPostingError } = states;
-  const { refetch } = postStates;
+
+  const { setPost } = postStates;
 
   const { setModalOpen } = useModal();
 
@@ -77,13 +78,13 @@ const CreatePost = () => {
       formData.append("content", postObject.content);
       formData.append("game", postObject.game);
 
-      await savePost(formData);
+      const { data } = await savePost(formData);
 
       if (!isPosting && !isPostingError) {
         setPreviewContent("");
         setPreviewImg("");
+        setPost(data.post[0]);
         setModalOpen(null);
-        await refetch();
       }
     }
 
@@ -106,14 +107,13 @@ const CreatePost = () => {
         game: "hi",
       };
 
-      await savePost(postObject);
+      const { data } = await savePost(postObject);
 
       if (!isPosting && !isPostingError) {
-        //TODO: Refetch the PostView after this executes
         setPreviewContent("");
         setPreviewImg("");
+        setPost(data.post[0]);
         setModalOpen(null);
-        await refetch();
       }
     }
   };
