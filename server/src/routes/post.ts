@@ -4,6 +4,7 @@ import {
   savePostController,
   addCommentController,
   getCommentsController,
+  addReplyController,
 } from "../controllers/PostController";
 import Multer from "multer";
 
@@ -17,5 +18,6 @@ router.post("/savepost", multer.single("file"), savePostController);
 router.get("/fetchpost", fetchPostsController);
 router.post("/addpost", addCommentController);
 router.get("/getcomments", getCommentsController);
+router.post("/addreply", addReplyController);
 
 export default router;

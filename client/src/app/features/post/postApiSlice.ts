@@ -13,7 +13,6 @@ export const postApiSlice = apiSlice.injectEndpoints({
     getPosts: builder.query({
       query: ({
         uid,
-        //TODO: Maybe put these into the redux slice have the uid the sole params
         offset,
         limit,
       }: {
@@ -43,6 +42,30 @@ export const postApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    addReply: builder.mutation({
+      query: ({
+        senderObject,
+        authorId,
+        postId,
+        commentId,
+        replyData,
+      }: {
+        senderObject: {
+          senderUserId: string;
+          senderDisplayname: string;
+          senderImgURL: string;
+        };
+        authorId: string;
+        postId: string;
+        commentId: string;
+        replyData: string;
+      }) => ({
+        url: "/post/addreply",
+        method: "POST",
+        body: { senderObject, authorId, postId, commentId, replyData },
+      }),
+    }),
+
     getComments: builder.query({
       query: ({ postId }: { postId: string }) =>
         `/post/getcomments?postId=${postId}&skip=${0}&limit=${5}`,
@@ -55,4 +78,5 @@ export const {
   useGetPostsQuery,
   useAddCommentMutation,
   useGetCommentsQuery,
+  useAddReplyMutation,
 } = postApiSlice;

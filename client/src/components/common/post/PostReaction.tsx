@@ -2,7 +2,13 @@ import { FaComment } from "react-icons/fa6";
 import { FaShare } from "react-icons/fa6";
 import { FaFire } from "react-icons/fa";
 
-const PostReaction = ({ postId }: { postId: string }) => {
+const PostReaction = ({
+  postId,
+  commentCount,
+}: {
+  postId: string;
+  commentCount: number;
+}) => {
   const ButtonTypes = [
     {
       Icon: <FaFire />,
@@ -13,7 +19,7 @@ const PostReaction = ({ postId }: { postId: string }) => {
     },
     {
       Icon: <FaComment />,
-      Label: "0",
+      Label: commentCount.toString(),
       onClick: () => {
         console.log("Comment");
       },
@@ -29,7 +35,7 @@ const PostReaction = ({ postId }: { postId: string }) => {
 
   return (
     <>
-      <div className="bg-secondary px-2 pt-2 pb-2">
+      <div className="bg-secondary px-2 pt-4 pb-2">
         <div className="flex justify-between border-t-[1px] border-b-[1px] border-slate-600 py-1">
           {ButtonTypes.map((button, index) => (
             <div

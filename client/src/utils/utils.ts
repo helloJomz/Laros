@@ -1,6 +1,13 @@
 import { v4 } from "uuid";
 import { arrayOfRandomAvatarGifsForAnon } from "./array";
-import { formatDistanceToNow } from "date-fns";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  formatDistanceToNow,
+  parseISO,
+} from "date-fns";
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -29,7 +36,27 @@ export function generateRandomAvatarGifsForAnon() {
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
+export const formatDateForPostHeader = (createdAt: string) => {
+  const parsedDate = parseISO(createdAt);
+  return formatDistanceToNow(parsedDate, { addSuffix: true });
+};
+
 export const formatDateDistanceToNow = (createdAt: string) => {
-  const createdAtDate = new Date(createdAt);
-  return formatDistanceToNow(createdAtDate, { addSuffix: true });
+  const now = new Date();
+
+  const days = differenceInDays(now, createdAt);
+  const hours = differenceInHours(now, createdAt) % 24;
+  const minutes = differenceInMinutes(now, createdAt) % 60;
+  const seconds = differenceInSeconds(now, createdAt) % 60;
+
+  if (days > 0) {
+    return `${days}d`;
+  }
+  if (hours > 0) {
+    return `${hours}h`;
+  }
+  if (minutes > 0) {
+    return `${minutes}m`;
+  }
+  return `${seconds}s`;
 };

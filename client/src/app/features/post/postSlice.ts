@@ -60,6 +60,22 @@ export const postSlice = createSlice({
       state.post[postIndex].comment.push(commentData);
     },
 
+    setPreviewReply: (state, action) => {
+      const { postId, commentId, replyData } = action.payload;
+
+      const postIndex = state.post.findIndex(
+        (post) => post._id === postId.toString().trim()
+      );
+
+      const commentIndex = state.post[postIndex].comment.findIndex(
+        (comment) => comment._id === commentId.toString().trim()
+      );
+
+      console.log(commentIndex);
+
+      state.post[postIndex].comment[commentIndex].reply.push({ ...replyData });
+    },
+
     // setPreviewAuthor: (
     //   state,
     //   action: PayloadAction<{ author: AuthorProps | null }>
@@ -92,8 +108,13 @@ export const postSlice = createSlice({
   },
 });
 
-export const { setPreviewContent, setPreviewImg, setPost, setPreviewComment } =
-  postSlice.actions;
+export const {
+  setPreviewContent,
+  setPreviewImg,
+  setPost,
+  setPreviewComment,
+  setPreviewReply,
+} = postSlice.actions;
 
 export const selectPost = (state: RootState) => state.post.post;
 

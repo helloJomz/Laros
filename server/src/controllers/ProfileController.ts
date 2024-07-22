@@ -274,8 +274,6 @@ export const checkProfileRelationshipStatusController = async (
         (f: any) => f.uid.toString() === otherUserUID
       );
 
-      console.log(!!isHeart, isFollowing);
-
       return res.status(200).json({ heart: !!isHeart, following: isFollowing });
     }
   } catch (error) {

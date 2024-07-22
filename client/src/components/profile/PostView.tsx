@@ -1,4 +1,8 @@
-import { capitalizeFirstLetter, formatDateDistanceToNow } from "@/utils/utils";
+import {
+  capitalizeFirstLetter,
+  formatDateDistanceToNow,
+  formatDateForPostHeader,
+} from "@/utils/utils";
 import { BsThreeDots } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { useNavbarContext } from "@/context/NavbarContext";
@@ -76,7 +80,7 @@ const PostView = () => {
                 content={item.content ? item.content : undefined}
                 postImgURL={item.imgURL ? item.imgURL : undefined}
                 comments={item.comment}
-                createDate={formatDateDistanceToNow(item.createdAt)}
+                createDate={formatDateForPostHeader(item.createdAt)}
               />
             );
           }

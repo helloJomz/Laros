@@ -119,7 +119,7 @@ export const fetchPostsController = async (req: any, res: Response) => {
       ]);
 
       if (posts.length > 0) {
-        return res.status(200).json(posts[0].post); // Return the posts array directly
+        return res.status(200).json([...posts[0].post]); // Return the posts array directly
       } else {
         return res.status(200).json([]); // Return an empty array if no posts found
       }
@@ -179,6 +179,79 @@ export const getCommentsController = async (req: any, res: Response) => {
       const post = await PostModel.findById({ _id: transformedPostId });
     } else {
       res.status(400).json({ message: "Cannot retrieved comments" });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const addReplyController = async (req: any, res: Response) => {
+  try {
+    const { senderObject, authorId, postId, commentId, replyData } = req.body;
+
+    if (senderObject && authorId && postId && commentId && replyData) {
+      const objectAuthorId = stringToObjectId(authorId);
+      const objectPostId = stringToObjectId(postId);
+      const objectCommentId = stringToObjectId(commentId);
+      const { senderUserId, senderDisplayname, senderImgURL } = senderObject;
+
+      const newReplyObjectId = new mongoose.Types.ObjectId();
+
+      const updatedPost = await PostModel.findOneAndUpdate(
+        {
+          _id: objectAuthorId,
+          "post._id": objectPostId,
+          "post.comment._id": objectCommentId,
+        },
+        {
+          $push: {
+            "post.$[post].comment.$[comment].reply": {
+              _id: newReplyObjectId,
+              uid: senderUserId,
+              displayname: senderDisplayname,
+              imgURL: senderImgURL,
+              content: replyData,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          },
+        },
+        {
+          arrayFilters: [
+            { "post._id": objectPostId },
+            { "comment._id": objectCommentId },
+          ],
+          new: true,
+        }
+      ).exec();
+
+      if (updatedPost) {
+        const specificPost = updatedPost.post.find(
+          (p) => p._id?.toString() === objectPostId.toString()
+        );
+
+        const specificComment = specificPost?.comment.find(
+          (c) => c._id?.toString() === objectCommentId.toString()
+        );
+
+        const specificReply = specificComment?.reply.find(
+          (r) => r._id?.toString() === newReplyObjectId.toString()
+        );
+
+        if (specificReply) {
+          return res.status(200).json(specificReply);
+        } else {
+          return res
+            .status(400)
+            .json({ message: "There was an error retrieving reply." });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({ message: "There was an error adding a reply." });
+      }
+    } else {
+      res.status(400).json({ message: "Cannot add a reply." });
     }
   } catch (error) {
     console.error(error);

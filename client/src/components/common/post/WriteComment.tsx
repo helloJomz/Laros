@@ -5,6 +5,7 @@ import { useAddCommentMutation } from "@/app/features/post/postApiSlice";
 import { useDispatch } from "react-redux";
 import { setPreviewComment } from "@/app/features/post/postSlice";
 import { usePost } from "@/hooks/usePost";
+import { capitalizeFirstLetter } from "@/utils/utils";
 
 const WriteComment = ({ postId }: { postId: string }) => {
   const dispatch = useDispatch();
@@ -53,7 +54,9 @@ const WriteComment = ({ postId }: { postId: string }) => {
           />
           <Input
             className="rounded-2xl bg-slate-600 text-xs md:text-sm w-full h-8 md:h-10"
-            placeholder="Share your thoughts..."
+            placeholder={`${capitalizeFirstLetter(
+              displayname
+            )}, share your thoughts...`}
             onChange={handleChange}
             value={commentContent}
             onKeyUp={handleEnter}

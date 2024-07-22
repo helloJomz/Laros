@@ -1,23 +1,25 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
+const ReplySchema = new Schema(
+  {
+    uid: String,
+    displayname: String,
+    imgURL: String,
+    content: String,
+  },
+  { timestamps: true } // Timestamps for replies
+);
+
 const CommentSchema = new Schema(
   {
     uid: String,
     displayname: String,
     imgURL: String,
     comment: String,
-
-    reply: [
-      {
-        uid: String,
-        displayname: String,
-        imgURL: String,
-        content: String,
-      },
-    ],
+    reply: [ReplySchema], // Replies are nested here
   },
-  { timestamps: true }
+  { timestamps: true } // Timestamps for comments
 );
 
 const PostContentSchema = new Schema(
@@ -50,7 +52,7 @@ const PostContentSchema = new Schema(
     },
     comment: [CommentSchema], // Comments are nested here
   },
-  { timestamps: true } // Apply timestamps to post content
+  { timestamps: true } // Timestamps for post content
 );
 
 const PostSchema = new Schema({
