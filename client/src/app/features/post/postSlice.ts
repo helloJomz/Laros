@@ -57,7 +57,9 @@ export const postSlice = createSlice({
         (post) => post._id === postId.toString().trim()
       );
 
-      state.post[postIndex].comment.push(commentData);
+      console.log(postIndex);
+
+      state.post[postIndex]?.comment.push(commentData);
     },
 
     setPreviewReply: (state, action) => {
@@ -71,9 +73,13 @@ export const postSlice = createSlice({
         (comment) => comment._id === commentId.toString().trim()
       );
 
-      console.log(commentIndex);
-
-      state.post[postIndex].comment[commentIndex].reply.push({ ...replyData });
+      if (Array.isArray(replyData)) {
+        state.post[postIndex].comment[commentIndex].reply.push(...replyData);
+      } else {
+        state.post[postIndex].comment[commentIndex].reply.push({
+          ...replyData,
+        });
+      }
     },
 
     // setPreviewAuthor: (

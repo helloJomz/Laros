@@ -11,6 +11,10 @@ import {
   useGetPostsQuery,
   useSavePostMutation,
 } from "@/app/features/post/postApiSlice";
+import {
+  selectReplyId,
+  setReplyId as setReplyIdSlice,
+} from "@/app/features/post/uiSlice";
 import { AppDispatch } from "@/app/store";
 import { useProfile } from "./useProfile";
 import { useState } from "react";
@@ -44,6 +48,11 @@ export const usePost = () => {
     dispatch(setPreviewContentSlice({ content: content }));
   const usePreviewContent = useSelector(selectPreviewContent);
 
+  //UI
+  const setReplyId = (id: string | null) =>
+    dispatch(setReplyIdSlice({ replyId: id }));
+  const useReplyId = useSelector(selectReplyId);
+
   return {
     postStates: {
       posts: useFetchedPost,
@@ -56,6 +65,10 @@ export const usePost = () => {
       setLimit,
       offset,
       setOffset,
+    },
+    ui: {
+      setReplyId,
+      replyid: useReplyId,
     },
     setPreviewImg,
     usePreviewImg,

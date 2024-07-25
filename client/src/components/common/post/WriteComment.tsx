@@ -32,6 +32,8 @@ const WriteComment = ({ postId }: { postId: string }) => {
 
       const { data, error } = await addComment(commentObject);
 
+      console.log(data);
+
       if (!error) {
         dispatch(setPreviewComment({ postId: postId, ...data }));
         setCommentContent("");

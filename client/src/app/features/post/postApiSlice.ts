@@ -66,6 +66,24 @@ export const postApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    loadMoreReply: builder.mutation({
+      query: ({
+        postId,
+        commentId,
+        skip,
+        limit,
+      }: {
+        postId: string;
+        commentId: string;
+        skip: number;
+        limit: number;
+      }) => ({
+        url: "/post/getreplies",
+        method: "POST",
+        body: { postId, commentId, skip, limit },
+      }),
+    }),
+
     getComments: builder.query({
       query: ({ postId }: { postId: string }) =>
         `/post/getcomments?postId=${postId}&skip=${0}&limit=${5}`,
@@ -79,4 +97,5 @@ export const {
   useAddCommentMutation,
   useGetCommentsQuery,
   useAddReplyMutation,
+  useLoadMoreReplyMutation,
 } = postApiSlice;

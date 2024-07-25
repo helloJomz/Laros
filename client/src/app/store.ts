@@ -6,6 +6,7 @@ import profileReducer from "./features/profile/profileSlice";
 import userReducer from "./features/users/userSlice";
 import modalReducer from "./features/modal/modalSlice";
 import postReducer from "./features/post/postSlice";
+import postUIReducer from "./features/post/uiSlice";
 import { apiSlice } from "./services/api";
 import {
   persistReducer,
@@ -42,6 +43,7 @@ export const store = configureStore({
     users: userReducer,
     modal: modalReducer,
     post: postReducer,
+    postUI: postUIReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -62,7 +64,6 @@ export const store = configureStore({
       .concat(apiSlice.middleware)
       .concat(giphyApiSlice.middleware),
   // concat here the other middleware APIs
-  devTools: true,
 });
 
 // TODO: need to remove this and just get the user's info with the cookie.

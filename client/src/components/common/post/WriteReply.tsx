@@ -8,6 +8,8 @@ import { useAddReplyMutation } from "@/app/features/post/postApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useDispatch } from "react-redux";
 import { setPreviewReply } from "@/app/features/post/postSlice";
+import { Input } from "@/components/ui/input";
+import { usePost } from "@/hooks/usePost";
 
 const WriteReply = ({
   id,
@@ -21,6 +23,8 @@ const WriteReply = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [replyContent, setReplyContent] = useState<string>("");
   const { authenticatedUserObject } = useUserContext();
+  const { ui } = usePost();
+  const { setReplyId } = ui;
 
   const {
     displayname: senderDisplayname,
@@ -62,15 +66,18 @@ const WriteReply = ({
 
     if (!error) {
       // do the adding here in slice
+      console.log(data);
+
       dispatch(
         setPreviewReply({
           postId: postId,
           commentId: commentId,
-          replyData: { ...data },
+          replyData: data,
         })
       );
 
       setReplyContent("");
+      setReplyId(null);
     }
   };
 
@@ -81,19 +88,29 @@ const WriteReply = ({
   if (isReply)
     return (
       <>
-        <div className="mt-2 w-[95%] ps-2">
+        <div className="mt-2 w-[95%] ps-10">
           <div className="relative">
-            <div className="bg-slate-600 rounded-lg p-1 h-auto">
-              <Textarea
-                ref={textareaRef}
-                placeholder={TextAreaPlaceholder}
-                value={replyContent}
-                onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) =>
-                  e.preventDefault()
-                }
-                className="w-[90%] h-full bg-red-500 p-2 border bg-transparent border-none  ounded resize-none text-xs md:text-sm overflow-hidden"
-                onChange={(e) => setReplyContent(e.target.value)}
+            <div className="flex gap-x-2">
+              <img
+                src={senderImgURL}
+                alt=""
+                className="h-6 w-6 rounded-full object-cover"
               />
+              <div className="bg-slate-600 rounded-lg p-1 h-auto w-full">
+                <Textarea
+                  ref={textareaRef}
+                  placeholder={TextAreaPlaceholder}
+                  value={replyContent}
+                  onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleReplySubmit();
+                    }
+                  }}
+                  className="w-[90%] h-full bg-red-500 p-2 border bg-transparent border-none  ounded resize-none text-xs md:text-sm overflow-hidden"
+                  onChange={(e) => setReplyContent(e.target.value)}
+                />
+              </div>
             </div>
 
             <Button

@@ -108,18 +108,57 @@ export const fetchPostsController = async (req: any, res: Response) => {
   try {
     if (uid) {
       const objectId = stringToObjectId(uid);
+      const commentLimit = 3;
+      const replyLimit = 1;
 
-      const posts = await PostModel.aggregate([
-        { $match: { _id: objectId } }, // Match the document by _id
-        { $unwind: "$post" }, // Deconstruct the post array
-        { $sort: { "post.createdAt": -1 } }, // Sort posts by createdAt in descending order
-        { $skip: parseInt(offset) }, // Skip documents based on offset
-        { $limit: parseInt(limit) }, // Limit the number of documents returned
-        { $group: { _id: "$_id", post: { $push: "$post" } } }, // Group back into original structure
+      const postsWithComments = await PostModel.aggregate([
+        { $match: { userid: objectId } },
+        {
+          $unwind: "$post", // Flatten the array of post contents
+        },
+        {
+          $sort: { "post.createdAt": -1 }, // Sort posts by createdAt
+        },
+        {
+          $addFields: {
+            "post.comment": {
+              $slice: ["$post.comment", commentLimit], // Limit the number of comments per post
+            },
+          },
+        },
+        {
+          $addFields: {
+            "post.comment": {
+              $map: {
+                input: "$post.comment",
+                as: "comment",
+                in: {
+                  $mergeObjects: [
+                    "$$comment",
+                    {
+                      reply: {
+                        $slice: ["$$comment.reply", replyLimit], // Limit the number of replies per comment
+                      },
+                      replyLength: {
+                        $size: { $ifNull: ["$$comment.reply", []] },
+                      }, // Calculate reply length
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            post: { $push: "$post" },
+          },
+        },
       ]);
 
-      if (posts.length > 0) {
-        return res.status(200).json([...posts[0].post]); // Return the posts array directly
+      if (postsWithComments.length > 0) {
+        return res.status(200).json(postsWithComments[0].post); // Return the posts array directly
       } else {
         return res.status(200).json([]); // Return an empty array if no posts found
       }
@@ -253,6 +292,44 @@ export const addReplyController = async (req: any, res: Response) => {
     } else {
       res.status(400).json({ message: "Cannot add a reply." });
     }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getRepliesController = async (req: any, res: Response) => {
+  const { postId, commentId, skip, limit } = req.body;
+
+  try {
+    const objectPostId = stringToObjectId(postId);
+    const objectCommentId = stringToObjectId(commentId);
+
+    const pipeline = [
+      {
+        $match: { "post._id": objectPostId },
+      },
+      {
+        $unwind: "$post",
+      },
+      {
+        $unwind: "$post.comment",
+      },
+      {
+        $match: { "post.comment._id": objectCommentId },
+      },
+      {
+        $project: {
+          _id: 0,
+          replies: {
+            $slice: ["$post.comment.reply", skip, limit],
+          },
+        },
+      },
+    ];
+
+    const result = await PostModel.aggregate(pipeline);
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
   }
