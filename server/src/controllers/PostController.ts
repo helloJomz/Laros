@@ -7,6 +7,8 @@ import {
 } from "../constants";
 import { stringToObjectId } from "../helpers";
 import { PostModel } from "../models/Post";
+import { CommentModel } from "../models/Comment";
+import { ReplyModel } from "../models/Reply";
 import mongoose from "mongoose";
 
 const projectId = GOOGLE_STORAGE_PROJECT_ID;
@@ -22,6 +24,7 @@ const bucket = storage.bucket(GOOGLE_STORAGE_BUCKET_NAME);
 export const savePostController = async (req: any, res: Response) => {
   const { uid, content, game } = req.body;
   const file = req.file;
+
   try {
     if (uid) {
       const _id = stringToObjectId(uid);
@@ -38,29 +41,21 @@ export const savePostController = async (req: any, res: Response) => {
         blobStream.on("finish", async () => {
           const publicURL = `https://storage.googleapis.com/${bucket.name}/${file.originalname}`;
 
-          await PostModel.findOneAndUpdate(
-            { _id: _id },
-            {
-              $set: { userid: _id },
-              $push: {
-                post: {
-                  _id: postId,
-                  postType: "post",
-                  content: content,
-                  imgURL: publicURL,
-                  // game: null,
-                },
-              },
-            },
-            { upsert: true, new: true }
-          );
-
-          const post = await PostModel.findById(_id, {
-            post: { $elemMatch: { _id: postId } },
+          await PostModel.create({
+            _id: postId,
+            userid: _id,
+            content: content,
+            postType: "post",
+            postImgURL: publicURL,
+            //   game: game,
           });
 
+          const post = await PostModel.findById(postId);
+
           if (post) {
-            res.status(200).json(post);
+            res
+              .status(200)
+              .json({ ...post.toObject(), userLiked: false, likeCount: 0 });
           } else {
             res
               .status(400)
@@ -69,28 +64,23 @@ export const savePostController = async (req: any, res: Response) => {
         });
         blobStream.end(file.buffer);
       } else {
-        await PostModel.updateOne(
-          { _id: _id },
-          {
-            $set: { userid: _id },
-            $push: {
-              post: {
-                _id: postId,
-                postType: "post",
-                content: content,
-                // game: null,
-              },
-            },
-          },
-          { upsert: true, new: true }
-        );
+        await PostModel.create({
+          _id: postId,
+          userid: _id,
+          content: content,
+          postType: "post",
+          //   game: game,
+        });
 
-        const post = await PostModel.findById(_id, {
-          post: { $elemMatch: { _id: postId } },
+        const post = await PostModel.findById(postId, {
+          likes: 0,
+          comments: 0,
         });
 
         if (post) {
-          res.status(200).json(post);
+          res
+            .status(200)
+            .json({ ...post.toObject(), userLiked: false, likeCount: 0 });
         } else {
           res
             .status(400)
@@ -104,63 +94,119 @@ export const savePostController = async (req: any, res: Response) => {
 };
 
 export const fetchPostsController = async (req: any, res: Response) => {
-  const { uid, offset, limit } = req.query;
+  const { uid, vieweruid } = req.query;
+
   try {
     if (uid) {
       const objectId = stringToObjectId(uid);
-      const commentLimit = 3;
-      const replyLimit = 1;
+      const objectViewerUID = stringToObjectId(vieweruid);
+      const skip = 0;
+      const limit = 5;
 
-      const postsWithComments = await PostModel.aggregate([
+      const posts = await PostModel.aggregate([
         { $match: { userid: objectId } },
-        {
-          $unwind: "$post", // Flatten the array of post contents
-        },
-        {
-          $sort: { "post.createdAt": -1 }, // Sort posts by createdAt
-        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
         {
           $addFields: {
-            "post.comment": {
-              $slice: ["$post.comment", commentLimit], // Limit the number of comments per post
+            likeCount: { $size: { $ifNull: ["$likes", []] } }, // Use $ifNull to handle missing fields
+            shareCount: { $size: { $ifNull: ["$shares", []] } }, // Use $ifNull to handle missing fields
+            commentCount: { $size: { $ifNull: ["$comments", []] } }, // Use $ifNull to handle missing fields
+            userLiked: {
+              $cond: [
+                { $in: [objectViewerUID, { $ifNull: ["$likes", []] }] },
+                true,
+                false,
+              ],
             },
           },
         },
         {
-          $addFields: {
-            "post.comment": {
-              $map: {
-                input: "$post.comment",
-                as: "comment",
-                in: {
-                  $mergeObjects: [
-                    "$$comment",
-                    {
-                      reply: {
-                        $slice: ["$$comment.reply", replyLimit], // Limit the number of replies per comment
-                      },
-                      replyLength: {
-                        $size: { $ifNull: ["$$comment.reply", []] },
-                      }, // Calculate reply length
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            post: { $push: "$post" },
+          $project: {
+            comments: 0,
+            likes: 0,
+            shares: 0,
           },
         },
       ]);
 
-      if (postsWithComments.length > 0) {
-        return res.status(200).json(postsWithComments[0].post); // Return the posts array directly
+      return res.status(200).json(posts);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const incrementLikeController = async (req: any, res: Response) => {
+  const { postId, userId } = req.body;
+  try {
+    if (postId && userId) {
+      const objectPostId = stringToObjectId(postId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await PostModel.findOne({
+        _id: objectPostId,
+        likes: { $in: [objectUserId] },
+      });
+
+      if (!isExistingLike) {
+        const liked = await PostModel.findOneAndUpdate(
+          { _id: objectPostId },
+          { $push: { likes: objectUserId } },
+          { new: true }
+        );
+
+        if (liked) {
+          return res
+            .status(200)
+            .json({ message: "Successfully liked a post." });
+        } else {
+          return res
+            .status(400)
+            .json({ message: "Unsuccessful liking a post." });
+        }
       } else {
-        return res.status(200).json([]); // Return an empty array if no posts found
+        return res.status(400).json({ message: "Already liked this post." });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const decrementLikeController = async (req: any, res: Response) => {
+  const { postId, userId } = req.body;
+  try {
+    if (postId && userId) {
+      const objectPostId = stringToObjectId(postId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await PostModel.findOne({
+        _id: objectPostId,
+        likes: { $in: [objectUserId] },
+      });
+
+      if (isExistingLike) {
+        const liked = await PostModel.findOneAndUpdate(
+          { _id: objectPostId },
+          { $pull: { likes: objectUserId } },
+          { new: true }
+        );
+
+        if (liked) {
+          return res
+            .status(200)
+            .json({ message: "Successfully unliked a post." });
+        } else {
+          return res
+            .status(400)
+            .json({ message: "Unsuccessful unliking a post." });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({ message: "You have not liked this post yet." });
       }
     }
   } catch (error) {
@@ -170,38 +216,29 @@ export const fetchPostsController = async (req: any, res: Response) => {
 
 export const addCommentController = async (req: any, res: Response) => {
   try {
-    const { uid, postId, comment, displayname, imgURL } = req.body;
+    const { uid, postId, comment } = req.body;
 
-    if (postId && comment && displayname && imgURL) {
-      const transformedUID = stringToObjectId(uid);
-      const transformedPostId = stringToObjectId(postId);
+    if (uid && postId && comment) {
+      const objectUID = stringToObjectId(uid);
+      const objectPostId = stringToObjectId(postId);
 
-      const post = await PostModel.findOneAndUpdate(
-        { "post._id": transformedPostId },
-        {
-          $push: {
-            "post.$.comment": {
-              uid: uid,
-              imgURL: imgURL,
-              displayname: displayname,
-              comment: comment,
-            },
-          },
-        },
-        {
-          upsert: true,
-          new: true,
-        }
+      const newComment = await CommentModel.create({
+        userId: objectUID,
+        postId: objectPostId,
+        content: comment,
+      });
+
+      await PostModel.findByIdAndUpdate(
+        objectPostId,
+        { $push: { comments: newComment._id } },
+        { new: true, useFindAndModify: false }
       );
 
-      const updatedPost = await PostModel.findOne(
-        { "post._id": transformedPostId },
-        { "post.$": 1 }
-      );
+      const commentFinalResult = await CommentModel.findById(
+        newComment._id
+      ).populate("userId", "_id displayname imgURL");
 
-      const updatedComment = updatedPost?.post[0]?.comment.slice(-1)[0];
-
-      return res.status(200).json(updatedComment);
+      return res.status(200).json(commentFinalResult);
     } else {
       res.status(400).json({ message: "Cannot add comment." });
     }
@@ -212,10 +249,18 @@ export const addCommentController = async (req: any, res: Response) => {
 
 export const getCommentsController = async (req: any, res: Response) => {
   try {
-    const { postId, skip, limit } = req.query;
-    if (postId) {
-      const transformedPostId = stringToObjectId(postId);
-      const post = await PostModel.findById({ _id: transformedPostId });
+    const { postid, skip, limit } = req.query;
+
+    if (postid) {
+      const objectPostId = stringToObjectId(postid);
+
+      const comments = await CommentModel.find({ postId: objectPostId })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "_id displayname imgURL")
+        .exec();
+
+      return res.status(200).json(comments);
     } else {
       res.status(400).json({ message: "Cannot retrieved comments" });
     }
@@ -226,69 +271,24 @@ export const getCommentsController = async (req: any, res: Response) => {
 
 export const addReplyController = async (req: any, res: Response) => {
   try {
-    const { senderObject, authorId, postId, commentId, replyData } = req.body;
+    const { userId, commentId, replyData } = req.body;
 
-    if (senderObject && authorId && postId && commentId && replyData) {
-      const objectAuthorId = stringToObjectId(authorId);
-      const objectPostId = stringToObjectId(postId);
+    if (userId && commentId && replyData) {
+      const objectUserId = stringToObjectId(userId);
       const objectCommentId = stringToObjectId(commentId);
-      const { senderUserId, senderDisplayname, senderImgURL } = senderObject;
 
       const newReplyObjectId = new mongoose.Types.ObjectId();
 
-      const updatedPost = await PostModel.findOneAndUpdate(
-        {
-          _id: objectAuthorId,
-          "post._id": objectPostId,
-          "post.comment._id": objectCommentId,
-        },
-        {
-          $push: {
-            "post.$[post].comment.$[comment].reply": {
-              _id: newReplyObjectId,
-              uid: senderUserId,
-              displayname: senderDisplayname,
-              imgURL: senderImgURL,
-              content: replyData,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          },
-        },
-        {
-          arrayFilters: [
-            { "post._id": objectPostId },
-            { "comment._id": objectCommentId },
-          ],
-          new: true,
-        }
-      ).exec();
+      await ReplyModel.create({
+        _id: newReplyObjectId,
+        userId: objectUserId,
+        commentId: objectCommentId,
+        content: replyData,
+      });
 
-      if (updatedPost) {
-        const specificPost = updatedPost.post.find(
-          (p) => p._id?.toString() === objectPostId.toString()
-        );
+      const commentReply = await ReplyModel.findOne({ _id: newReplyObjectId });
 
-        const specificComment = specificPost?.comment.find(
-          (c) => c._id?.toString() === objectCommentId.toString()
-        );
-
-        const specificReply = specificComment?.reply.find(
-          (r) => r._id?.toString() === newReplyObjectId.toString()
-        );
-
-        if (specificReply) {
-          return res.status(200).json(specificReply);
-        } else {
-          return res
-            .status(400)
-            .json({ message: "There was an error retrieving reply." });
-        }
-      } else {
-        return res
-          .status(400)
-          .json({ message: "There was an error adding a reply." });
-      }
+      return res.status(200).json(commentReply);
     } else {
       res.status(400).json({ message: "Cannot add a reply." });
     }
@@ -297,39 +297,30 @@ export const addReplyController = async (req: any, res: Response) => {
   }
 };
 
-export const getRepliesController = async (req: any, res: Response) => {
-  const { postId, commentId, skip, limit } = req.body;
+export const getParentRepliesController = async (req: any, res: Response) => {
+  const { commentid, skip, limit } = req.query;
 
   try {
-    const objectPostId = stringToObjectId(postId);
-    const objectCommentId = stringToObjectId(commentId);
+    if (commentid) {
+      const objectCommentId = stringToObjectId(commentid);
 
-    const pipeline = [
-      {
-        $match: { "post._id": objectPostId },
-      },
-      {
-        $unwind: "$post",
-      },
-      {
-        $unwind: "$post.comment",
-      },
-      {
-        $match: { "post.comment._id": objectCommentId },
-      },
-      {
-        $project: {
-          _id: 0,
-          replies: {
-            $slice: ["$post.comment.reply", skip, limit],
+      const parentReplies = await ReplyModel.find({
+        $and: [
+          { commentId: objectCommentId }, // Match the specific commentId
+          {
+            $or: [
+              { parentReply: { $exists: false } }, // Field does not exist
+              { parentReply: null }, // Field is explicitly set to null
+            ],
           },
-        },
-      },
-    ];
+        ],
+      })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "_id displayname imgURL");
 
-    const result = await PostModel.aggregate(pipeline);
-
-    return res.status(200).json(result);
+      return res.status(200).json(parentReplies);
+    }
   } catch (error) {
     console.error(error);
   }

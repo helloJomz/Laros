@@ -11,14 +11,17 @@ import PostType from "../common/post/PostType";
 import PostSkeleton from "./skeletons/PostSkeleton";
 import { usePost } from "@/hooks/usePost";
 import { useProfile } from "@/hooks/useProfile";
+import { useState } from "react";
 
 const PostView = () => {
   //TODO: Put Comments and Reactions on the design
 
   const { isAuthProfile, profilePageEndpoint } = useProfile();
-  const { postStates, pagination } = usePost();
+  const { postStates } = usePost();
 
-  const { isLoading, isError, posts } = postStates;
+  const { isPostFetching, isPostSaveError, fetchedPosts } = postStates;
+
+  console.log(fetchedPosts);
 
   const { windowWidth } = useNavbarContext();
 
@@ -27,17 +30,17 @@ const PostView = () => {
   //   setOffset((offset) => offset + 5);
   // };
 
-  if (isLoading) return <PostSkeleton />;
+  if (isPostFetching) return <PostSkeleton />;
 
-  if (isError) return <span>Error...</span>;
+  if (isPostSaveError) return <span>Error...</span>;
 
-  if (posts && posts.length === 0)
+  if (fetchedPosts.length === 0)
     return (
       <>
         <div className="flex gap-x-4 items-center">
           <h4 className="font-bold">Post </h4>
 
-          <div className="flex-1 border-dotted border-t-2 border-muted w-full mt-1" />
+          <div className="flex-1 border border-t-2 border-muted w-full mt-1" />
         </div>
 
         <div className="flex flex-col gap-y-4 text-center text-muted-foreground m-0 md:mt-4 py-10 lg:py-8">
@@ -64,29 +67,19 @@ const PostView = () => {
     <>
       <div className="flex gap-x-4 items-center">
         <h4 className="font-bold">Posts</h4>
-        <div className="border-dotted border-t-2 border-muted w-full mt-1" />
+        <div className="border-t-2 border-muted w-full mt-1" />
         <Button variant="secondary" className="px-2">
           <BsThreeDots />
         </Button>
       </div>
 
-      <div className="flex flex-col gap-y-4">
-        {posts.map((item: any) => {
-          if (item.postType === "post") {
-            return (
-              <PostType
-                key={item._id}
-                postId={item._id}
-                content={item.content ? item.content : undefined}
-                postImgURL={item.imgURL ? item.imgURL : undefined}
-                comments={item.comment}
-                createDate={formatDateForPostHeader(item.createdAt)}
-              />
-            );
-          }
-        })}
+      <div className="flex flex-col gap-y-4 ">
+        {fetchedPosts.map((post: any, index: number) => {
+          if (post.postType === "post")
+            return <PostType key={`postType-${index}`} postObject={post} />;
 
-        {posts.length > 5 && <Button>Load more</Button>}
+          return null;
+        })}
       </div>
     </>
   );

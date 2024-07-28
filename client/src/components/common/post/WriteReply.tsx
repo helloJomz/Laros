@@ -7,22 +7,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAddReplyMutation } from "@/app/features/post/postApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useDispatch } from "react-redux";
-import { setPreviewReply } from "@/app/features/post/postSlice";
+// import { setPreviewReply } from "@/app/features/post/postSlice";
 import { Input } from "@/components/ui/input";
 import { usePost } from "@/hooks/usePost";
 
-const WriteReply = ({
-  id,
-  isReply,
-  commentObject,
-}: {
-  id: { postId: string; commentId: string };
-  isReply: boolean;
-  commentObject: any;
-}) => {
+const WriteReply = ({ commentObject }: { commentObject: any }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [replyContent, setReplyContent] = useState<string>("");
+
   const { authenticatedUserObject } = useUserContext();
+
   const { ui } = usePost();
   const { setReplyId } = ui;
 
@@ -31,8 +25,9 @@ const WriteReply = ({
     userid: senderUserId,
     imgURL: senderImgURL,
   } = authenticatedUserObject;
-  const { commentId, postId } = id;
-  const { displayname, uid } = commentObject;
+
+  const { postId, commentId, commenterUID, commenterDisplayname } =
+    commentObject;
 
   const [addReply, { isLoading }] = useAddReplyMutation();
 
@@ -57,79 +52,73 @@ const WriteReply = ({
     }
 
     const { data, error } = await addReply({
-      senderObject: { senderUserId, senderDisplayname, senderImgURL },
-      authorId: uid,
+      userId: senderUserId,
       commentId: commentId,
       postId: postId,
-      replyData: replyContent,
+      replyData: replyContent.trim().replace(/[\r\n]+/g, " "),
     });
 
     if (!error) {
-      // do the adding here in slice
-      console.log(data);
-
-      dispatch(
-        setPreviewReply({
-          postId: postId,
-          commentId: commentId,
-          replyData: data,
-        })
-      );
+      // dispatch(
+      //   setPreviewReply({
+      //     postId: postId,
+      //     commentId: commentId,
+      //     replyData: data,
+      //   })
+      // );
 
       setReplyContent("");
-      setReplyId(null);
     }
   };
 
-  const TextAreaPlaceholder = `You are replying to ${capitalizeFirstLetter(
-    displayname || "Laros"
+  const TextAreaPlaceholder = `Replying to ${capitalizeFirstLetter(
+    commenterDisplayname || "Laros"
   )}`;
 
-  if (isReply)
-    return (
-      <>
-        <div className="mt-2 w-[95%] ps-10">
-          <div className="relative">
-            <div className="flex gap-x-2">
-              <img
-                src={senderImgURL}
-                alt=""
-                className="h-6 w-6 rounded-full object-cover"
+  return (
+    <>
+      <div className="mt-2 w-[95%] ps-10">
+        <div className="relative">
+          <div className="flex gap-x-2">
+            <img
+              src={senderImgURL}
+              alt=""
+              className="h-6 w-6 rounded-full object-cover"
+            />
+            <div className="bg-slate-600 rounded-lg p-1 h-auto w-full">
+              <Textarea
+                ref={textareaRef}
+                placeholder={TextAreaPlaceholder}
+                value={replyContent}
+                onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleReplySubmit();
+                  }
+                }}
+                className="w-[90%] h-full bg-red-500 p-2 border bg-transparent border-none  ounded resize-none text-xs md:text-sm overflow-hidden"
+                onChange={(e) => setReplyContent(e.target.value)}
               />
-              <div className="bg-slate-600 rounded-lg p-1 h-auto w-full">
-                <Textarea
-                  ref={textareaRef}
-                  placeholder={TextAreaPlaceholder}
-                  value={replyContent}
-                  onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleReplySubmit();
-                    }
-                  }}
-                  className="w-[90%] h-full bg-red-500 p-2 border bg-transparent border-none  ounded resize-none text-xs md:text-sm overflow-hidden"
-                  onChange={(e) => setReplyContent(e.target.value)}
-                />
-              </div>
             </div>
-
-            <Button
-              className={cn(
-                "absolute bottom-3 right-2 text-muted-foreground p-1 m-0 h-fit w-fit ",
-                {
-                  "text-white": replyContent.length > 0,
-                }
-              )}
-              variant={"ghost"}
-              disabled={replyContent.length === 0 || isLoading}
-              onClick={handleReplySubmit}
-            >
-              <SendHorizontal size={20} />
-            </Button>
           </div>
+
+          <Button
+            className={cn(
+              "absolute bottom-3 right-2 text-muted-foreground p-1 m-0 h-fit w-fit ",
+              {
+                "text-white": replyContent.length > 0,
+              }
+            )}
+            variant={"ghost"}
+            disabled={replyContent.length === 0 || isLoading}
+            onClick={handleReplySubmit}
+          >
+            <SendHorizontal size={20} />
+          </Button>
         </div>
-      </>
-    );
+      </div>
+    </>
+  );
 };
 
 export default WriteReply;

@@ -5,14 +5,19 @@ import DisplayPicture from "./modals/DisplayPicture";
 import { cn } from "@/lib/utils";
 import CreatePost from "../common/modal/CreatePost/CreatePost";
 import { useModal } from "@/hooks/useModal";
+import MaxViewPost from "../common/modal/MaxViewPost";
 
 const componentMap: { [key: string]: React.ComponentType<any> } = {
+  // EXCLUSIVE ON PROFILE
   following: Following,
   genre: EditGenre,
   heart: () => <HeartAndFollow type="heart" />,
   follow: () => <HeartAndFollow type="follow" />,
   displaypicture: DisplayPicture,
+
+  //COMMONS
   createpost: CreatePost,
+  maxviewpost: MaxViewPost,
 };
 
 const ProfileModal = () => {

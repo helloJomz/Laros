@@ -8,6 +8,6 @@ const router = Router();
 
 router.post("/getuserbydisplayname", getUserByDisplayNameController);
 
-router.post("/getuserbyid", getUserByIdController);
+router.get("/getuser", getUserByIdController);
 
 export default router;

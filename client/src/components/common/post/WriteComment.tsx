@@ -1,9 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { useUserContext } from "@/context/UserContext";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAddCommentMutation } from "@/app/features/post/postApiSlice";
 import { useDispatch } from "react-redux";
-import { setPreviewComment } from "@/app/features/post/postSlice";
+import { setComment } from "@/app/features/post/postSlice";
 import { usePost } from "@/hooks/usePost";
 import { capitalizeFirstLetter } from "@/utils/utils";
 
@@ -25,8 +25,6 @@ const WriteComment = ({ postId }: { postId: string }) => {
       const commentObject = {
         uid: userid,
         postId: postId,
-        imgURL: imgURL,
-        displayname: displayname,
         comment: commentContent,
       };
 
@@ -35,7 +33,7 @@ const WriteComment = ({ postId }: { postId: string }) => {
       console.log(data);
 
       if (!error) {
-        dispatch(setPreviewComment({ postId: postId, ...data }));
+        dispatch(setComment({ postId: postId, commentData: data }));
         setCommentContent("");
       }
     }

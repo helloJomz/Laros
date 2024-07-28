@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "@/app/store";
 
-const initialState: { modal: string | null } = {
+const initialState: { modal: string | null; helper: any } = {
   modal: null,
+  helper: null,
 };
 
 export const modalSlice = createSlice({
@@ -12,10 +14,16 @@ export const modalSlice = createSlice({
       const { modal } = action.payload;
       state.modal = modal;
     },
+
+    setHelper: (state, action: PayloadAction<{ helper: any }>) => {
+      const { helper } = action.payload;
+      state.helper = helper;
+    },
   },
 });
 
-export const { setModal } = modalSlice.actions;
-export const selectModal = (state: any) => state.modal.modal;
+export const { setModal, setHelper } = modalSlice.actions;
+export const selectModal = (state: RootState) => state.modal.modal;
+export const selectHelper = (state: RootState) => state.modal.helper;
 
 export default modalSlice.reducer;

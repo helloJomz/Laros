@@ -1,29 +1,13 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const ReplySchema = new Schema(
+const PostSchema = new Schema(
   {
-    uid: String,
-    displayname: String,
-    imgURL: String,
-    content: String,
-  },
-  { timestamps: true } // Timestamps for replies
-);
-
-const CommentSchema = new Schema(
-  {
-    uid: String,
-    displayname: String,
-    imgURL: String,
-    comment: String,
-    reply: [ReplySchema], // Replies are nested here
-  },
-  { timestamps: true } // Timestamps for comments
-);
-
-const PostContentSchema = new Schema(
-  {
+    userid: {
+      type: Schema.Types.ObjectId,
+      ref: "Users", // Reference to the User model
+      required: true,
+    },
     postType: {
       type: String,
       required: true,
@@ -32,7 +16,7 @@ const PostContentSchema = new Schema(
       type: String,
       required: false,
     },
-    imgURL: {
+    postImgURL: {
       type: String,
       required: false,
     },
@@ -50,18 +34,11 @@ const PostContentSchema = new Schema(
         required: false,
       },
     },
-    comment: [CommentSchema], // Comments are nested here
+    likes: [{ type: Schema.Types.ObjectId, ref: "users" }],
+    // shares: [{ stype: Schema.Types.ObjectId, ref: "shares" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "comments" }],
   },
-  { timestamps: true } // Timestamps for post content
+  { timestamps: true }
 );
-
-const PostSchema = new Schema({
-  userid: {
-    type: Schema.Types.ObjectId,
-    ref: "Users", // Reference to the User model
-    required: true,
-  },
-  post: [PostContentSchema], // Posts are nested here
-});
 
 export const PostModel = model("Posts", PostSchema);

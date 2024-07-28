@@ -10,15 +10,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    getUserById: builder.mutation({
-      query: (uid: string) => ({
-        url: "/user/getuserbyid",
-        method: "POST",
-        body: { uid },
-      }),
+    getUserById: builder.query({
+      query: (uid: string) => `/user/getuser?userid=${uid}`,
     }),
   }),
 });
 
-export const { useGetUserByDisplayNameMutation, useGetUserByIdMutation } =
+export const { useGetUserByDisplayNameMutation, useGetUserByIdQuery } =
   userApiSlice;

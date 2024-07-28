@@ -1,175 +1,197 @@
 import { capitalizeFirstLetter, formatDateDistanceToNow } from "@/utils/utils";
-import { MdExpandMore, MdVerified } from "react-icons/md";
+import { MdVerified } from "react-icons/md";
 import { useNavbarContext } from "@/context/NavbarContext";
 import { Link } from "react-router-dom";
-import { FaComment } from "react-icons/fa";
 import { useState } from "react";
-import { Heart } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Heart, LoaderCircle } from "lucide-react";
 import WriteReply from "./WriteReply";
 import Replies from "./Replies";
 import React from "react";
 import { usePost } from "@/hooks/usePost";
+import { useNavigate } from "react-router-dom";
+import { useLoadMoreCommentMutation } from "@/app/features/post/postApiSlice";
+import { useDispatch } from "react-redux";
+import { useGetCommentsQuery } from "@/app/features/post/postApiSlice";
+// import { setPreviewComment } from "@/app/features/post/postSlice";
 
-const PostComment = ({
-  postId,
-  comments,
-}: {
-  postId: string;
-  comments: any[];
-}) => {
-  const { ui } = usePost();
-  const { setReplyId, replyid } = ui;
+const PostComment = ({ postId }: { postId: any }) => {
+  const navigate = useNavigate();
+
   const { windowWidth } = useNavbarContext();
 
-  const startIdx =
-    windowWidth <= 768
-      ? Math.max(comments.length - 1, 0)
-      : Math.max(comments.length - 3, 0);
-  const endIdx = comments.length;
+  const [skipLimit, setSkipLimit] = useState<{ skip: number; limit: number }>({
+    skip: 0,
+    limit: 5,
+  });
 
-  const modifiedComments = comments.map((comment, index) => ({
-    ...comment,
-    isFirst: index === 0,
-  }));
+  useGetCommentsQuery(
+    {
+      postId,
+      ...skipLimit,
+    },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  const { ui, commentStates, loadingStates } = usePost();
+
+  const { useComment } = commentStates;
+  const { useIsCommentLoading, useIsCommentError } = loadingStates;
+
+  const isRendered = !useIsCommentLoading && !useIsCommentError;
+
+  const filteredCommentByPostId = isRendered
+    ? useComment.filter((comment: any) => comment.postId === postId)
+    : [];
+
+  const { setReplyId, replyid } = ui;
+
+  const [lengthOfComments, setLengthOfReplies] = useState<number>(1);
 
   const isVerified: boolean = true;
-
-  const [replyCommentId, setReplyCommentId] = useState<string>("");
 
   const textLengthForExpand: number = windowWidth > 768 ? 400 : 100;
 
   const [expandComment, setExpandComment] = useState<string | null>(null);
 
+  const handleLoadMoreComment = async () => {
+    // const { data, error } = await loadMoreComment({
+    //   postId: postId,
+    //   ...skipLimit,
+    // });
+    // if (!error) {
+    //   // dispatch(
+    //   //   setPreviewComment({
+    //   //     postId: postId,
+    //   //     commentData: data,
+    //   //   })
+    //   // );
+    //   setLengthOfReplies((number) => number - 5);
+    //   setSkipLimit((prevObj) => ({
+    //     skip: prevObj?.skip + 5,
+    //     limit: prevObj?.limit + 5,
+    //   }));
+    // }
+  };
+
+  if (useIsCommentLoading) return <span>Loading....</span>;
+
+  if (useIsCommentError) return <span>Error...</span>;
+
   // Initial
   return (
     <>
-      <div className="pt-0.5 md:pt-1 pb-2 flex flex-col px-2  gap-y-2 md:gap-y-4 w-full">
-        {modifiedComments
-          .slice(startIdx, endIdx)
-          .reverse()
-          .map((comment: any) => (
-            <React.Fragment key={comment._id}>
-              <div>
-                <div className="rounded-lg flex gap-x-1 gap-y-2 w-full">
-                  <div className="grid grid-cols-[2rem_3fr] gap-x-1 w-full ">
-                    <div className="flex items-center flex-col gap-y-1.5 text-muted-foreground">
-                      <img
-                        src={comment.imgURL}
-                        alt=""
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
+      <div className="pt-0.5 md:pt-1 pb-2 flex flex-col px-2  gap-y-2 md:gap-y-4 w-full max-h-72 md:max-h-[26rem] overflow-y-auto">
+        {filteredCommentByPostId.map((comment: any, index: number) => (
+          <React.Fragment key={`${index}-${comment._id}`}>
+            <div>
+              <div className="rounded-lg flex gap-x-1 gap-y-2 w-full">
+                <div className="grid grid-cols-[2rem_3fr] gap-x-1 w-full ">
+                  <div className="flex items-center flex-col gap-y-1.5 text-muted-foreground">
+                    <img
+                      src={comment.userId.imgURL}
+                      alt=""
+                      className="w-8 h-8 rounded-full object-cover hover:brightness-150 cursor-pointer"
+                      onClick={() => navigate(`/${comment.userId.displayname}`)}
+                    />
 
-                      {comment.reply.length > 0 && (
-                        <div className="bg-slate-600 w-0.5 flex-grow" />
-                      )}
-                    </div>
+                    {/* {comment.reply.length > 0 && (
+                      <div className="bg-slate-600 w-0.5 flex-grow" />
+                    )} */}
+                  </div>
 
-                    <div className="flex flex-col w-full gap-y-8">
-                      <div className="w-full">
-                        <div className="flex flex-col gap-y-1.5">
-                          <div className="flex gap-x-1 items-center text-xs md:text-sm">
-                            <Link
-                              to={`/${comment.displayname}`}
-                              className=" font-semibold hover:underline"
-                            >
-                              <span>
-                                {capitalizeFirstLetter(comment.displayname)}
-                              </span>
-                            </Link>
-
-                            {isVerified && (
-                              <MdVerified className=" text-sky-400" />
-                            )}
-                          </div>
-
-                          <div className="bg-gradient-to-r from-slate-500 to-slate-600 rounded-lg p-2 text-xs w-fit md:max-w-[85%] md:text-sm break-all px-2">
-                            <div className="space-x-1 w-full">
-                              <span>
-                                {!expandComment && comment.comment.length > 100
-                                  ? comment.comment.slice(
-                                      0,
-                                      textLengthForExpand
-                                    )
-                                  : comment.comment}
-                              </span>
-                              {comment.comment.length > textLengthForExpand && (
-                                <span
-                                  className="text-sky-400 hover:underline cursor-pointer"
-                                  onClick={() =>
-                                    setExpandComment((prevId) =>
-                                      prevId === comment._id
-                                        ? null
-                                        : comment._id
-                                    )
-                                  }
-                                >
-                                  {!expandComment
-                                    ? "See more..."
-                                    : "See less..."}
-                                </span>
+                  <div className="flex flex-col w-full gap-y-8">
+                    <div className="w-full">
+                      <div className="flex flex-col gap-y-1.5">
+                        <div className="flex gap-x-1 items-center text-xs md:text-sm">
+                          <Link
+                            to={`/${comment.userId.displayname}`}
+                            className=" font-semibold hover:underline"
+                          >
+                            <span>
+                              {capitalizeFirstLetter(
+                                comment.userId.displayname
                               )}
-                            </div>
-                          </div>
+                            </span>
+                          </Link>
+
+                          {isVerified && (
+                            <MdVerified className=" text-sky-400" />
+                          )}
                         </div>
 
-                        <div className="flex gap-x-4 items-center mt-0.5 text-muted-foreground">
-                          <span className="text-[0.7rem]">
-                            {formatDateDistanceToNow(comment.createdAt)}
-                          </span>
-                          {/* Reply Button */}
-                          <div
-                            className="cursor-pointer hover:underline text-xs"
-                            onClick={() => setReplyId(comment._id)}
-                          >
-                            <span>Reply</span>
+                        <div className="bg-gradient-to-r from-slate-500 to-slate-600 rounded-lg p-2 text-xs w-fit md:max-w-[85%] md:text-sm break-all px-2">
+                          <div className="space-x-1 w-full">
+                            <span>
+                              {!expandComment && comment.content.length > 100
+                                ? comment.content.slice(0, textLengthForExpand)
+                                : comment.content}
+                            </span>
+                            {comment.content.length > textLengthForExpand && (
+                              <span
+                                className="text-sky-400 hover:underline cursor-pointer"
+                                onClick={() =>
+                                  setExpandComment((prevId) =>
+                                    prevId === comment._id ? null : comment._id
+                                  )
+                                }
+                              >
+                                {!expandComment ? "See more..." : "See less..."}
+                              </span>
+                            )}
                           </div>
+                        </div>
+                      </div>
 
-                          <div className="flex gap-x-0.5 text-xs items-center hover:text-red-300 cursor-pointer">
-                            <span>1</span>
-                            <Heart size={13} className="mt-[0.1rem]" />
-                          </div>
+                      <div className="flex gap-x-4 items-center mt-0.5 text-muted-foreground">
+                        <span className="text-[0.7rem]">
+                          {formatDateDistanceToNow(comment.createdAt)}
+                        </span>
+                        {/* Reply Button */}
+                        <div
+                          className="cursor-pointer hover:underline text-xs"
+                          onClick={() => setReplyId(comment._id)}
+                        >
+                          <span>Reply</span>
+                        </div>
+
+                        <div className="flex gap-x-0.5 text-xs items-center hover:text-red-300 cursor-pointer">
+                          <span>1</span>
+                          <Heart size={13} className="mt-[0.1rem]" />
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <Replies
-                  openInput={replyCommentId !== "" ? true : false}
-                  replyObject={comment.reply}
-                  replyLength={comment.replyLength}
-                  id={{ postId: postId, commentId: comment._id }}
-                />
-
-                <WriteReply
-                  isReply={replyid === comment._id}
-                  commentObject={replyid === comment._id ? comment : {}}
-                  id={{ postId: postId, commentId: comment._id }}
-                />
               </div>
-            </React.Fragment>
-          ))}
+
+              <Replies commentId={comment._id} />
+
+              {replyid === comment._id && (
+                <WriteReply
+                  commentObject={{
+                    postId: postId,
+                    commentId: comment._id,
+                    commenterDisplayname: comment.userId.displayname,
+                    commenterUID: comment.userId,
+                  }}
+                />
+              )}
+            </div>
+          </React.Fragment>
+        ))}
+
+        {lengthOfComments > 3 && (
+          <div
+            className=" text-slate-200 ps-1 pt-1 hover:underline cursor-pointer hover:text-muted-foreground w-fit text-xs md:text-sm flex gap-x-2 items-center"
+            onClick={handleLoadMoreComment}
+          >
+            {useIsCommentLoading && (
+              <LoaderCircle className="animate-spin" size={12} />
+            )}
+            <span>{`View ${lengthOfComments - 3} more  comments`}</span>
+          </div>
+        )}
       </div>
-      {windowWidth > 768
-        ? comments.length > 3 && (
-            <div
-              className="text-xs md:text-sm px-2 flex gap-x-1 items-center text-slate-200 hover:underline cursor-pointer"
-              onClick={() => console.log(postId)}
-            >
-              <MdExpandMore className="mt-0.5" />
-              <span>See all comments</span>
-            </div>
-          )
-        : comments.length > 1 && (
-            <div
-              className="text-xs md:text-sm px-2 flex gap-x-1 items-center text-slate-200 hover:underline cursor-pointer"
-              onClick={() => console.log(postId)}
-            >
-              <MdExpandMore className="mt-0.5" />
-              <span>See all comments</span>
-            </div>
-          )}
     </>
   );
 };

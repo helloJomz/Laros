@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/User";
 import mongoose from "mongoose";
-import { PostModel } from "../models/Post";
+import { stringToObjectId } from "../helpers";
 
 export const getUserByDisplayNameController = async (
   req: Request,
@@ -31,13 +31,11 @@ export const getUserByDisplayNameController = async (
 };
 
 export const getUserByIdController = async (req: Request, res: Response) => {
-  const { uid } = req.body;
+  const { userid } = req.query;
 
-  if (uid) {
-    const transformedUID = mongoose.Types.ObjectId.createFromHexString(uid);
-    const user = await UserModel.findById(transformedUID);
-
-    console.log(user);
+  if (userid) {
+    const objectUID = stringToObjectId(userid as string);
+    const user = await UserModel.findById(objectUID);
 
     if (user) {
       const userObj = {
@@ -49,7 +47,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
         follower: user.follower.length,
         following: user.following.length,
       };
-      return res.status(200).json({ ...userObj });
+      return res.status(200).json(userObj);
     } else {
       return res.status(400).json({ message: "No user found" });
     }

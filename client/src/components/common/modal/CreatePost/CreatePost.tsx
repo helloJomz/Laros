@@ -19,14 +19,10 @@ const CreatePost = () => {
     usePreviewImg,
     usePreviewContent,
     setPreviewContent,
-    savePost,
-    states,
     postStates,
   } = usePost();
 
-  const { isPosting, isPostingError } = states;
-
-  const { setPost } = postStates;
+  const { savePost, setPost, isPostSaving, isPostSaveError } = postStates;
 
   const { setModalOpen } = useModal();
 
@@ -78,9 +74,9 @@ const CreatePost = () => {
       formData.append("content", postObject.content);
       formData.append("game", postObject.game);
 
-      const { data } = await savePost(formData);
+      const { data, error } = await savePost(formData);
 
-      if (!isPosting && !isPostingError) {
+      if (!error) {
         setPreviewContent("");
         setPreviewImg("");
         setPost(data.post[0]);
@@ -107,12 +103,12 @@ const CreatePost = () => {
         game: "hi",
       };
 
-      const { data } = await savePost(postObject);
+      const { data, error } = await savePost(postObject);
 
-      if (!isPosting && !isPostingError) {
+      if (!error) {
         setPreviewContent("");
         setPreviewImg("");
-        setPost(data.post[0]);
+        setPost(data);
         setModalOpen(null);
       }
     }
@@ -141,7 +137,7 @@ const CreatePost = () => {
             <img
               src={imgURL}
               alt={`photo_${displayname}`}
-              className="w-8 h-8 rounded-full"
+              className="w-8 h-8 rounded-full object-cover"
             />
             <h4 className="font-semibold">
               {capitalizeFirstLetter(displayname)}
@@ -179,8 +175,8 @@ const CreatePost = () => {
           </div>
         </div>
 
-        <Button onClick={handleSubmitPost} disabled={isPosting}>
-          {isPosting ? <LoaderCircle className="animate-spin" /> : "Post"}
+        <Button onClick={handleSubmitPost} disabled={isPostSaving}>
+          {isPostSaving ? <LoaderCircle className="animate-spin" /> : "Post"}
         </Button>
       </div>
     </>

@@ -15,7 +15,6 @@ export const PostUISlice = createSlice({
   reducers: {
     setReplyId: (state, action: PayloadAction<{ replyId: string | null }>) => {
       const { replyId } = action.payload;
-      console.log(replyId);
       if (state.replyId === replyId) {
         state.replyId = null;
       } else {

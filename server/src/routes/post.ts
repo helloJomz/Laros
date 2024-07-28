@@ -5,7 +5,10 @@ import {
   addCommentController,
   getCommentsController,
   addReplyController,
-  getRepliesController,
+  getParentRepliesController,
+  incrementLikeController,
+  decrementLikeController,
+  // getRepliesController,
 } from "../controllers/PostController";
 import Multer from "multer";
 
@@ -17,9 +20,13 @@ const multer = Multer({
 
 router.post("/savepost", multer.single("file"), savePostController);
 router.get("/fetchpost", fetchPostsController);
-router.post("/addpost", addCommentController);
-router.get("/getcomments", getCommentsController);
+router.post("/incrementlike", incrementLikeController);
+router.post("/decrementlike", decrementLikeController);
+
+router.get("/fetchcomment", getCommentsController);
+router.post("/addcomment", addCommentController);
+router.get("/fetchparentreply", getParentRepliesController);
 router.post("/addreply", addReplyController);
-router.post("/getreplies", getRepliesController);
+// router.post("/getreplies", getRepliesController);
 
 export default router;

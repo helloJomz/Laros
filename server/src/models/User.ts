@@ -59,14 +59,6 @@ export const UserSchema = new Schema({
       },
     ],
   },
-  post: [
-    {
-      uid: {
-        type: Schema.Types.ObjectId,
-        ref: "Posts",
-      },
-    },
-  ],
 });
 
 export const UserModel = model("Users", UserSchema);

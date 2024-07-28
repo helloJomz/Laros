@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const CommentSchema = new Schema(
+const ReplySchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -13,6 +13,16 @@ const CommentSchema = new Schema(
       ref: "Posts",
       required: true,
     },
+    commentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Comments",
+      required: true,
+    },
+    parentReply: {
+      type: Schema.Types.ObjectId,
+      ref: "Replies", // Reference to another reply
+      default: null,
+    },
     content: {
       type: String,
       required: true,
@@ -22,7 +32,4 @@ const CommentSchema = new Schema(
   { timestamps: true }
 );
 
-CommentSchema.index({ postId: 1 });
-CommentSchema.index({ userId: 1 });
-
-export const CommentModel = model("Comments", CommentSchema);
+export const ReplyModel = model("Replies", ReplySchema);
