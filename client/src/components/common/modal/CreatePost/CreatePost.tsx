@@ -10,6 +10,8 @@ import { usePost } from "@/hooks/usePost";
 import Content from "./Content";
 import { useModal } from "@/hooks/useModal";
 
+//FIXME: When create post with image the modal does not close.
+
 const CreatePost = () => {
   const { authenticatedUserObject } = useUserContext();
   const { imgURL, displayname, userid } = authenticatedUserObject;
@@ -79,7 +81,7 @@ const CreatePost = () => {
       if (!error) {
         setPreviewContent("");
         setPreviewImg("");
-        setPost(data.post[0]);
+        setPost(data);
         setModalOpen(null);
       }
     }

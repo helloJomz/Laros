@@ -13,9 +13,15 @@ const MaxViewPost = () => {
     selectSinglePost(state, postId)
   );
 
-  // EDIT THE WIDTH
+  // EDIT THE WIDTH //TODO: RENDER A COMMENT COMPONENT HERE
   if (selectedPost?.postType === "post")
-    return <PostType postObject={selectedPost!} />;
+    return (
+      <>
+        <div className="w-[90%] md:w-[30%]">
+          <PostType postObject={selectedPost!} />
+        </div>
+      </>
+    );
 
   return null;
 };

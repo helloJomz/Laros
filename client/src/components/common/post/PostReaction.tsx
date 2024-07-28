@@ -20,6 +20,8 @@ const PostReaction = ({
 }) => {
   const dispatch = useDispatch();
 
+  const { usehelper } = useModal();
+
   const { authenticatedUserObject } = useUserContext();
   const { userid } = authenticatedUserObject;
 
@@ -56,7 +58,9 @@ const PostReaction = ({
       onClick: handleLikeClick,
     },
     {
-      Icon: <FaComment />,
+      Icon: (
+        <FaComment className={usehelper === postId ? "text-slate-100" : ""} />
+      ),
       onClick: handleCommentClick,
     },
     {

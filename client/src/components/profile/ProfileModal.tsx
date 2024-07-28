@@ -34,7 +34,8 @@ const ProfileModal = () => {
       className={cn(
         "fixed w-full h-full overflow-y-hidden bg-opacity-70 bg-black z-[99] flex items-center justify-center pb-14 md:pb-32",
         {
-          "bg-opacity-90": modalType === "displaypicture",
+          "bg-opacity-90":
+            modalType === "displaypicture" || modalType === "maxviewpost",
           "flex-col justify-center ": modalType === "createpost",
         }
       )}

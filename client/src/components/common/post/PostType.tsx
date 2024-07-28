@@ -34,7 +34,7 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
 
   return (
     <>
-      <div className="bg-secondary rounded">
+      <div className="bg-secondary rounded w-full">
         <div className="w-full bg-secondary h-fit flex flex-col gap-y-4 rounded">
           <div className="flex justify-between px-4 pt-4 pb-2">
             <div className="flex gap-x-2 items-center">
