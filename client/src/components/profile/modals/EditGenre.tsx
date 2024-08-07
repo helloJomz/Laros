@@ -6,8 +6,11 @@ import { useAddGenreMutation } from "@/app/features/profile/profileApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
 import { useProfile } from "@/hooks/useProfile";
+import useClickedOutsideModal from "@/hooks/useClickedOutsideModal";
 
 const EditGenre = () => {
+  const { componentRef } = useClickedOutsideModal();
+
   const { authenticatedUserObject } = useUserContext();
   const yourUID = authenticatedUserObject.userid;
   const { userObject, setGenre } = useProfile();
@@ -48,7 +51,10 @@ const EditGenre = () => {
 
   return (
     <>
-      <div className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-1/2 xl:w-1/3 rounded shadow-lg p-4 flex flex-col gap-y-4">
+      <div
+        className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-1/2 xl:w-1/3 rounded shadow-lg p-4 flex flex-col gap-y-4"
+        ref={componentRef}
+      >
         <div>
           <h1 className="text-base lg:text-lg font-semibold">
             Add Your Favorite Genres

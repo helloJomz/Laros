@@ -5,10 +5,14 @@ import {
   addCommentController,
   getCommentsController,
   addReplyController,
-  getParentRepliesController,
+  deleteCommentController,
   incrementLikeController,
   decrementLikeController,
-  // getRepliesController,
+  incrementCommentLikeController,
+  decrementCommentLikeController,
+  getRepliesController,
+  decrementReplyLikeController,
+  incrementReplyLikeController,
 } from "../controllers/PostController";
 import Multer from "multer";
 
@@ -25,8 +29,13 @@ router.post("/decrementlike", decrementLikeController);
 
 router.get("/fetchcomment", getCommentsController);
 router.post("/addcomment", addCommentController);
-router.get("/fetchparentreply", getParentRepliesController);
+router.post("/deletecomment", deleteCommentController);
+router.post("/incrementcommentlike", incrementCommentLikeController);
+router.post("/decrementcommentlike", decrementCommentLikeController);
+
+router.post("/getreplies", getRepliesController);
 router.post("/addreply", addReplyController);
-// router.post("/getreplies", getRepliesController);
+router.post("/incrementreplylike", incrementReplyLikeController);
+router.post("/decrementreplylike", decrementReplyLikeController);
 
 export default router;

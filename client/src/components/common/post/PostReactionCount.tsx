@@ -1,16 +1,29 @@
+import { useModal } from "@/hooks/useModal";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { FaFire } from "react-icons/fa";
 
 const PostReactionCount = ({
   count,
+  postId,
 }: {
+  postId: string;
   count: { likeCount: number; shareCount: number; commentCount: number };
 }) => {
+  const { setHelper, setModalOpen } = useModal();
+
+  const { viewPost } = useModal();
+  const { useViewPostState, setViewPostState } = viewPost;
+
   const { commentCount, likeCount, shareCount } = count;
 
-  if (commentCount === 0 && likeCount === 0 && shareCount === 0)
-    return <div className="py-2" />;
+  const handleCommentCountClick = () => {
+    setHelper(postId);
+    setModalOpen("maxviewpost");
+    setViewPostState(
+      useViewPostState === "withComment" ? "noComment" : "withComment"
+    );
+  };
 
   return (
     <>
@@ -33,7 +46,10 @@ const PostReactionCount = ({
 
         <div className="flex gap-x-2 text-xs md:text-sm">
           {commentCount > 0 && (
-            <div className="hover:underline cursor-pointer hover:text-slate-200">
+            <div
+              className="hover:underline cursor-pointer hover:text-slate-200"
+              onClick={handleCommentCountClick}
+            >
               <span>{`${commentCount} comment${
                 commentCount > 1 ? "s" : ""
               }`}</span>

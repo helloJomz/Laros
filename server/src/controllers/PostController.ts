@@ -53,9 +53,12 @@ export const savePostController = async (req: any, res: Response) => {
           const post = await PostModel.findById(postId);
 
           if (post) {
-            res
-              .status(200)
-              .json({ ...post.toObject(), userLiked: false, likeCount: 0 });
+            res.status(200).json({
+              ...post.toObject(),
+              userLiked: false,
+              likeCount: 0,
+              commentCount: 0,
+            });
           } else {
             res
               .status(400)
@@ -78,9 +81,12 @@ export const savePostController = async (req: any, res: Response) => {
         });
 
         if (post) {
-          res
-            .status(200)
-            .json({ ...post.toObject(), userLiked: false, likeCount: 0 });
+          res.status(200).json({
+            ...post.toObject(),
+            userLiked: false,
+            likeCount: 0,
+            commentCount: 0,
+          });
         } else {
           res
             .status(400)
@@ -234,11 +240,25 @@ export const addCommentController = async (req: any, res: Response) => {
         { new: true, useFindAndModify: false }
       );
 
-      const commentFinalResult = await CommentModel.findById(
-        newComment._id
-      ).populate("userId", "_id displayname imgURL");
+      const commentFinalResult = await CommentModel.findById(newComment._id)
+        .populate("userId", "_id displayname imgURL")
+        .lean();
 
-      return res.status(200).json(commentFinalResult);
+      if (!commentFinalResult)
+        return res
+          .status(400)
+          .json({ message: "There is an error occured on adding comment." });
+
+      const { userId: user, ...rest } = commentFinalResult;
+
+      return res.status(200).json({
+        ...rest,
+        user,
+        isLiked: false,
+        likeCount: 0,
+        likes: undefined,
+        postId: undefined,
+      });
     } else {
       res.status(400).json({ message: "Cannot add comment." });
     }
@@ -247,22 +267,207 @@ export const addCommentController = async (req: any, res: Response) => {
   }
 };
 
+export const deleteCommentController = async (req: any, res: Response) => {
+  const { uid, postId, commentId } = req.body;
+  try {
+    if (uid && postId && commentId) {
+      const objectCommentId = stringToObjectId(commentId);
+      const objectPostId = stringToObjectId(postId);
+      const objectUserId = stringToObjectId(uid);
+
+      const deleteComment = await CommentModel.deleteOne({
+        _id: objectCommentId,
+        postId: objectPostId,
+      });
+
+      const deleteRepliesReferencedToComment = await ReplyModel.deleteMany({
+        commentId: objectCommentId,
+      });
+
+      const deleteCommentsToPost = await PostModel.findOneAndUpdate(
+        { _id: objectPostId },
+        { $pull: { comments: objectCommentId } }
+      );
+
+      if (
+        deleteComment &&
+        deleteRepliesReferencedToComment &&
+        deleteCommentsToPost
+      ) {
+        return res
+          .status(200)
+          .json({ message: "Delete a comment successfully" });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getCommentsController = async (req: any, res: Response) => {
   try {
-    const { postid, skip, limit } = req.query;
+    const { userid, postid, skip, limit } = req.query;
 
     if (postid) {
+      const objectUserId = stringToObjectId(userid);
       const objectPostId = stringToObjectId(postid);
 
-      const comments = await CommentModel.find({ postId: objectPostId })
-        .skip(skip)
-        .limit(limit)
-        .populate("userId", "_id displayname imgURL")
-        .exec();
+      const post = await PostModel.findById(objectPostId);
+
+      if (!post) {
+        return res
+          .status(400)
+          .json({ message: "There was no post retrieved." });
+      }
+
+      const comments = await CommentModel.aggregate([
+        { $match: { _id: { $in: post.comments } } },
+
+        {
+          $addFields: {
+            replyCount: { $size: "$replies" },
+          },
+        },
+
+        {
+          $addFields: {
+            isSpecificUser: {
+              $cond: [{ $eq: ["$userId", objectUserId] }, 1, 0],
+            },
+          },
+        },
+
+        {
+          $addFields: {
+            likeCount: { $size: "$likes" },
+          },
+        },
+
+        {
+          $addFields: {
+            isLiked: {
+              $cond: [{ $in: [objectUserId, "$likes"] }, true, false],
+            },
+          },
+        },
+        {
+          $addFields: {
+            replies: [],
+          },
+        },
+
+        { $sort: { isSpecificUser: -1, createdAt: -1 } },
+
+        { $skip: parseInt(skip) },
+        { $limit: parseInt(limit) },
+
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+
+        {
+          $project: {
+            _id: 1,
+            content: 1,
+            createdAt: 1,
+            likeCount: 1,
+            isLiked: 1,
+            replyCount: 1,
+            replies: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+      ]).exec();
 
       return res.status(200).json(comments);
     } else {
       res.status(400).json({ message: "Cannot retrieved comments" });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const incrementCommentLikeController = async (
+  req: any,
+  res: Response
+) => {
+  const { postId, commentId, userId } = req.body;
+  try {
+    if (postId && userId && commentId) {
+      const objectCommentId = stringToObjectId(commentId);
+      const objectPostId = stringToObjectId(postId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await CommentModel.findOne({
+        _id: objectCommentId,
+        postId: objectPostId,
+        likes: objectUserId,
+      });
+
+      if (!isExistingLike) {
+        await CommentModel.findOneAndUpdate(
+          { postId: objectPostId, _id: commentId },
+          {
+            $push: { likes: objectUserId },
+          }
+        );
+        return res
+          .status(200)
+          .json({ message: "Successfully liked a comment." });
+      }
+    } else {
+      res.status(400).json({ message: "Post id and User Id is missing." });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const decrementCommentLikeController = async (
+  req: any,
+  res: Response
+) => {
+  const { postId, commentId, userId } = req.body;
+
+  try {
+    if (postId && userId && commentId) {
+      const objectCommentId = stringToObjectId(commentId);
+      const objectPostId = stringToObjectId(postId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await CommentModel.findOne({
+        _id: objectCommentId,
+        postId: objectPostId,
+        likes: objectUserId,
+      });
+
+      if (isExistingLike) {
+        await CommentModel.findOneAndUpdate(
+          { postId: objectPostId, _id: commentId },
+          {
+            $pull: { likes: objectUserId },
+          }
+        );
+
+        return res
+          .status(200)
+          .json({ message: "Successfully unliked a comment." });
+      }
+    } else {
+      res.status(400).json({ message: "Post id and User Id is missing." });
     }
   } catch (error) {
     console.error(error);
@@ -277,18 +482,30 @@ export const addReplyController = async (req: any, res: Response) => {
       const objectUserId = stringToObjectId(userId);
       const objectCommentId = stringToObjectId(commentId);
 
-      const newReplyObjectId = new mongoose.Types.ObjectId();
-
-      await ReplyModel.create({
-        _id: newReplyObjectId,
+      const newReply = await ReplyModel.create({
         userId: objectUserId,
         commentId: objectCommentId,
         content: replyData,
       });
 
-      const commentReply = await ReplyModel.findOne({ _id: newReplyObjectId });
+      const updateComment = await CommentModel.findOneAndUpdate(
+        { _id: objectCommentId },
+        {
+          $push: { replies: newReply._id },
+        }
+      );
 
-      return res.status(200).json(commentReply);
+      if (updateComment) {
+        const commentReply = await ReplyModel.findOne({
+          _id: newReply._id,
+        })
+          .populate("userId", "displayname imgURL")
+          .lean();
+
+        return res
+          .status(200)
+          .json({ ...commentReply, likeCount: 0, isLiked: false });
+      }
     } else {
       res.status(400).json({ message: "Cannot add a reply." });
     }
@@ -297,29 +514,88 @@ export const addReplyController = async (req: any, res: Response) => {
   }
 };
 
-export const getParentRepliesController = async (req: any, res: Response) => {
-  const { commentid, skip, limit } = req.query;
+export const getRepliesController = async (req: any, res: Response) => {
+  const { userId, commentId, skip, limit } = req.body;
 
   try {
-    if (commentid) {
-      const objectCommentId = stringToObjectId(commentid);
+    if (commentId) {
+      const objectUserId = stringToObjectId(userId);
+      const objectCommentId = stringToObjectId(commentId);
 
-      const parentReplies = await ReplyModel.find({
-        $and: [
-          { commentId: objectCommentId }, // Match the specific commentId
+      const replies = await ReplyModel.find({ commentId: objectCommentId })
+        .skip(parseInt(skip, 10))
+        .limit(parseInt(limit, 10))
+        .populate("userId", "displayname imgURL") // Optional: populate user data
+        .exec();
+
+      const repliesWithAdditionalFields = replies.map((reply) => ({
+        ...reply.toObject(),
+        likeCount: reply.likes.length,
+        isLiked: reply.likes.includes(objectUserId),
+      }));
+
+      return res.status(200).json(repliesWithAdditionalFields);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const incrementReplyLikeController = async (req: any, res: Response) => {
+  const { commentId, replyId, userId } = req.body;
+  try {
+    if (commentId && replyId && userId) {
+      const objectReplyId = stringToObjectId(replyId);
+      const objectCommentId = stringToObjectId(commentId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await ReplyModel.findOne({
+        _id: objectReplyId,
+        commentId: objectCommentId,
+        likes: objectUserId,
+      });
+
+      if (!isExistingLike) {
+        await ReplyModel.findOneAndUpdate(
+          { commentId: objectCommentId, _id: objectReplyId },
           {
-            $or: [
-              { parentReply: { $exists: false } }, // Field does not exist
-              { parentReply: null }, // Field is explicitly set to null
-            ],
-          },
-        ],
-      })
-        .skip(skip)
-        .limit(limit)
-        .populate("userId", "_id displayname imgURL");
+            $push: { likes: objectUserId },
+          }
+        );
+        return res.status(200).json({ message: "Successfully liked a reply." });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-      return res.status(200).json(parentReplies);
+export const decrementReplyLikeController = async (req: any, res: Response) => {
+  const { commentId, replyId, userId } = req.body;
+
+  try {
+    if (commentId && replyId && userId) {
+      const objectReplyId = stringToObjectId(replyId);
+      const objectCommentId = stringToObjectId(commentId);
+      const objectUserId = stringToObjectId(userId);
+
+      const isExistingLike = await ReplyModel.findOne({
+        _id: objectReplyId,
+        commentId: objectCommentId,
+        likes: objectUserId,
+      });
+
+      if (isExistingLike) {
+        await ReplyModel.findOneAndUpdate(
+          { commentId: objectCommentId, _id: objectReplyId },
+          {
+            $pull: { likes: objectUserId },
+          }
+        );
+        return res
+          .status(200)
+          .json({ message: "Successfully unliked a reply." });
+      }
     }
   } catch (error) {
     console.error(error);

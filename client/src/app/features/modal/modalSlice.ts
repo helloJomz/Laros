@@ -1,7 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/app/store";
 
-const initialState: { modal: string | null; helper: any } = {
+interface initialState {
+  modal: string | null;
+  helper: any;
+}
+
+const initialState: initialState = {
   modal: null,
   helper: null,
 };

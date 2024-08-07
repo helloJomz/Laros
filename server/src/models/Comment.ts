@@ -17,7 +17,8 @@ const CommentSchema = new Schema(
       type: String,
       required: true,
     },
-    hearts: { type: Number, default: 0 },
+    likes: [{ type: Schema.Types.ObjectId, ref: "users" }],
+    replies: [{ type: Schema.Types.ObjectId, ref: "replies" }],
   },
   { timestamps: true }
 );

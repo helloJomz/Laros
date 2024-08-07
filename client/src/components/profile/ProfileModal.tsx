@@ -23,8 +23,6 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
 const ProfileModal = () => {
   const { modalType } = useModal();
 
-  //TODO: Implement click outside close on every modals
-
   if (!modalType) return null;
 
   const ModalComponent = componentMap[modalType];

@@ -2,19 +2,12 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "@/app/store";
 import { postApiSlice } from "./postApiSlice";
 
-interface Comment {
-  _id: string;
-  userid: string;
-  postId: string;
-  content: string;
-  hearts: number;
-}
-
 interface Post {
   _id: string;
   userid: string;
   postType: string;
   content: string;
+  postImgURL: string;
   createdAt: string;
   updatedAt: string;
   likeCount: number;
@@ -23,13 +16,34 @@ interface Post {
   userLiked: boolean;
 }
 
-interface ParentReply {
+interface Reply {
   _id: string;
   userId: string;
   commentId: string;
-  parentReply: string | null;
   content: string;
-  hearts: number;
+  likeCount: number;
+  isLiked: boolean;
+  user: {
+    _id: string;
+    displayname: string;
+    imgURL: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Comment {
+  _id: string; // MongoDB ObjectId as a string
+  content: string;
+  likeCount: number;
+  isLiked: boolean;
+  user: {
+    _id: string;
+    displayname: string;
+    imgURL: string;
+  };
+  replyCount: number;
+  replies: Reply[];
   createdAt: string;
   updatedAt: string;
 }
@@ -43,7 +57,6 @@ interface initialState {
 
   post: Post[];
   comment: Comment[];
-  parentReply: ParentReply[];
   preview: Partial<any>;
 }
 
@@ -56,7 +69,6 @@ const initialState: initialState = {
 
   post: [],
   comment: [],
-  parentReply: [],
   preview: {},
 };
 
@@ -83,15 +95,25 @@ export const postSlice = createSlice({
 
     setComment: (state, action) => {
       const { postId, commentData } = action.payload;
+      void state.comment.unshift({ ...commentData });
+
       const postIndex = state.post.findIndex(
-        (post) => post._id === postId.toString().trim()
+        (p) => p._id.toString() === postId
       );
 
-      if (Array.isArray(commentData)) {
-        state.comment.push(...commentData);
-      } else {
-        state.comment.push({ ...commentData });
-      }
+      state.post[postIndex].commentCount += 1;
+    },
+
+    setDeleteComment: (state, action) => {
+      const { postId, commentId } = action.payload;
+
+      state.comment = state.comment.filter((c) => c._id !== commentId);
+
+      const postIndex = state.post.findIndex(
+        (p) => p._id.toString() === postId
+      );
+
+      state.post[postIndex].commentCount -= 1;
     },
 
     setLikeCount: (
@@ -113,25 +135,87 @@ export const postSlice = createSlice({
       }
     },
 
-    // setPreviewReply: (state, action) => {
-    //   const { postId, commentId, replyData } = action.payload;
+    setCommentLikeCount: (
+      state,
+      action: PayloadAction<{ commentId: string; opt: boolean }>
+    ) => {
+      const { commentId, opt } = action.payload;
 
-    //   const postIndex = state.post.findIndex(
-    //     (post) => post._id === postId.toString().trim()
-    //   );
+      const commentIndex = state.comment.findIndex(
+        (c) => c._id.toString() === commentId
+      );
 
-    //   const commentIndex = state.post[postIndex].comment.findIndex(
-    //     (comment) => comment._id === commentId.toString().trim()
-    //   );
+      if (!opt) {
+        state.comment[commentIndex].likeCount += 1;
+        state.comment[commentIndex].isLiked = true;
+      } else {
+        state.comment[commentIndex].likeCount -= 1;
+        state.comment[commentIndex].isLiked = false;
+      }
+    },
 
-    //   if (Array.isArray(replyData)) {
-    //     state.post[postIndex].comment[commentIndex].reply.push(...replyData);
-    //   } else {
-    //     state.post[postIndex].comment[commentIndex].reply.push({
-    //       ...replyData,
-    //     });
-    //   }
-    // },
+    setReply: (state, action) => {
+      const { commentId, replyData } = action.payload;
+
+      const commentIndex = state.comment.findIndex(
+        (c) => c._id.toString() === commentId
+      );
+
+      if (Array.isArray(replyData)) {
+        state.comment[commentIndex].replies?.push(...replyData);
+        state.comment[commentIndex].replyCount -= 5;
+      } else {
+        state.comment[commentIndex].replies?.push(replyData);
+        if (state.comment[commentIndex].replies?.length !== 1) {
+          state.comment[commentIndex].replyCount += 1;
+        }
+      }
+    },
+
+    setReplyHide: (state, action) => {
+      const { commentId, skipCount } = action.payload;
+
+      const commentIndex = state.comment.findIndex(
+        (c) => c._id.toString() === commentId
+      );
+
+      if (commentIndex !== -1) {
+        if (skipCount === 0) {
+          state.comment[commentIndex].replyCount =
+            state.comment[commentIndex].replies.length;
+        } else {
+          state.comment[commentIndex].replyCount += skipCount;
+        }
+        state.comment[commentIndex].replies = [];
+      }
+    },
+
+    setReplyLikeCount: (
+      state,
+      action: PayloadAction<{
+        commentId: string;
+        replyId: string;
+        opt: boolean;
+      }>
+    ) => {
+      const { commentId, replyId, opt } = action.payload;
+
+      const commentIndex = state.comment.findIndex(
+        (c) => c._id.toString() === commentId
+      );
+
+      const replyIndex = state.comment[commentIndex].replies.findIndex(
+        (r) => r._id.toString() === replyId
+      );
+
+      if (!opt) {
+        state.comment[commentIndex].replies[replyIndex].likeCount += 1;
+        state.comment[commentIndex].replies[replyIndex].isLiked = true;
+      } else {
+        state.comment[commentIndex].replies[replyIndex].likeCount -= 1;
+        state.comment[commentIndex].replies[replyIndex].isLiked = false;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -156,28 +240,7 @@ export const postSlice = createSlice({
       .addMatcher(postApiSlice.endpoints.getComments.matchRejected, (state) => {
         state.isCommentLoading = false;
         state.isCommentError = true;
-      })
-
-      // FOR PARENT REPLIES
-      .addMatcher(
-        postApiSlice.endpoints.getParentReplies.matchPending,
-        (state) => {
-          state.isParentReplyLoading = true;
-        }
-      )
-      .addMatcher(
-        postApiSlice.endpoints.getParentReplies.matchFulfilled,
-        (state, action) => {
-          state.isParentReplyLoading = false;
-          state.parentReply = action.payload;
-        }
-      )
-      .addMatcher(
-        postApiSlice.endpoints.getParentReplies.matchRejected,
-        (state) => {
-          state.isParentReplyError = true;
-        }
-      );
+      });
   },
 });
 
@@ -186,8 +249,12 @@ export const {
   setPreviewImg,
   setPost,
   setComment,
+  setDeleteComment,
   setLikeCount,
-  // setPreviewReply,
+  setCommentLikeCount,
+  setReply,
+  setReplyHide,
+  setReplyLikeCount,
 } = postSlice.actions;
 
 export const selectIsCommentLoading = (state: RootState) =>
@@ -205,17 +272,13 @@ export const selectSinglePost = (state: RootState, postId: string) =>
   state.post.post.find((post) => post._id.toString() === postId);
 
 export const selectComment = (state: RootState) => state.post.comment;
-export const selectParentReply = (state: RootState) => state.post.parentReply;
+
+export const selectReplies = (state: RootState, commentId: string) =>
+  state.post.comment.find((c) => c._id.toString() === commentId)?.replies;
 
 export const selectPreviewImg = (state: RootState) =>
   state.post.preview.postImgURL;
 export const selectPreviewContent = (state: RootState) =>
   state.post.preview.content;
-
-// export const selectPreviewAuthor = (state: RootState) =>
-//   state.post.preview.author;
-// export const selectPreviewGame = (state: RootState) => state.post.preview.game;
-
-// export const selectPreviewPost = (state: RootState) => state.post.preview;
 
 export default postSlice.reducer;

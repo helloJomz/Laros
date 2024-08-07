@@ -20,11 +20,14 @@ import { useLogoutMutation } from "@/app/features/auth/authApiSlice";
 import { v4 } from "uuid";
 import { generateRandomAvatarGifsForAnon } from "@/utils/utils";
 import { capitalizeFirstLetter } from "@/utils/utils";
+import { useProfile } from "@/hooks/useProfile";
 
 const SideMenu = () => {
   const { displayname, userid, imgURL } = useSelector(selectCurrentUser);
   const { setTriggerAlertFooter, setShowPromptToLogin } = useNavbarContext();
   const [isProcessingLogout, setIsProcessingLogout] = useState<boolean>(false);
+
+  const { isAuthProfile } = useProfile();
 
   const [anonObject, _setAnonObject] = useState<{
     anon_uuid: string;
@@ -88,7 +91,8 @@ const SideMenu = () => {
 
   const handleRedirectToProfile = () => {
     setShowPromptToLogin(false);
-    navigate(`/${displayname}`, { state: { from: location.pathname } });
+    if (!isAuthProfile)
+      navigate(`/${displayname}`, { state: { from: location.pathname } });
   };
 
   return (

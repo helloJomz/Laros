@@ -22,7 +22,6 @@ import {
 } from "@/app/features/post/uiSlice";
 import { AppDispatch } from "@/app/store";
 import { useProfile } from "./useProfile";
-import { useState } from "react";
 import { useUserContext } from "@/context/UserContext";
 
 export const usePost = () => {

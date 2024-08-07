@@ -4,7 +4,9 @@ import { useLocation } from "react-router-dom";
 const PrivateRoute = ({ auth }: { auth: string }) => {
   const location = useLocation();
   return auth ? (
-    <Outlet />
+    <>
+      <Outlet />
+    </>
   ) : (
     <Navigate to={"/login"} state={{ from: location }} replace />
   );

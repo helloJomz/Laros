@@ -8,26 +8,16 @@ const ReplySchema = new Schema(
       ref: "Users",
       required: true,
     },
-    postId: {
-      type: Schema.Types.ObjectId,
-      ref: "Posts",
-      required: true,
-    },
     commentId: {
       type: Schema.Types.ObjectId,
       ref: "Comments",
       required: true,
     },
-    parentReply: {
-      type: Schema.Types.ObjectId,
-      ref: "Replies", // Reference to another reply
-      default: null,
-    },
     content: {
       type: String,
       required: true,
     },
-    hearts: { type: Number, default: 0 },
+    likes: [{ type: Schema.Types.ObjectId, ref: "users" }],
   },
   { timestamps: true }
 );

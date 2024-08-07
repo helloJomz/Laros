@@ -2,12 +2,10 @@ import { useProfile } from "@/hooks/useProfile";
 import { capitalizeFirstLetter, formatDateForPostHeader } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import PostReaction from "./PostReaction";
-import PostComment from "./PostComment";
-import WriteComment from "./WriteComment";
 import { MdVerified } from "react-icons/md";
 import { useNavbarContext } from "@/context/NavbarContext";
-import { useEffect, useState } from "react";
 import PostReactionCount from "./PostReactionCount";
+import { useModal } from "@/hooks/useModal";
 
 interface PostObject {
   _id: string;
@@ -24,6 +22,8 @@ interface PostObject {
 }
 
 const PostType = ({ postObject }: { postObject: PostObject }) => {
+  const { setModalOpen, setHelper, modalType } = useModal();
+
   const { userObject } = useProfile();
   const { imgURL, displayname } = userObject || {};
   const { windowWidth } = useNavbarContext();
@@ -34,9 +34,9 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
 
   return (
     <>
-      <div className="bg-secondary rounded w-full">
-        <div className="w-full bg-secondary h-fit flex flex-col gap-y-4 rounded">
-          <div className="flex justify-between px-4 pt-4 pb-2">
+      <div className="bg-secondary rounded w-full h-fit">
+        <div className="w-full bg-secondary h-fit flex flex-col gap-y-1 rounded">
+          <div className="flex justify-between ps-2 py-3 pe-4">
             <div className="flex gap-x-2 items-center">
               <img
                 src={imgURL!}
@@ -59,7 +59,7 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
               </div>
             </div>
 
-            <div className="flex items-center text-xs">
+            <div className="text-xs">
               <div className="flex items-center gap-x-1 text-muted-foreground hover:underline cursor-pointer">
                 <img
                   src={
@@ -76,8 +76,18 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
           {content && postImgURL && (
             <>
               <div className="flex flex-col gap-y-2">
-                <span>{content}</span>
-                <img src={postImgURL} alt={postImgURL} />
+                <div className="px-4">
+                  <span>{content}</span>
+                </div>
+                <img
+                  src={postImgURL}
+                  alt={postImgURL}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setHelper(postObject._id);
+                    setModalOpen("maxviewpost");
+                  }}
+                />
               </div>
             </>
           )}
@@ -87,7 +97,17 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
           )}
 
           {!content && postImgURL && (
-            <img src={postImgURL} alt={postImgURL} className="rounded" />
+            <img
+              src={postImgURL}
+              alt={postImgURL}
+              className={modalType !== "maxviewpost" ? "cursor-pointer" : ""}
+              onClick={() => {
+                if (modalType !== "maxviewpost") {
+                  setHelper(postObject._id);
+                  setModalOpen("maxviewpost");
+                }
+              }}
+            />
           )}
         </div>
 
@@ -97,13 +117,12 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
             likeCount: postObject.likeCount,
             shareCount: postObject.shareCount,
           }}
+          postId={postObject._id}
         />
         <PostReaction
           postId={postObject._id}
           userLiked={postObject.userLiked}
         />
-        {/* <PostComment postId={_id} />
-        <WriteComment postId={_id} /> */}
       </div>
     </>
   );

@@ -20,12 +20,10 @@ const PostReaction = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { usehelper } = useModal();
-
   const { authenticatedUserObject } = useUserContext();
   const { userid } = authenticatedUserObject;
 
-  const { setModalOpen, setHelper } = useModal();
+  const { setModalOpen, modalType, setHelper } = useModal();
 
   // State to track if the user has liked the post
   const [isLikeClicked, setIsLikeClicked] = useState(userLiked);
@@ -44,8 +42,10 @@ const PostReaction = ({
   };
 
   const handleCommentClick = () => {
-    setHelper(postId);
-    setModalOpen("maxviewpost");
+    if (!modalType) {
+      setHelper(postId);
+      setModalOpen("maxviewpost");
+    }
   };
 
   useEffect(() => {
@@ -59,7 +59,9 @@ const PostReaction = ({
     },
     {
       Icon: (
-        <FaComment className={usehelper === postId ? "text-slate-100" : ""} />
+        <FaComment
+          className={modalType === "maxviewpost" ? "text-slate-100" : ""}
+        />
       ),
       onClick: handleCommentClick,
     },

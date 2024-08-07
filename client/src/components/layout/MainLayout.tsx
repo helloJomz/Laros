@@ -19,7 +19,7 @@ const MainLayout = ({ currentLocation }: MainLayoutProps) => {
         <div className="flex flex-col h-screen">
           <Navbar />
           <PromptToLogin />
-          <div className="flex-grow h-full overflow-y-auto">
+          <div className="flex-grow overflow-y-auto h-full ">
             <Outlet />
           </div>
           <Alerts />

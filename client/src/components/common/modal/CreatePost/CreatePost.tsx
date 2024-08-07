@@ -9,10 +9,11 @@ import { useEffect, useRef, useState } from "react";
 import { usePost } from "@/hooks/usePost";
 import Content from "./Content";
 import { useModal } from "@/hooks/useModal";
-
-//FIXME: When create post with image the modal does not close.
+import useClickedOutsideModal from "@/hooks/useClickedOutsideModal";
 
 const CreatePost = () => {
+  const { componentRef } = useClickedOutsideModal();
+
   const { authenticatedUserObject } = useUserContext();
   const { imgURL, displayname, userid } = authenticatedUserObject;
 
@@ -128,7 +129,10 @@ const CreatePost = () => {
 
   return (
     <>
-      <div className="bg-secondary w-[90%] h-fit md:w-1/2 xl:w-[23%] rounded shadow-lg p-4 flex flex-col gap-y-4 justify-center">
+      <div
+        className="bg-secondary w-[90%] h-fit md:w-1/2 xl:w-[23%] rounded shadow-lg p-4 flex flex-col gap-y-4 justify-center"
+        ref={componentRef}
+      >
         <div className="flex justify-between items-center border border-b-slate-600 pb-2">
           <h1 className="text-base lg:text-lg font-semibold">Create Post</h1>
           <CloseButton />

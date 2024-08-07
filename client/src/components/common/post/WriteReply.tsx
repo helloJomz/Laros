@@ -7,9 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAddReplyMutation } from "@/app/features/post/postApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useDispatch } from "react-redux";
-// import { setPreviewReply } from "@/app/features/post/postSlice";
-import { Input } from "@/components/ui/input";
-import { usePost } from "@/hooks/usePost";
+import { setReply } from "@/app/features/post/postSlice";
 
 const WriteReply = ({ commentObject }: { commentObject: any }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -17,17 +15,10 @@ const WriteReply = ({ commentObject }: { commentObject: any }) => {
 
   const { authenticatedUserObject } = useUserContext();
 
-  const { ui } = usePost();
-  const { setReplyId } = ui;
+  const { userid: senderUserId, imgURL: senderImgURL } =
+    authenticatedUserObject;
 
-  const {
-    displayname: senderDisplayname,
-    userid: senderUserId,
-    imgURL: senderImgURL,
-  } = authenticatedUserObject;
-
-  const { postId, commentId, commenterUID, commenterDisplayname } =
-    commentObject;
+  const { commentId, commenterDisplayname } = commentObject;
 
   const [addReply, { isLoading }] = useAddReplyMutation();
 
@@ -54,23 +45,22 @@ const WriteReply = ({ commentObject }: { commentObject: any }) => {
     const { data, error } = await addReply({
       userId: senderUserId,
       commentId: commentId,
-      postId: postId,
       replyData: replyContent.trim().replace(/[\r\n]+/g, " "),
     });
 
     if (!error) {
-      // dispatch(
-      //   setPreviewReply({
-      //     postId: postId,
-      //     commentId: commentId,
-      //     replyData: data,
-      //   })
-      // );
+      dispatch(
+        setReply({
+          commentId: commentId,
+          replyData: data,
+        })
+      );
 
       setReplyContent("");
     }
   };
 
+  //FIXME: Laros is the one displaying
   const TextAreaPlaceholder = `Replying to ${capitalizeFirstLetter(
     commenterDisplayname || "Laros"
   )}`;

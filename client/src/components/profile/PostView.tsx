@@ -14,21 +14,12 @@ import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 
 const PostView = () => {
-  //TODO: Put Comments and Reactions on the design
-
   const { isAuthProfile, profilePageEndpoint } = useProfile();
   const { postStates } = usePost();
 
   const { isPostFetching, isPostSaveError, fetchedPosts } = postStates;
 
-  console.log(fetchedPosts);
-
   const { windowWidth } = useNavbarContext();
-
-  // const handleLoadMore = async () => {
-  //   setLimit((limit) => limit + 5);
-  //   setOffset((offset) => offset + 5);
-  // };
 
   if (isPostFetching) return <PostSkeleton />;
 
@@ -39,7 +30,6 @@ const PostView = () => {
       <>
         <div className="flex gap-x-4 items-center">
           <h4 className="font-bold">Post </h4>
-
           <div className="flex-1 border border-t-2 border-muted w-full mt-1" />
         </div>
 

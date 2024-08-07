@@ -4,6 +4,10 @@ import {
   selectHelper,
   setHelper as setHelperSlice,
 } from "@/app/features/modal/modalSlice";
+import {
+  setViewPostState as setViewPostStateSlice,
+  selectViewPostState,
+} from "@/app/features/modal/viewpostSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useModal = () => {
@@ -18,10 +22,19 @@ export const useModal = () => {
   const modalType = useSelector(selectModal);
   const usehelper = useSelector(selectHelper);
 
+  // VIEW POST
+  const useViewPostState = useSelector(selectViewPostState);
+  const setViewPostState = (state: "withComment" | "noComment") =>
+    dispatch(setViewPostStateSlice({ viewPostState: state }));
+
   return {
     setModalOpen,
     modalType,
     setHelper,
     usehelper,
+    viewPost: {
+      setViewPostState,
+      useViewPostState,
+    },
   };
 };

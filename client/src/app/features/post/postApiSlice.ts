@@ -17,27 +17,17 @@ export const postApiSlice = apiSlice.injectEndpoints({
 
     getComments: builder.query({
       query: ({
+        userId,
         postId,
         skip,
         limit,
       }: {
+        userId: string;
         postId: string;
         skip: number;
         limit: number;
-      }) => `/post/fetchcomment?postid=${postId}&skip=${skip}&limit=${limit}`,
-    }),
-
-    getParentReplies: builder.query({
-      query: ({
-        commentId,
-        skip,
-        limit,
-      }: {
-        commentId: string;
-        skip: number;
-        limit: number;
       }) =>
-        `/post/fetchparentreply?commentid=${commentId}&skip=${skip}&limit=${limit}`,
+        `/post/fetchcomment?userid=${userId}&postid=${postId}&skip=${skip}&limit=${limit}`,
     }),
 
     addComment: builder.mutation({
@@ -56,39 +46,53 @@ export const postApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    deleteComment: builder.mutation({
+      query: ({
+        uid,
+        postId,
+        commentId,
+      }: {
+        uid: string;
+        postId: string;
+        commentId: string;
+      }) => ({
+        url: "/post/deletecomment",
+        method: "POST",
+        body: { uid, postId, commentId },
+      }),
+    }),
+
     addReply: builder.mutation({
       query: ({
         userId,
-        postId,
         commentId,
         replyData,
       }: {
         userId: string;
-        postId: string;
         commentId: string;
         replyData: string;
       }) => ({
         url: "/post/addreply",
         method: "POST",
-        body: { userId, postId, commentId, replyData },
+        body: { userId, commentId, replyData },
       }),
     }),
 
     loadMoreReply: builder.mutation({
       query: ({
-        postId,
+        userId,
         commentId,
         skip,
         limit,
       }: {
-        postId: string;
+        userId: string;
         commentId: string;
         skip: number;
         limit: number;
       }) => ({
         url: "/post/getreplies",
         method: "POST",
-        body: { postId, commentId, skip, limit },
+        body: { userId, commentId, skip, limit },
       }),
     }),
 
@@ -123,6 +127,38 @@ export const postApiSlice = apiSlice.injectEndpoints({
         body: { postId, userId },
       }),
     }),
+
+    incrementCommentLikeCount: builder.mutation({
+      query: ({ postId, commentId, userId }) => ({
+        url: "/post/incrementcommentlike",
+        method: "POST",
+        body: { postId, commentId, userId },
+      }),
+    }),
+
+    decrementCommentLikeCount: builder.mutation({
+      query: ({ postId, commentId, userId }) => ({
+        url: "/post/decrementcommentlike",
+        method: "POST",
+        body: { postId, commentId, userId },
+      }),
+    }),
+
+    incrementReplyLikeCount: builder.mutation({
+      query: ({ commentId, replyId, userId }) => ({
+        url: "/post/incrementreplylike",
+        method: "POST",
+        body: { commentId, replyId, userId },
+      }),
+    }),
+
+    decrementReplyLikeCount: builder.mutation({
+      query: ({ commentId, replyId, userId }) => ({
+        url: "/post/decrementreplylike",
+        method: "POST",
+        body: { commentId, replyId, userId },
+      }),
+    }),
   }),
 });
 
@@ -132,9 +168,13 @@ export const {
   useIncrementLikeCountMutation,
   useDecrementLikeCountMutation,
   useGetCommentsQuery,
-  useGetParentRepliesQuery,
+  useIncrementCommentLikeCountMutation,
+  useDecrementCommentLikeCountMutation,
   useAddCommentMutation,
+  useDeleteCommentMutation,
   useAddReplyMutation,
   useLoadMoreReplyMutation,
   useLoadMoreCommentMutation,
+  useIncrementReplyLikeCountMutation,
+  useDecrementReplyLikeCountMutation,
 } = postApiSlice;

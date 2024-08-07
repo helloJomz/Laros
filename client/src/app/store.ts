@@ -7,6 +7,7 @@ import userReducer from "./features/users/userSlice";
 import modalReducer from "./features/modal/modalSlice";
 import postReducer from "./features/post/postSlice";
 import postUIReducer from "./features/post/uiSlice";
+import viewPostReducer from "./features/modal/viewpostSlice";
 import { apiSlice } from "./services/api";
 import {
   persistReducer,
@@ -19,6 +20,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { features } from "process";
 
 const persistConfig = {
   key: "root",
@@ -42,6 +44,7 @@ export const store = configureStore({
     profile: profileReducer,
     users: userReducer,
     modal: modalReducer,
+    viewpostmodal: viewPostReducer,
     post: postReducer,
     postUI: postUIReducer,
   },

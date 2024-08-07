@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useAddCommentMutation } from "@/app/features/post/postApiSlice";
 import { useDispatch } from "react-redux";
 import { setComment } from "@/app/features/post/postSlice";
-import { usePost } from "@/hooks/usePost";
 import { capitalizeFirstLetter } from "@/utils/utils";
 
 const WriteComment = ({ postId }: { postId: string }) => {
@@ -29,8 +28,6 @@ const WriteComment = ({ postId }: { postId: string }) => {
       };
 
       const { data, error } = await addComment(commentObject);
-
-      console.log(data);
 
       if (!error) {
         dispatch(setComment({ postId: postId, commentData: data }));
