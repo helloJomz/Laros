@@ -10,6 +10,7 @@ import {
 } from "@/app/features/post/postApiSlice";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
+import { useNavbarContext } from "@/context/NavbarContext";
 
 const PostReaction = ({
   postId,
@@ -19,7 +20,7 @@ const PostReaction = ({
   userLiked: boolean;
 }) => {
   const dispatch = useDispatch();
-
+  const { setShowPromptToLogin } = useNavbarContext();
   const { authenticatedUserObject } = useUserContext();
   const { userid } = authenticatedUserObject;
 
@@ -32,6 +33,10 @@ const PostReaction = ({
   const [decrementLikeCount] = useDecrementLikeCountMutation();
 
   const handleLikeClick = async () => {
+    if (!userid) {
+      setShowPromptToLogin(true);
+      return;
+    }
     setIsLikeClicked((click) => !click);
     if (isLikeClicked) {
       await decrementLikeCount({ postId, userId: userid });
@@ -68,7 +73,10 @@ const PostReaction = ({
     {
       Icon: <FaShare />,
       onClick: () => {
-        console.log("Share");
+        if (!userid) {
+          setShowPromptToLogin(true);
+          return;
+        }
       },
     },
   ];

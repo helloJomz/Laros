@@ -3,20 +3,20 @@ import {
   deleteAllRecentHistoryController,
   deleteOneRecentHistoryController,
   getAllRecentHistoryController,
-  getGameListByQueryController,
-  upsertRecentHistoryController,
+  addRecentHistoryController,
+  searchQueryController,
 } from "../controllers/SearchController";
 
 const router = Router();
 
 // GET LIST OF GAMES BASED ON THE QUERY OF THE USER
-router.get("/games/:query?", getGameListByQueryController);
+router.get("/", searchQueryController);
 
 // FOR CREATING SEARCH HISTORY
-router.post("/recent_history", upsertRecentHistoryController);
+router.post("/recent_history", addRecentHistoryController);
 
 // FOR GETTING THE RECENT HISTORY
-router.get("/recent_history/:userid", getAllRecentHistoryController);
+router.get("/recent_history", getAllRecentHistoryController);
 
 // FOR DELETING ONE RECENT HISTORY
 router.delete("/recent_history/one_target", deleteOneRecentHistoryController);

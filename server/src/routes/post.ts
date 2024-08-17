@@ -13,6 +13,7 @@ import {
   getRepliesController,
   decrementReplyLikeController,
   incrementReplyLikeController,
+  fetchHomePostsController,
 } from "../controllers/PostController";
 import Multer from "multer";
 
@@ -24,6 +25,7 @@ const multer = Multer({
 
 router.post("/savepost", multer.single("file"), savePostController);
 router.get("/fetchpost", fetchPostsController);
+router.get("/fetchhomepost", fetchHomePostsController);
 router.post("/incrementlike", incrementLikeController);
 router.post("/decrementlike", decrementLikeController);
 

@@ -5,19 +5,17 @@ import Photo from "@/components/profile/Photo";
 import UserHeader from "@/components/profile/UserHeader";
 import Post from "../components/profile/Post";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
-import ProfileModal from "@/components/profile/ProfileModal";
 import { useProfile } from "@/hooks/useProfile";
 import { useEffect } from "react";
 import { useGetUserByDisplayNameMutation } from "@/app/features/users/userApiSlice";
-import { usePageTabName } from "@/hooks/usePageTabName";
+import { Helmet } from "react-helmet-async";
+import { capitalizeFirstLetter } from "@/utils/utils";
 
 const ProfilePage = () => {
   const { windowWidth } = useNavbarContext();
 
   const { isProfileError, isProfileLoading, profilePageEndpoint } =
     useProfile();
-
-  usePageTabName({ tabName: profilePageEndpoint! || "Laros" });
 
   const [getUserByDisplayName] = useGetUserByDisplayNameMutation();
 
@@ -45,7 +43,9 @@ const ProfilePage = () => {
   if (!isProfileLoading && !isProfileError)
     return (
       <>
-        <ProfileModal />
+        <Helmet>
+          <title>{capitalizeFirstLetter(profilePageEndpoint!)}</title>
+        </Helmet>
 
         <div className="w-full md:w-[85%] xl:w-1/2 m-auto ">
           <div

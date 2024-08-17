@@ -1,113 +1,89 @@
 import { Input } from "./ui/input";
-import { Check, LoaderCircle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "../lib/utils";
-import { Badge } from "./ui/badge";
-import { useNavbarContext } from "../context/NavbarContext";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchVal, selectSearchVal } from "@/app/features/nav/navSlice";
+import { useAddGameToRecentHistoryMutation } from "@/app/features/search/searchAPI";
+import { useUserContext } from "@/context/UserContext";
+import { addHistory } from "@/app/features/search/searchSlice";
+import { useDebouncedCallback } from "use-debounce";
 
 type SearchBoxProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const SearchBox = ({ className, ...props }: SearchBoxProps) => {
-  // Context
-  const { searchBoxType, setSearchBoxType, isSearchTyping } =
-    useNavbarContext();
+  const { userid } = useUserContext().authenticatedUserObject;
 
-  // State
-  const [placeholder, setPlaceholder] = useState<string>("Search games...");
-  const [isTypeMenuOpen, setIsTypeMenuOpen] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const searchVal = useSelector(selectSearchVal);
 
-  const searchBoxLowerCased = searchBoxType.toLowerCase();
-  const handleGameType = searchBoxLowerCased === "games";
-  const handleUserType = searchBoxLowerCased === "users";
-
+  // FOR FOCUSING THE INPUTBOX WHEN THE COMPONENT MOUNTS
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const updatedPlaceholder = handleGameType
-      ? "Search games..."
-      : "Search users...";
-    setPlaceholder(updatedPlaceholder);
-  }, [searchBoxLowerCased]);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
-  const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const [addGameToRecentHistory] = useAddGameToRecentHistoryMutation();
+
+  const handleEnter = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       try {
+        const newHistoryItem = {
+          userid: userid,
+          anon: {
+            query: searchVal,
+          },
+        };
+        const { data, error } = await addGameToRecentHistory(newHistoryItem);
+
+        if (!error) {
+          dispatch(addHistory(data));
+        }
       } catch (error) {
         console.error(error);
       }
     }
   };
 
+  const handleOnClick = async () => {
+    try {
+      const newHistoryItem = {
+        userid: userid,
+        anon: {
+          query: searchVal,
+        },
+      };
+      await addGameToRecentHistory(newHistoryItem);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const debouncedOnChange = useDebouncedCallback((value) => {
+    dispatch(setSearchVal({ search: value }));
+  }, 700);
+
   return (
-    <div className={cn("justify-center items-center", className)}>
-      <div className="relative w-full">
+    <div className={cn("justify-center items-center ", className)}>
+      <div className="relative w-full bg-primary">
         <Input
-          className={cn("h-8 w-full pe-4", {
-            "ps-20": handleGameType,
-            "ps-[4.5rem]": handleUserType,
-          })}
-          placeholder={placeholder}
+          className="h-8 w-full pe-9 bg-white border-none text-black"
+          placeholder="Search something..."
+          ref={inputRef}
           {...props}
           onKeyDown={handleEnter}
+          onChange={(e) => {
+            debouncedOnChange(e.target.value);
+          }}
         />
 
-        {/* TRIGGER  */}
-        <Badge
-          className="flex items-center absolute mt-[0.32rem] ms-2 top-0 text-xs cursor-pointer"
-          onClick={() => setIsTypeMenuOpen((isTypeMenuOpen) => !isTypeMenuOpen)}
+        <div
+          className="absolute top-0 right-0 mt-2 mr-4 cursor-pointer"
+          onClick={handleOnClick}
         >
-          {handleGameType ? "Games" : handleUserType && "Users"}:
-        </Badge>
-
-        {isTypeMenuOpen && (
-          <div className="bg-background ms-[-0.5rem] lg:ms-[-1rem] mt-1 w-28 z-50 absolute rounded font-semibold shadow-lg border-[1px] border-muted">
-            <div className="p-2 border-b-[1px] border-b-muted flex gap-x-2 items-center">
-              <Search size={16} />
-              <span className="text-sm">Search By</span>
-            </div>
-            <div className="text-sm p-2">
-              <div className="flex items-center gap-x-2 p-[0.2rem] mb-1 hover:bg-secondary rounded">
-                <div
-                  className={cn("invisible", {
-                    visible: handleGameType,
-                  })}
-                >
-                  <Check size={14} />
-                </div>
-                <button
-                  onClick={() => {
-                    setSearchBoxType("Games");
-                    setIsTypeMenuOpen(false);
-                  }}
-                >
-                  Games
-                </button>
-              </div>
-              <div className="flex items-center gap-x-2 p-[0.5rem] hover:bg-secondary rounded">
-                <div
-                  className={cn("invisible", {
-                    visible: handleUserType,
-                  })}
-                >
-                  <Check size={14} />
-                </div>
-                <button
-                  onClick={() => {
-                    setSearchBoxType("Users");
-                    setIsTypeMenuOpen(false);
-                  }}
-                >
-                  Users
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="absolute top-0 right-0 mt-2 mr-4 cursor-pointer">
-          {!isSearchTyping ? (
-            <Search size={16} />
-          ) : (
-            <LoaderCircle size={16} className="animate-spin" />
-          )}
+          <Search size={16} stroke="#000000" />
         </div>
       </div>
     </div>

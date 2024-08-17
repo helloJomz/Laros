@@ -15,8 +15,6 @@ import {
 import { useDispatch } from "react-redux";
 import { useUserContext } from "@/context/UserContext";
 import { useCheckProfileRelationshipStatusQuery } from "@/app/features/profile/profileApiSlice";
-import { usePageTabName } from "./usePageTabName";
-import { capitalizeFirstLetter } from "@/utils/utils";
 
 type UserProfile = {
   bio: string;
@@ -58,7 +56,7 @@ export const useProfile = () => {
       otherUserUID: userObject?.userid,
     },
     {
-      skip: userObject === undefined || isAuthProfile,
+      skip: userObject === undefined || isAuthProfile || !yourUID,
     }
   );
 

@@ -1,4 +1,5 @@
 type HistoryDocuments = {
+  userid: string;
   origin: string;
   time: string;
   _id: string;

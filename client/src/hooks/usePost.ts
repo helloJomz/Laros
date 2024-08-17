@@ -9,10 +9,11 @@ import {
   selectComment,
   selectIsCommentLoading,
   selectIsCommentError,
-  selectIsParentReplyLoading,
-  selectIsParentReplyError,
+  selectIsPostLoading,
+  selectIsPostError,
 } from "@/app/features/post/postSlice";
 import {
+  useGetHomePostsQuery,
   useGetPostsQuery,
   useSavePostMutation,
 } from "@/app/features/post/postApiSlice";
@@ -23,24 +24,46 @@ import {
 import { AppDispatch } from "@/app/store";
 import { useProfile } from "./useProfile";
 import { useUserContext } from "@/context/UserContext";
+import { useLocation } from "react-router-dom";
+import { useModal } from "./useModal";
 
 export const usePost = () => {
+  const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
 
   const { authenticatedUserObject } = useUserContext();
   const { userid: viewerUID } = authenticatedUserObject;
 
-  const { userObject } = useProfile();
-  const { userid } = userObject || {};
+  const { modalType } = useModal();
+
+  const { isProfileLoading } = useProfile();
+  const { userid, displayname } = useProfile().userObject || {};
+
+  const isAtProfilePage = location.pathname === `/${displayname}`;
+  const isAtHomePage = location.pathname === "/";
 
   const [savePost, { isLoading: isPostSaving, isError: isPostSaveError }] =
     useSavePostMutation();
 
   const { isLoading: isPostFetching, isError: isPostFetchError } =
-    useGetPostsQuery({
-      uid: userid,
-      viewerUID: viewerUID, // ID of the one using the app.
-    });
+    useGetPostsQuery(
+      {
+        uid: userid,
+        viewerUID: viewerUID, // ID of the one using the app.
+      },
+      {
+        skip: isAtHomePage || isProfileLoading,
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { refetch: homePostRefetch } = useGetHomePostsQuery(
+    { viewerUID: viewerUID }, // ID of the one using the app.
+    {
+      skip: isAtProfilePage,
+      refetchOnMountOrArgChange: isAtHomePage && modalType === null,
+    }
+  );
 
   const useFetchedPost = useSelector(selectPost);
   const setPost = (post: any) => dispatch(setPostSlice(post));
@@ -56,8 +79,8 @@ export const usePost = () => {
   // LOADING AND ERROR STATES
   const useIsCommentLoading = useSelector(selectIsCommentLoading);
   const useIsCommentError = useSelector(selectIsCommentError);
-  const useIsParentReplyLoading = useSelector(selectIsParentReplyLoading);
-  const useIsParentReplyError = useSelector(selectIsParentReplyError);
+  const useIsPostLoading = useSelector(selectIsPostLoading);
+  const useIsPostError = useSelector(selectIsPostError);
 
   //UI
   const setReplyId = (id: string | null) =>
@@ -68,11 +91,14 @@ export const usePost = () => {
   const useComment = useSelector(selectComment);
 
   return {
+    navStates: {
+      homePostRefetch,
+      useIsPostLoading,
+      useIsPostError,
+    },
     loadingStates: {
       useIsCommentLoading,
       useIsCommentError,
-      useIsParentReplyLoading,
-      useIsParentReplyError,
     },
     postStates: {
       fetchedPosts: useFetchedPost,
@@ -90,7 +116,10 @@ export const usePost = () => {
       setReplyId,
       replyid: useReplyId,
     },
-
+    endpoints: {
+      isAtHomePage,
+      isAtProfilePage,
+    },
     setPreviewImg,
     usePreviewImg,
     setPreviewContent,

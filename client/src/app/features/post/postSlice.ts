@@ -14,6 +14,11 @@ interface Post {
   shareCount: number;
   commentCount: number;
   userLiked: boolean;
+  user: {
+    _id: string;
+    imgURL: string;
+    displayname: string;
+  };
 }
 
 interface Reply {
@@ -49,11 +54,11 @@ interface Comment {
 }
 
 interface initialState {
+  isPostLoading: boolean;
+  isPostError: boolean;
+
   isCommentLoading: boolean;
   isCommentError: boolean;
-
-  isParentReplyLoading: boolean;
-  isParentReplyError: boolean;
 
   post: Post[];
   comment: Comment[];
@@ -61,11 +66,11 @@ interface initialState {
 }
 
 const initialState: initialState = {
+  isPostLoading: false,
+  isPostError: false,
+
   isCommentLoading: true,
   isCommentError: false,
-
-  isParentReplyLoading: true,
-  isParentReplyError: false,
 
   post: [],
   comment: [],
@@ -226,6 +231,24 @@ export const postSlice = createSlice({
         }
       )
 
+      // HOME POSTS
+      .addMatcher(postApiSlice.endpoints.getHomePosts.matchPending, (state) => {
+        state.isPostLoading = true;
+      })
+      .addMatcher(
+        postApiSlice.endpoints.getHomePosts.matchFulfilled,
+        (state, action) => {
+          state.post = [];
+          state.isPostLoading = false;
+          state.post = action.payload;
+        }
+      )
+      .addMatcher(
+        postApiSlice.endpoints.getHomePosts.matchRejected,
+        (state) => {
+          state.isPostError = true;
+        }
+      )
       // FOR COMMENT
       .addMatcher(postApiSlice.endpoints.getComments.matchPending, (state) => {
         state.isCommentLoading = true;
@@ -262,10 +285,9 @@ export const selectIsCommentLoading = (state: RootState) =>
 export const selectIsCommentError = (state: RootState) =>
   state.post.isCommentError;
 
-export const selectIsParentReplyLoading = (state: RootState) =>
-  state.post.isParentReplyLoading;
-export const selectIsParentReplyError = (state: RootState) =>
-  state.post.isParentReplyError;
+export const selectIsPostLoading = (state: RootState) =>
+  state.post.isPostLoading;
+export const selectIsPostError = (state: RootState) => state.post.isPostError;
 
 export const selectPost = (state: RootState) => state.post.post;
 export const selectSinglePost = (state: RootState, postId: string) =>

@@ -1,34 +1,25 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 
-const SearchHistorySchema = new Schema({
-  userid: {
-    type: Types.ObjectId,
-    required: true,
-  },
-  history: [
-    {
-      origin: {
-        type: String,
-        required: true,
-      },
-      query: {
-        type: String,
-        required: true,
-      },
-      trackerid: {
-        type: String,
-        required: false,
-      },
-      imageURL: {
-        type: String,
-        required: false,
-      },
-      time: {
-        type: Date,
-        default: Date.now,
-      },
+const SearchHistorySchema = new Schema(
+  {
+    userid: {
+      type: Schema.Types.ObjectId,
+      required: true,
     },
-  ],
-});
+    anon: {
+      query: String,
+    },
+    user: {
+      displayname: String,
+      img_url: String,
+    },
+    game: {
+      guid: String,
+      gamename: String,
+      icon_url: String,
+    },
+  },
+  { timestamps: true }
+);
 
 export const SearchHistoryModel = model("searchhistories", SearchHistorySchema);

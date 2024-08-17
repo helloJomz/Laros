@@ -50,11 +50,18 @@ export const savePostController = async (req: any, res: Response) => {
             //   game: game,
           });
 
-          const post = await PostModel.findById(postId);
+          const post = await PostModel.findById(postId)
+            .populate("userid", "_id displayname imgURL")
+            .lean();
 
           if (post) {
+            const { userid, ...rest } = post;
+
             res.status(200).json({
-              ...post.toObject(),
+              ...rest,
+              user: {
+                ...userid,
+              },
               userLiked: false,
               likeCount: 0,
               commentCount: 0,
@@ -78,11 +85,18 @@ export const savePostController = async (req: any, res: Response) => {
         const post = await PostModel.findById(postId, {
           likes: 0,
           comments: 0,
-        });
+        })
+          .populate("userid", "_id displayname imgURL")
+          .lean();
 
         if (post) {
+          const { userid, ...rest } = post;
+
           res.status(200).json({
-            ...post.toObject(),
+            ...rest,
+            user: {
+              ...userid,
+            },
             userLiked: false,
             likeCount: 0,
             commentCount: 0,
@@ -103,7 +117,7 @@ export const fetchPostsController = async (req: any, res: Response) => {
   const { uid, vieweruid } = req.query;
 
   try {
-    if (uid) {
+    if (vieweruid !== null && vieweruid !== undefined && vieweruid !== "null") {
       const objectId = stringToObjectId(uid);
       const objectViewerUID = stringToObjectId(vieweruid);
       const skip = 0;
@@ -111,6 +125,126 @@ export const fetchPostsController = async (req: any, res: Response) => {
 
       const posts = await PostModel.aggregate([
         { $match: { userid: objectId } },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $addFields: {
+            likeCount: { $size: { $ifNull: ["$likes", []] } },
+            shareCount: { $size: { $ifNull: ["$shares", []] } },
+            commentCount: { $size: { $ifNull: ["$comments", []] } },
+            userLiked: {
+              $cond: [
+                { $in: [objectViewerUID, { $ifNull: ["$likes", []] }] },
+                true,
+                false,
+              ],
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userid",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            userid: 1,
+            postType: 1,
+            content: 1,
+            postImgURL: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            likeCount: 1,
+            shareCount: 1,
+            commentCount: 1,
+            userLiked: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+      ]);
+
+      return res.status(200).json(posts);
+    } else {
+      const objectId = stringToObjectId(uid);
+      const skip = 0;
+      const limit = 5;
+
+      const posts = await PostModel.aggregate([
+        { $match: { userid: objectId } },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $addFields: {
+            likeCount: { $size: { $ifNull: ["$likes", []] } },
+            shareCount: { $size: { $ifNull: ["$shares", []] } },
+            commentCount: { $size: { $ifNull: ["$comments", []] } },
+            userLiked: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userid",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            userid: 1,
+            postType: 1,
+            content: 1,
+            postImgURL: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            likeCount: 1,
+            shareCount: 1,
+            commentCount: 1,
+            userLiked: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+      ]);
+
+      return res.status(200).json(posts);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchHomePostsController = async (req: any, res: Response) => {
+  const { vieweruid } = req.query;
+
+  try {
+    if (vieweruid !== null && vieweruid !== undefined && vieweruid !== "null") {
+      const objectViewerUID = stringToObjectId(vieweruid.toString());
+
+      const skip = 0;
+      const limit = 5;
+
+      const posts = await PostModel.aggregate([
         { $sort: { createdAt: -1 } },
         { $skip: skip },
         { $limit: limit },
@@ -129,11 +263,85 @@ export const fetchPostsController = async (req: any, res: Response) => {
           },
         },
         {
-          $project: {
-            comments: 0,
-            likes: 0,
-            shares: 0,
+          $lookup: {
+            from: "users",
+            localField: "userid",
+            foreignField: "_id",
+            as: "user",
           },
+        },
+        {
+          $project: {
+            _id: 1,
+            userid: 1,
+            postType: 1,
+            content: 1,
+            postImgURL: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            likeCount: 1,
+            shareCount: 1,
+            commentCount: 1,
+            userLiked: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+      ]);
+
+      return res.status(200).json(posts);
+    } else {
+      const skip = 0;
+      const limit = 5;
+
+      const posts = await PostModel.aggregate([
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $addFields: {
+            likeCount: { $size: { $ifNull: ["$likes", []] } }, // Use $ifNull to handle missing fields
+            shareCount: { $size: { $ifNull: ["$shares", []] } }, // Use $ifNull to handle missing fields
+            commentCount: { $size: { $ifNull: ["$comments", []] } }, // Use $ifNull to handle missing fields
+            userLiked: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userid",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            userid: 1,
+            postType: 1,
+            content: 1,
+            postImgURL: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            likeCount: 1,
+            shareCount: 1,
+            commentCount: 1,
+            userLiked: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
         },
       ]);
 
@@ -308,7 +516,7 @@ export const getCommentsController = async (req: any, res: Response) => {
   try {
     const { userid, postid, skip, limit } = req.query;
 
-    if (postid) {
+    if (userid !== null && userid !== undefined && userid !== "null") {
       const objectUserId = stringToObjectId(userid);
       const objectPostId = stringToObjectId(postid);
 
@@ -393,7 +601,84 @@ export const getCommentsController = async (req: any, res: Response) => {
 
       return res.status(200).json(comments);
     } else {
-      res.status(400).json({ message: "Cannot retrieved comments" });
+      const objectPostId = stringToObjectId(postid);
+
+      const post = await PostModel.findById(objectPostId);
+
+      if (!post) {
+        return res
+          .status(400)
+          .json({ message: "There was no post retrieved." });
+      }
+
+      const comments = await CommentModel.aggregate([
+        { $match: { _id: { $in: post.comments } } },
+
+        {
+          $addFields: {
+            replyCount: { $size: "$replies" },
+          },
+        },
+
+        {
+          $addFields: {
+            isSpecificUser: false,
+          },
+        },
+
+        {
+          $addFields: {
+            likeCount: { $size: "$likes" },
+          },
+        },
+
+        {
+          $addFields: {
+            isLiked: false,
+          },
+        },
+        {
+          $addFields: {
+            replies: [],
+          },
+        },
+
+        { $sort: { isSpecificUser: -1, createdAt: -1 } },
+
+        { $skip: parseInt(skip) },
+        { $limit: parseInt(limit) },
+
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+
+        {
+          $project: {
+            _id: 1,
+            content: 1,
+            createdAt: 1,
+            likeCount: 1,
+            isLiked: 1,
+            replyCount: 1,
+            replies: 1,
+            user: {
+              _id: 1,
+              displayname: 1,
+              imgURL: 1,
+            },
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+      ]).exec();
+
+      return res.status(200).json(comments);
     }
   } catch (error) {
     console.error(error);
@@ -516,22 +801,37 @@ export const addReplyController = async (req: any, res: Response) => {
 
 export const getRepliesController = async (req: any, res: Response) => {
   const { userId, commentId, skip, limit } = req.body;
-
   try {
-    if (commentId) {
+    if (userId !== null && userId !== undefined && userId !== "null") {
       const objectUserId = stringToObjectId(userId);
       const objectCommentId = stringToObjectId(commentId);
 
       const replies = await ReplyModel.find({ commentId: objectCommentId })
         .skip(parseInt(skip, 10))
         .limit(parseInt(limit, 10))
-        .populate("userId", "displayname imgURL") // Optional: populate user data
+        .populate("userId", "displayname imgURL")
         .exec();
 
       const repliesWithAdditionalFields = replies.map((reply) => ({
         ...reply.toObject(),
         likeCount: reply.likes.length,
         isLiked: reply.likes.includes(objectUserId),
+      }));
+
+      return res.status(200).json(repliesWithAdditionalFields);
+    } else {
+      const objectCommentId = stringToObjectId(commentId);
+
+      const replies = await ReplyModel.find({ commentId: objectCommentId })
+        .skip(parseInt(skip, 10))
+        .limit(parseInt(limit, 10))
+        .populate("userId", "displayname imgURL")
+        .exec();
+
+      const repliesWithAdditionalFields = replies.map((reply) => ({
+        ...reply.toObject(),
+        likeCount: reply.likes.length,
+        isLiked: false,
       }));
 
       return res.status(200).json(repliesWithAdditionalFields);

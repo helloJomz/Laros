@@ -52,11 +52,12 @@ const WriteComment = ({ postId }: { postId: string }) => {
           <Input
             className="rounded-2xl bg-slate-600 text-xs md:text-sm w-full h-8 md:h-10"
             placeholder={`${capitalizeFirstLetter(
-              displayname
+              displayname || "Anon"
             )}, share your thoughts...`}
             onChange={handleChange}
             value={commentContent}
             onKeyUp={handleEnter}
+            disabled={!userid}
           />
         </div>
       </div>

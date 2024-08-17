@@ -8,6 +8,9 @@ import modalReducer from "./features/modal/modalSlice";
 import postReducer from "./features/post/postSlice";
 import postUIReducer from "./features/post/uiSlice";
 import viewPostReducer from "./features/modal/viewpostSlice";
+import navReducer from "./features/nav/navSlice";
+import searchReducer from "./features/search/searchSlice";
+import gameReducer from "./features/game/gameSlice";
 import { apiSlice } from "./services/api";
 import {
   persistReducer,
@@ -20,17 +23,10 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { features } from "process";
 
 const persistConfig = {
   key: "root",
   storage,
-};
-
-const defaultMiddlewareConfig = {
-  serializableCheck: {
-    ignoredPaths: ["filters.startDate", "filters.endDate"],
-  },
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
@@ -47,6 +43,9 @@ export const store = configureStore({
     viewpostmodal: viewPostReducer,
     post: postReducer,
     postUI: postUIReducer,
+    nav: navReducer,
+    search: searchReducer,
+    game: gameReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

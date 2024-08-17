@@ -15,6 +15,10 @@ export const postApiSlice = apiSlice.injectEndpoints({
         `/post/fetchpost?uid=${uid}&vieweruid=${viewerUID}`,
     }),
 
+    getHomePosts: builder.query({
+      query: ({ viewerUID }) => `/post/fetchhomepost?vieweruid=${viewerUID}`,
+    }),
+
     getComments: builder.query({
       query: ({
         userId,
@@ -165,6 +169,7 @@ export const postApiSlice = apiSlice.injectEndpoints({
 export const {
   useSavePostMutation,
   useGetPostsQuery,
+  useGetHomePostsQuery,
   useIncrementLikeCountMutation,
   useDecrementLikeCountMutation,
   useGetCommentsQuery,

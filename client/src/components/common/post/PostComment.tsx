@@ -37,7 +37,7 @@ const PostComment = ({
   const navigate = useNavigate();
 
   const { setModalOpen } = useModal();
-
+  const { setShowPromptToLogin } = useNavbarContext();
   const { authenticatedUserObject } = useUserContext();
   const { userid: userId } = authenticatedUserObject;
 
@@ -285,7 +285,12 @@ const PostComment = ({
                         {/* Reply Button */}
                         <div
                           className="cursor-pointer hover:underline text-xs"
-                          onClick={() => setReplyId(comment._id)}
+                          onClick={() => {
+                            if (!userId) {
+                              return;
+                            }
+                            setReplyId(comment._id);
+                          }}
                         >
                           <span>Reply</span>
                         </div>

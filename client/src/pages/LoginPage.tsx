@@ -6,6 +6,7 @@ import { CircleDashed } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const LoginPage = () => {
   const { windowWidth } = useNavbarContext();
@@ -13,6 +14,10 @@ const LoginPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Laros | Login </title>
+      </Helmet>
+
       <div className="fixed top-0">
         <div className="p-2">
           <Link

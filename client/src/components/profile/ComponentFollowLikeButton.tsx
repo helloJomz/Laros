@@ -4,6 +4,7 @@ import {
   useAddFollowMutation,
   useMinusFollowMutation,
 } from "@/app/features/profile/profileApiSlice";
+import { useNavbarContext } from "@/context/NavbarContext";
 import { useUserContext } from "@/context/UserContext";
 import { useModal } from "@/hooks/useModal";
 import { useProfile } from "@/hooks/useProfile";
@@ -26,6 +27,7 @@ const ComponentFollowLikeButton = ({
   variant,
   type,
 }: ComponentFollowLikeButton) => {
+  const { setShowPromptToLogin } = useNavbarContext();
   const { authenticatedUserObject } = useUserContext();
   const { userid: yourUID } = authenticatedUserObject;
 
@@ -58,6 +60,10 @@ const ComponentFollowLikeButton = ({
   const [minusFollow] = useMinusFollowMutation();
 
   const handleHeartClick = async () => {
+    if (!yourUID) {
+      setShowPromptToLogin(true);
+      return;
+    }
     setHeartCount((heart) => (heartStatus ? heart - 1 : heart + 1));
     setHeartStatus(!heartStatus);
     if (!heartStatus) {
@@ -74,6 +80,10 @@ const ComponentFollowLikeButton = ({
   };
 
   const handleFollowClick = async () => {
+    if (!yourUID) {
+      setShowPromptToLogin(true);
+      return;
+    }
     setFollowerCount((follow) => (followingStatus ? follow - 1 : follow + 1));
     setFollowingStatus(!followingStatus);
     if (!followingStatus) {

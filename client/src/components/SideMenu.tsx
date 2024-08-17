@@ -97,7 +97,7 @@ const SideMenu = () => {
 
   return (
     <div>
-      <Menubar className="border-none ps-2 relative bg-transparent">
+      <Menubar className="border-none p-0 h-0 relative bg-transparent ">
         <MenubarMenu>
           <MenubarTrigger className="flex justify-center items-center h-fit w-fit p-0 cursor-pointer">
             <AvatarDisplay
@@ -106,7 +106,7 @@ const SideMenu = () => {
               variant="menu"
             />
           </MenubarTrigger>
-          <MenubarContent className="absolute top-[-0.1rem] right-[-3.5rem] z-[9999999]">
+          <MenubarContent className="absolute top-[-0.1rem] right-[-3rem] z-[9999999]">
             <div className="w-[15rem] h-[18rem] p-2 flex flex-col justify-between">
               <div
                 className="flex flex-col gap-y-2"

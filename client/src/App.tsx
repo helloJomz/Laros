@@ -9,9 +9,10 @@ import SignupPage from "./pages/SignupPage";
 import { PrivateRoute, AnonymousRoute } from "./routes/ProtectedRoutes";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "@/app/features/auth/authSlice";
-import Home from "./components/Home";
+import Home from "./pages/Home";
 import UploadAvatar from "./pages/UploadAvatar";
 import ProfilePage from "./pages/ProfilePage";
+import GamePage from "./pages/GamePage";
 
 function App() {
   const auth = useSelector(selectCurrentToken);
@@ -28,11 +29,12 @@ function App() {
             </Route>
 
             <Route element={<MainLayout currentLocation={location} />}>
+              <Route path="/game/:guid" element={<GamePage />} />
               <Route path="/" element={<Home />} />
+              <Route path="/:displayname" element={<ProfilePage />} />
 
               <Route element={<PrivateRoute auth={auth} />}>
                 <Route path="/upload/avatar" element={<UploadAvatar />} />
-                <Route path="/:displayname" element={<ProfilePage />} />
               </Route>
 
               <Route path="*" element={<PageNotFound />} />

@@ -28,7 +28,7 @@ const PromptToLogin = () => {
   return (
     <>
       {showPromptToLogin && !userid && (
-        <div className="fixed w-fit top-20 left-0 right-0 mx-auto bg-background border border-muted p-4 rounded shadow-lg">
+        <div className="fixed w-fit top-20 left-0 right-0 mx-auto bg-background border border-muted p-4 rounded shadow-lg z-[9999]">
           <div className="flex flex-col gap-y-6">
             <div className="flex justify-between items-center border-b-2 border-muted pb-2">
               <div className="flex gap-x-1 items-center">

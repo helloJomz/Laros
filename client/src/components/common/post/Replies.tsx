@@ -127,7 +127,9 @@ const Replies = ({
                   to={`/${reply.userId.displayname}`}
                   className="font-semibold hover:underline w-fit"
                 >
-                  <span>{capitalizeFirstLetter(reply.userId.displayname)}</span>
+                  <span>
+                    {capitalizeFirstLetter(reply.userId.displayname || "Anon")}
+                  </span>
                 </Link>
 
                 <div className="bg-gradient-to-r from-slate-500 to-slate-600 rounded-lg py-2 ps-2 pe-3 w-fit md:text-sm flex flex-col">

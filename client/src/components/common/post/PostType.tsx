@@ -1,4 +1,3 @@
-import { useProfile } from "@/hooks/useProfile";
 import { capitalizeFirstLetter, formatDateForPostHeader } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import PostReaction from "./PostReaction";
@@ -6,6 +5,7 @@ import { MdVerified } from "react-icons/md";
 import { useNavbarContext } from "@/context/NavbarContext";
 import PostReactionCount from "./PostReactionCount";
 import { useModal } from "@/hooks/useModal";
+import useResizeImage from "@/hooks/useResizeImage";
 
 interface PostObject {
   _id: string;
@@ -19,16 +19,21 @@ interface PostObject {
   userLiked: boolean;
   shareCount: number;
   commentCount: number;
+  user?: {
+    _id: string;
+    displayname: string;
+    imgURL: string;
+  };
 }
 
 const PostType = ({ postObject }: { postObject: PostObject }) => {
-  const { setModalOpen, setHelper, modalType } = useModal();
-
-  const { userObject } = useProfile();
-  const { imgURL, displayname } = userObject || {};
   const { windowWidth } = useNavbarContext();
-
+  const { setModalOpen, setHelper, modalType } = useModal();
   const { content, postImgURL, createdAt } = postObject;
+
+  console.log(postObject);
+
+  const [ref, size] = useResizeImage(windowWidth);
 
   const isVerified: boolean = true;
 
@@ -39,22 +44,24 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
           <div className="flex justify-between ps-2 py-3 pe-4">
             <div className="flex gap-x-2 items-center">
               <img
-                src={imgURL!}
-                alt={`${displayname}_photo`}
+                src={postObject.user?.imgURL}
+                alt={`${postObject.user?.displayname}_photo`}
                 className="w-10 h-10 rounded-full object-cover pointer-events-none"
               />
               <div className="flex flex-col">
                 <div className="flex gap-x-1 items-center text-sm md:text-base">
-                  <Link to={`/${displayname}`}>
+                  <Link to={`/${postObject.user?.displayname}`}>
                     <span className="font-semibold hover:underline">
-                      {displayname && capitalizeFirstLetter(displayname)}
+                      {capitalizeFirstLetter(
+                        postObject.user?.displayname || "Laros"
+                      )}
                     </span>
                   </Link>
                   {isVerified && <MdVerified className=" text-sky-400" />}
                 </div>
 
                 <span className="text-muted-foreground text-xs">
-                  {formatDateForPostHeader(createdAt)}
+                  {capitalizeFirstLetter(formatDateForPostHeader(createdAt))}
                 </span>
               </div>
             </div>
@@ -76,18 +83,21 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
           {content && postImgURL && (
             <>
               <div className="flex flex-col gap-y-2">
-                <div className="px-4">
+                <div className="px-2">
                   <span>{content}</span>
                 </div>
-                <img
-                  src={postImgURL}
-                  alt={postImgURL}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setHelper(postObject._id);
-                    setModalOpen("maxviewpost");
-                  }}
-                />
+                <div className={`bg-gray-900 flex justify-center ${size}`}>
+                  <img
+                    src={postImgURL}
+                    alt={postImgURL}
+                    ref={ref}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setHelper(postObject._id);
+                      setModalOpen("maxviewpost");
+                    }}
+                  />
+                </div>
               </div>
             </>
           )}
@@ -100,7 +110,10 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
             <img
               src={postImgURL}
               alt={postImgURL}
-              className={modalType !== "maxviewpost" ? "cursor-pointer" : ""}
+              className={`${size} ${
+                modalType !== "maxviewpost" ? "cursor-pointer" : ""
+              }`}
+              ref={ref}
               onClick={() => {
                 if (modalType !== "maxviewpost") {
                   setHelper(postObject._id);

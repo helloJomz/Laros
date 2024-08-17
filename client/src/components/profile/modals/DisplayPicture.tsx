@@ -26,7 +26,12 @@ const DisplayPicture = () => {
         />
         {isAuthProfile && (
           <div className="flex flex-col gap-y-4 ">
-            <Button onClick={() => navigate("/upload/avatar")}>
+            <Button
+              onClick={() => {
+                setModalOpen(null);
+                navigate("/upload/avatar");
+              }}
+            >
               Change Avatar
             </Button>
             <Button

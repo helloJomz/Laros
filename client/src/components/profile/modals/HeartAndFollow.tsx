@@ -52,7 +52,7 @@ const HeartAndFollow = ({ type }: HeartAndFollowProps) => {
     return (
       <>
         <div
-          className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg px-4 pt-3 pb-8  flex flex-col gap-y-4"
+          className="bg-secondary w-[90%] h-[80%] md:w-1/2 md:h-[60%] xl:w-1/3 rounded shadow-lg px-4 pt-3 pb-8 flex flex-col gap-y-4"
           ref={componentRef}
         >
           {children}

@@ -10,6 +10,7 @@ import { LoaderCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setUpdateImgURL } from "@/app/features/auth/authSlice";
 import { useUserContext } from "@/context/UserContext";
+import { Helmet } from "react-helmet-async";
 
 const UploadAvatar = () => {
   const { authenticatedUserObject } = useUserContext();
@@ -127,6 +128,10 @@ const UploadAvatar = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Laros | Upload an Avatar</title>
+      </Helmet>
+
       <div className="flex flex-col items-center gap-y-8 justify-center h-full ">
         <div className="text-white text-center font-semibold">
           <h1 className="text-lg md:text-2xl">Upload your Avatar</h1>

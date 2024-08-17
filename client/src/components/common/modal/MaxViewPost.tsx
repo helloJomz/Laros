@@ -10,14 +10,13 @@ import { cn } from "@/lib/utils";
 import { useGetUserByIdQuery } from "@/app/features/users/userApiSlice";
 import { capitalizeFirstLetter } from "@/utils/utils";
 import { useUserContext } from "@/context/UserContext";
-import { useRef } from "react";
 import useClickedOutsideModal from "@/hooks/useClickedOutsideModal";
 
 const MaxViewPost = () => {
   const { componentRef } = useClickedOutsideModal();
 
   const { authenticatedUserObject } = useUserContext();
-  const { displayname } = authenticatedUserObject;
+  const { displayname, userid } = authenticatedUserObject;
 
   const { usehelper, setModalOpen } = useModal();
   const postId = usehelper;
@@ -26,9 +25,8 @@ const MaxViewPost = () => {
     selectSinglePost(state, postId)
   );
 
-  if (!selectedPost) return null;
-
-  const { data, isLoading } = useGetUserByIdQuery(selectedPost.userid, {
+  const { data, isLoading } = useGetUserByIdQuery(selectedPost!.user._id, {
+    skip: !selectedPost,
     refetchOnMountOrArgChange: true,
   });
 
@@ -38,15 +36,15 @@ const MaxViewPost = () => {
     <>
       <div
         className={cn(
-          "h-[90%] w-[95%] md:w-[70%] lg:w-[50%] xl:w-[30%] bg-secondary rounded overflow-hidden flex flex-col",
+          "h-full w-[95%] md:w-[70%] lg:w-[50%] xl:w-[30%] bg-secondary rounded overflow-hidden flex flex-col md:mt-24",
           {
-            "h-fit": selectedPost.commentCount === 0,
+            "h-fit": selectedPost!.commentCount <= 1,
           }
         )}
         ref={componentRef}
       >
         <div className="font-bold border-b border-slate-600 py-3 lg:py-4 relative">
-          <div className="text-center ">
+          <div className="text-center">
             <h5>
               {displayname === data.displayname
                 ? "Your Post"
@@ -54,7 +52,7 @@ const MaxViewPost = () => {
             </h5>
           </div>
           <div
-            className="absolute top-2.5 lg:top-3.5 right-1.5 p-1.5 rounded-full hover:bg-opacity-10 hover:bg-slate-200 cursor-pointer"
+            className="absolute top-2.5 lg:top-3.5 right-1.5 p-1.5 rounded-full bg-opacity-10 bg-slate-200 hover:bg-opacity-20 cursor-pointer"
             onClick={() => setModalOpen(null)}
           >
             <X size={16} />
@@ -63,12 +61,14 @@ const MaxViewPost = () => {
 
         <div className="flex-1 overflow-y-auto bg-secondary">
           <PostType postObject={selectedPost!} />
-          <PostComment postId={postId} authorId={selectedPost.userid} />
+          <PostComment postId={postId} authorId={selectedPost!.user._id} />
         </div>
 
-        <div className="bg-secondary w-full py-1">
-          <WriteComment postId={postId} />
-        </div>
+        {userid && (
+          <div className="bg-secondary w-full py-1">
+            <WriteComment postId={postId} />
+          </div>
+        )}
       </div>
     </>
   );

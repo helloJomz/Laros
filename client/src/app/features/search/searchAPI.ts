@@ -8,8 +8,8 @@ export const searchAPI = createApi({
   }),
   endpoints: (builder) => ({
     // FOR GETTING GAME BASED ON THE QUERY
-    getGamesByName: builder.query({
-      query: (gameName) => `/games/${gameName}`,
+    searchQuery: builder.query({
+      query: (query) => `/?query=${query}`,
     }),
 
     // FOR ADDING THE CLICKED GAME TO THE RECENT HISTORY
@@ -24,16 +24,21 @@ export const searchAPI = createApi({
 
     // FOR GETTING ALL RECENT HISTORY
     getAllRecentHistory: builder.query({
-      query: (userid) => `/recent_history/${userid}`,
+      query: (userid) => `/recent_history/?userid=${userid}`,
     }),
 
     // FOR DELETING ONE RECENT HISTORY
     deleteOneRecentHistory: builder.mutation({
-      query: (historyId) => ({
+      query: ({
+        userId,
+        historyId,
+      }: {
+        userId: string;
+        historyId: string;
+      }) => ({
         url: "/recent_history/one_target",
         method: "DELETE",
-        headers: HEADER_JSON,
-        body: historyId,
+        body: { userId, historyId },
       }),
     }),
 
@@ -42,15 +47,14 @@ export const searchAPI = createApi({
       query: (userid) => ({
         url: "/recent_history/all_target",
         method: "DELETE",
-        headers: HEADER_JSON,
-        body: userid,
+        body: { userid },
       }),
     }),
   }),
 });
 
 export const {
-  useGetGamesByNameQuery,
+  useSearchQueryQuery,
   useAddGameToRecentHistoryMutation,
   useGetAllRecentHistoryQuery,
   useDeleteAllRecentHistoryMutation,
