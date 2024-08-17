@@ -6,9 +6,10 @@ import {
   REFRESH_SECRET,
   SALT,
 } from "../constants";
-import { generateToken, generateRandomAvatarGifs } from "../helpers/index";
+import { generateToken } from "../helpers/index";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import { generateRandomAvatarGifs } from "../helpers/index";
 
 export const signupController = async (req: Request, res: Response) => {
   const { displayname, email, password } = req.body;
