@@ -5,7 +5,7 @@ import {
   GOOGLE_STORAGE_KEY,
   GOOGLE_STORAGE_PROJECT_ID,
 } from "../constants";
-import { stringToObjectId } from "../helpers";
+import { stringToObjectId } from "../helpers/index";
 import { PostModel } from "../models/Post";
 import { CommentModel } from "../models/Comment";
 import { ReplyModel } from "../models/Reply";

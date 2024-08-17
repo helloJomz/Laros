@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/User";
 import mongoose from "mongoose";
-import { stringToObjectId } from "../helpers";
+import { stringToObjectId } from "../helpers/index";
 
 export const getUserByDisplayNameController = async (
   req: Request,

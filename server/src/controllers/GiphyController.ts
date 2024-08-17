@@ -1,7 +1,7 @@
 import { Request, Response, json } from "express";
 import axios from "axios";
 import { GIPHY_APIKEY, GIPHY_APIKEY2 } from "../constants";
-import { randomVerifiedGiphyGameChannelsGif } from "../helpers";
+import { randomVerifiedGiphyGameChannelsGif } from "../helpers/index";
 
 export const randomBgGifController = async (req: Request, res: Response) => {
   try {
