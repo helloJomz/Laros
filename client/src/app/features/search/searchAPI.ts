@@ -4,7 +4,7 @@ import { HEADER_JSON } from "@/app/constants";
 export const searchAPI = createApi({
   reducerPath: "searchAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api/search",
+    baseUrl: "https://laros-backend.onrender.com/api/search",
   }),
   endpoints: (builder) => ({
     // FOR GETTING GAME BASED ON THE QUERY
