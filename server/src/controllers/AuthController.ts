@@ -10,7 +10,7 @@ import { generateToken } from "../helpers/index";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { generateRandomAvatarGifs } from "../helpers/index";
-import { User } from "@/helpers/types";
+import { User } from "../helpers/types";
 
 export const signupController = async (req: Request, res: Response) => {
   const { displayname, email, password } = req.body;
@@ -81,7 +81,7 @@ export const loginController = async (req: Request, res: Response) => {
     _id: user._id,
     displayname: user.displayname.toString(),
     email: user.email.toString(),
-    ...(user.imgURL !== undefined && { imgURL: user.imgURL.toString() }),
+    imgURL: user.imgURL!.toString(),
   };
 
   const accessToken = generateToken(userObj, "access", "30m");
