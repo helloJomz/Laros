@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
 export const CONNECTION: string = process.env.MONGODBCREDENTIALS!;
 export const PORT: string | number = process.env._PORT || 3000;

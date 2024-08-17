@@ -10,6 +10,7 @@ import { generateToken } from "../helpers/index";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { generateRandomAvatarGifs } from "../helpers/index";
+import { User } from "@/helpers/types";
 
 export const signupController = async (req: Request, res: Response) => {
   const { displayname, email, password } = req.body;
@@ -24,7 +25,7 @@ export const signupController = async (req: Request, res: Response) => {
       imgURL: randomGif,
     };
 
-    const user = await UserModel.create(newUser);
+    const user = (await UserModel.create(newUser)) as User;
 
     if (user) {
       const userObj = {
@@ -70,17 +71,17 @@ export const loginController = async (req: Request, res: Response) => {
   if (!user)
     return res.status(400).json({ error: "Invalid email or Password." });
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password.toString());
 
   if (!isMatch) {
     return res.status(400).json({ error: "Invalid email or password" });
   }
 
-  const userObj = {
+  const userObj: User = {
     _id: user._id,
-    displayname: user.displayname,
-    email: user.email,
-    ...(user.imgURL !== undefined && { imgURL: user.imgURL }),
+    displayname: user.displayname.toString(),
+    email: user.email.toString(),
+    ...(user.imgURL !== undefined && { imgURL: user.imgURL.toString() }),
   };
 
   const accessToken = generateToken(userObj, "access", "30m");
@@ -162,11 +163,12 @@ export const refreshTokenController = async (
 
   jwt.verify(refreshToken!, REFRESH_SECRET!, (err: any, decoded: any) => {
     if (err) return res.status(401).json({ message: "Forbidden Access!" });
-    const data = decoded.user;
+    const data = decoded.user as User;
     const newUserObj = {
       _id: data._id,
       displayname: data.displayname,
       email: data.email,
+      imgURL: data.imgURL,
     };
     const accessToken = generateToken(newUserObj, "access", "30m");
     return res
