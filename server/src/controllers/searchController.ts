@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { APIKEY } from "../constants";
 import axios from "axios";
 import { SearchHistoryModel } from "../models/SearchHistory";
-import mongoose from "mongoose";
 import { stringToObjectId } from "../helpers";
 import { UserModel } from "../models/User";
 
