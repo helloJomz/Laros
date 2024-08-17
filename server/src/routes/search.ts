@@ -5,7 +5,6 @@ import {
   deleteAllRecentHistoryController,
   deleteOneRecentHistoryController,
   getAllRecentHistoryController,
-  getGameListByQueryController,
 } from "controllers/SearchController";
 
 const router = Router();
