@@ -1,36 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES6", // The target JavaScript version
-    "module": "CommonJS", // Module system to use, CommonJS for Node.js
-    "moduleResolution": "node", // Module resolution strategy, node for Node.js
-    "lib": ["ES6", "DOM"], // Library files to include in the compilation
-    "outDir": "./dist", // Directory to output compiled JavaScript files
-    "rootDir": "./src", // Root directory of the source files
-    "baseUrl": "./src", // Base directory for non-relative module imports
-    "paths": {
-      // Path mapping for module resolution
-      "@controllers/*": ["controllers/*"],
-      "@models/*": ["models/*"],
-      "@routes/*": ["routes/*"],
-      "@utils/*": ["utils/*"]
-    },
-    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules
-    "allowSyntheticDefaultImports": true, // Allows default imports from modules without default exports
-    "strict": true, // Enables all strict type-checking options
-    "noImplicitAny": true, // Disallows variable declarations with an implied 'any' type
-    "noImplicitThis": true, // Disallows 'this' expressions with an implied 'any' type
-    "strictNullChecks": true, // Enables strict null checks
-    "forceConsistentCasingInFileNames": true, // Ensures consistent casing in file names
-    "skipLibCheck": true, // Skips type checking of declaration files
-    "preserveConstEnums": true, // Retains const enum declarations in the output
-    "noEmitOnError": true, // Prevents emitting files if there are compilation errors
-    "incremental": true, // Enables incremental compilation
-    "sourceMap": true, // Generates source map files for debugging
-    "declaration": true, // Generates declaration files (.d.ts) for TypeScript
-    "declarationMap": true, // Generates sourcemaps for declaration files
-    "experimentalDecorators": true, // Enables experimental support for decorators
-    "emitDecoratorMetadata": true // Enables experimental metadata reflection for decorators
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"], // Specifies the files to include in the compilation
-  "exclude": ["node_modules", "dist"] // Specifies the files to exclude from the compilation
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
