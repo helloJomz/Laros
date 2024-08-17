@@ -19,7 +19,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://laros-lime.vercel.app/",
+    origin: "https://laros-lime.vercel.app",
     credentials: true,
   })
 );
