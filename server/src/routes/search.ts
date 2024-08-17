@@ -1,11 +1,12 @@
 import { Router } from "express";
 import {
+  searchQueryController,
+  addRecentHistoryController,
   deleteAllRecentHistoryController,
   deleteOneRecentHistoryController,
   getAllRecentHistoryController,
-  addRecentHistoryController,
-  searchQueryController,
-} from "../controllers/SearchController";
+  getGameListByQueryController,
+} from "controllers/SearchController";
 
 const router = Router();
 
