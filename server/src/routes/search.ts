@@ -5,7 +5,7 @@ import {
   deleteAllRecentHistoryController,
   deleteOneRecentHistoryController,
   getAllRecentHistoryController,
-} from "controllers/SearchController";
+} from "../controllers/SearchController";
 
 const router = Router();
 
