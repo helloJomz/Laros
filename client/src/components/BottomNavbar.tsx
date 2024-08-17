@@ -1,6 +1,6 @@
 import { usePost } from "@/hooks/usePost";
 import { Users, Swords, Bell, LoaderCircle } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const BottomNavbar = () => {

@@ -1,7 +1,7 @@
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { cn } from "../lib/utils";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchVal, selectSearchVal } from "@/app/features/nav/navSlice";
 import { useAddGameToRecentHistoryMutation } from "@/app/features/search/searchAPI";

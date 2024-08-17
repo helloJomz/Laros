@@ -39,8 +39,6 @@ const Replies = ({
   const { ui } = usePost();
   const { setReplyId } = ui;
 
-  const [lengthOfReplies, setLengthOfReplies] = useState<number>(1);
-
   const [skip, setSkip] = useState<number>(0);
 
   const [loadMoreReply, { isLoading, isError }] = useLoadMoreReplyMutation();

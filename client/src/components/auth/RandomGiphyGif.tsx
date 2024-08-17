@@ -1,6 +1,5 @@
 import { useRandomGifQuery } from "@/app/features/giphy/giphySlice";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
 
 const RandomGiphyGif = () => {
   const { data: giphyData, isLoading, refetch } = useRandomGifQuery();

@@ -25,7 +25,7 @@ const CreatePost = () => {
     postStates,
   } = usePost();
 
-  const { savePost, setPost, isPostSaving, isPostSaveError } = postStates;
+  const { savePost, setPost, isPostSaving } = postStates;
 
   const { setModalOpen } = useModal();
 
@@ -57,11 +57,9 @@ const CreatePost = () => {
     // FOR SELECTED FILE FROM LOCAL SYSTEM
     if (selectedFile && typeof selectedFile === "object") {
       const blob = selectedFile.slice(0, selectedFile.size, selectedFile.type);
-      const newFile = new File(
-        [blob],
-        generatePostRandomString(selectedFile.name),
-        { type: selectedFile.type }
-      );
+      const newFile = new File([blob], generatePostRandomString(), {
+        type: selectedFile.type,
+      });
       const formData = new FormData();
 
       const postObject = {

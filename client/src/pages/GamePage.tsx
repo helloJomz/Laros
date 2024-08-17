@@ -8,17 +8,11 @@ import {
 } from "@/app/features/game/gameSlice";
 import {
   Bookmark,
-  ChevronDown,
-  ChevronUp,
-  Circle,
   Gamepad2,
   Heart,
-  Quote,
-  Image,
   Minus,
   Plus,
   MessageCircle,
-  Paperclip,
 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";

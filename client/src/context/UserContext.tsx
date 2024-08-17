@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/features/auth/authSlice";
 import { type UserObject } from "@/types/Profile";

@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import SignupForm from "../components/auth/SignupForm";
 import { Link } from "react-router-dom";
-import { TypeAnimation } from "react-type-animation";
 
 const SignupPage = () => {
   return (

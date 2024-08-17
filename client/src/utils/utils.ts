@@ -13,7 +13,7 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function generatePostRandomString(imageName: string) {
+export function generatePostRandomString() {
   const uuid = v4();
   const finalString = `post_${uuid}`;
   return finalString;

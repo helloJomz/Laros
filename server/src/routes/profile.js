@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const ProfileController_1 = require("../controllers/ProfileController");
+const router = (0, express_1.Router)();
+router.post("/addHeart", ProfileController_1.addHeartController);
+router.post("/minusHeart", ProfileController_1.minusHeartController);
+router.get("/heart", ProfileController_1.getAllHeartController);
+router.post("/addFollow", ProfileController_1.addFollowController);
+router.post("/minusFollow", ProfileController_1.minusFollowController);
+router.get("/follow", ProfileController_1.getAllFollowersController);
+router.post("/addbio", ProfileController_1.addBioController);
+router.post("/addgenre", ProfileController_1.addGenreController);
+router.get("/:yourUID/:otherUserUID/relationship", ProfileController_1.checkProfileRelationshipStatusController);
+router.get("/getfollowing", ProfileController_1.getUserFollowingController);
+router.post("/unfollow", ProfileController_1.unfollowUserController);
+exports.default = router;

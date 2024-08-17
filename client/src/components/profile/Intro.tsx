@@ -2,7 +2,6 @@ import FavoriteGame from "./FavoriteGame";
 import { useNavbarContext } from "@/context/NavbarContext";
 import Bio from "./Bio";
 import Genre from "./Genre";
-import { useState } from "react";
 
 type IntroProps = React.HTMLAttributes<HTMLDivElement>;
 

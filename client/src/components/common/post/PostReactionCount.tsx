@@ -1,6 +1,5 @@
 import { useModal } from "@/hooks/useModal";
 import { cn } from "@/lib/utils";
-import React from "react";
 import { FaFire } from "react-icons/fa";
 
 const PostReactionCount = ({

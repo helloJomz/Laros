@@ -37,7 +37,7 @@ const PostComment = ({
   const navigate = useNavigate();
 
   const { setModalOpen } = useModal();
-  const { setShowPromptToLogin } = useNavbarContext();
+
   const { authenticatedUserObject } = useUserContext();
   const { userid: userId } = authenticatedUserObject;
 
@@ -45,7 +45,7 @@ const PostComment = ({
 
   const { windowWidth } = useNavbarContext();
 
-  const [skipLimit, setSkipLimit] = useState<{ skip: number; limit: number }>({
+  const [skipLimit] = useState<{ skip: number; limit: number }>({
     skip: 0,
     limit: 10,
   });
@@ -67,7 +67,7 @@ const PostComment = ({
 
   const { setReplyId, replyid } = ui;
 
-  const [lengthOfComments, setLengthOfReplies] = useState<number>(1);
+  const [lengthOfComments, _setLengthOfReplies] = useState<number>(1);
   const [isCommentHovered, setIsCommentHovered] = useState<string | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(
     null

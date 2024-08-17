@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { FC, ReactNode, HTMLAttributes } from "react";
+import { FC, HTMLAttributes } from "react";
 
 type ButtonIconProps = HTMLAttributes<HTMLButtonElement> & {
   variant?:
@@ -17,7 +17,7 @@ type ButtonIconProps = HTMLAttributes<HTMLButtonElement> & {
 };
 
 const ButtonIcon: FC<ButtonIconProps> = ({ className, children, ...props }) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isHovered, _setIsHovered] = useState<boolean>(false);
   return (
     <Button
       className={cn(className, {

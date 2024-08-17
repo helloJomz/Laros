@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import SearchResult from "./SearchResult";
 
 const TopNavbar = () => {
-  const { homePostRefetch, useIsPostLoading } = usePost().navStates;
+  const { homePostRefetch } = usePost().navStates;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

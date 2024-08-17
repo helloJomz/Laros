@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import useClickedOutsideModal from "@/hooks/useClickedOutsideModal";
 import { useModal } from "@/hooks/useModal";
 import { useProfile } from "@/hooks/useProfile";
-import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DisplayPicture = () => {
