@@ -58,11 +58,10 @@ const PostView = () => {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-y-4 ">
+      <div className="flex flex-col gap-y-4">
         {fetchedPosts.map((post: any, index: number) => {
           if (post.postType === "post")
             return <PostType key={`postType-${index}`} postObject={post} />;
-
           return null;
         })}
       </div>

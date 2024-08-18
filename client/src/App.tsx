@@ -8,14 +8,14 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import { PrivateRoute, AnonymousRoute } from "./routes/ProtectedRoutes";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "@/app/features/auth/authSlice";
+import { selectCurrentUser } from "@/app/features/auth/authSlice";
 import Home from "./pages/Home";
 import UploadAvatar from "./pages/UploadAvatar";
 import ProfilePage from "./pages/ProfilePage";
 import GamePage from "./pages/GamePage";
 
 function App() {
-  const auth = useSelector(selectCurrentToken);
+  const auth = useSelector(selectCurrentUser);
   const { pathname: location } = useLocation();
 
   return (

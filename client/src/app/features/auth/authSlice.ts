@@ -35,6 +35,5 @@ export const { setCredentials, setUpdateImgURL, destroyUserSession } =
   authSlice.actions;
 
 export const selectCurrentUser = (state: any) => state.auth.user;
-export const selectCurrentToken = (state: any) => state.auth.token;
 
 export default authSlice.reducer;

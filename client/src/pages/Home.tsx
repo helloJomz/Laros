@@ -32,7 +32,7 @@ const Home = () => {
         <div className="flex flex-col gap-y-4 h-full">
           <CreatePost />
           {!useIsPostLoading ? (
-            <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-y-4 pb-4">
               {fetchedPosts.map((post: any, index: number) => {
                 if (post.postType === "post")
                   return (
