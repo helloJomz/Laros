@@ -22,8 +22,6 @@ export const UploadAvatarController = async (req: any, res: Response) => {
   const { uid } = req.body;
   const file = req.file;
 
-  console.log(uid);
-
   try {
     if (uid && file) {
       //TODO: MAKE A CHECKING IF USER HAS A EXISTING IMG IN THE GOOGLECLOUD
