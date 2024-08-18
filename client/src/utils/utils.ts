@@ -60,3 +60,20 @@ export const formatDateDistanceToNow = (createdAt: string) => {
   }
   return `${seconds}s`;
 };
+
+export const getRandomGradient = () => {
+  const gradients = [
+    "bg-gradient-to-r from-blue-300 to-blue-800",
+    "bg-gradient-to-r from-indigo-500 to-blue-500",
+    "bg-gradient-to-r from-rose-400 to-orange-300",
+    "bg-gradient-to-r from-emerald-500 to-lime-600",
+    "bg-gradient-to-r from-fuchsia-600 to-purple-600",
+    "bg-gradient-to-r from-red-400 to-red-900",
+    "bg-gradient-to-r from-emerald-500 to-lime-600",
+    "bg-gradient-to-r from-sky-400 to-blue-500",
+  ];
+  const randomIndex = Math.floor(Math.random() * gradients.length);
+  const gradient = gradients[randomIndex];
+  gradients.splice(randomIndex, 1); // Remove the selected gradient
+  return gradient;
+};

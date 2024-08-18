@@ -6,6 +6,7 @@ interface Post {
   _id: string;
   userid: string;
   postType: string;
+  bg: string;
   content: string;
   postImgURL: string;
   createdAt: string;

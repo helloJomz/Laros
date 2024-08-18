@@ -1,6 +1,10 @@
 import { useUserContext } from "@/context/UserContext";
 import CloseButton from "../../CloseButton";
-import { capitalizeFirstLetter, generatePostRandomString } from "@/utils/utils";
+import {
+  capitalizeFirstLetter,
+  generatePostRandomString,
+  getRandomGradient,
+} from "@/utils/utils";
 import GameShowcase from "./GameShowcase";
 import { Button } from "@/components/ui/button";
 import { MdOutlineGif } from "react-icons/md";
@@ -54,6 +58,8 @@ const CreatePost = () => {
       console.log("error");
     }
 
+    const gradient = getRandomGradient();
+
     // FOR SELECTED FILE FROM LOCAL SYSTEM
     if (selectedFile && typeof selectedFile === "object") {
       const blob = selectedFile.slice(0, selectedFile.size, selectedFile.type);
@@ -74,6 +80,7 @@ const CreatePost = () => {
       formData.append("file", postObject.file);
       formData.append("content", postObject.content);
       formData.append("game", postObject.game);
+      formData.append("bg", gradient);
 
       const { data, error } = await savePost(formData);
 
@@ -102,6 +109,7 @@ const CreatePost = () => {
         content: usePreviewContent,
         //TODO: Implement this object
         game: "hi",
+        bg: gradient,
       };
 
       const { data, error } = await savePost(postObject);

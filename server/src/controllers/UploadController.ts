@@ -24,8 +24,6 @@ export const UploadAvatarController = async (req: any, res: Response) => {
 
   try {
     if (uid && file) {
-      //TODO: MAKE A CHECKING IF USER HAS A EXISTING IMG IN THE GOOGLECLOUD
-
       const blob = bucket.file(file.originalname);
       const blobStream = blob.createWriteStream();
       blobStream.on("error", () => {

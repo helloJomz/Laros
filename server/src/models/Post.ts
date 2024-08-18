@@ -12,6 +12,10 @@ const PostSchema = new Schema(
       type: String,
       required: true,
     },
+    bg: {
+      type: String,
+      required: true,
+    },
     content: {
       type: String,
       required: false,

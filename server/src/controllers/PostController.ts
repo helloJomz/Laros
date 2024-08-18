@@ -22,7 +22,7 @@ const storage = new Storage({
 const bucket = storage.bucket(GOOGLE_STORAGE_BUCKET_NAME);
 
 export const savePostController = async (req: any, res: Response) => {
-  const { uid, content, game } = req.body;
+  const { uid, content, game, bg } = req.body;
   const file = req.file;
 
   try {
@@ -48,6 +48,7 @@ export const savePostController = async (req: any, res: Response) => {
             postType: "post",
             postImgURL: publicURL,
             //   game: game,
+            bg: bg,
           });
 
           const post = await PostModel.findById(postId)
@@ -80,6 +81,7 @@ export const savePostController = async (req: any, res: Response) => {
           content: content,
           postType: "post",
           //   game: game,
+          bg: bg,
         });
 
         const post = await PostModel.findById(postId, {
@@ -154,6 +156,7 @@ export const fetchPostsController = async (req: any, res: Response) => {
           $project: {
             _id: 1,
             userid: 1,
+            bg: 1,
             postType: 1,
             content: 1,
             postImgURL: 1,
@@ -274,6 +277,7 @@ export const fetchHomePostsController = async (req: any, res: Response) => {
           $project: {
             _id: 1,
             userid: 1,
+            bg: 1,
             postType: 1,
             content: 1,
             postImgURL: 1,
