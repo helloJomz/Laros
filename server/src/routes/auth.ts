@@ -3,7 +3,6 @@ import {
   signupController,
   loginController,
   logoutController,
-  refreshTokenController,
   isDisplayNameExistsController,
   isEmailExistsController,
 } from "../controllers/AuthController";
@@ -16,7 +15,5 @@ router.post("/logout", logoutController);
 
 router.post("/checkemailexists", isEmailExistsController);
 router.post("/checkdisplaynameexists", isDisplayNameExistsController);
-
-router.get("/refreshtoken", refreshTokenController);
 
 export default router;

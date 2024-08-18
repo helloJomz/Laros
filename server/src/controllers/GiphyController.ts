@@ -1,6 +1,6 @@
-import { Request, Response, json } from "express";
+import { Request, Response } from "express";
 import axios from "axios";
-import { GIPHY_APIKEY, GIPHY_APIKEY2 } from "../constants";
+import { GIPHY_APIKEY2 } from "../constants";
 import { randomVerifiedGiphyGameChannelsGif } from "../helpers/index";
 
 export const randomBgGifController = async (req: Request, res: Response) => {
@@ -9,7 +9,7 @@ export const randomBgGifController = async (req: Request, res: Response) => {
 
     const response = await axios.get("https://api.giphy.com/v1/gifs/random/", {
       params: {
-        api_key: GIPHY_APIKEY,
+        api_key: GIPHY_APIKEY2,
         tag: gameChannelUsername,
       },
     });

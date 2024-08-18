@@ -1,7 +1,7 @@
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { cn } from "../lib/utils";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchVal, selectSearchVal } from "@/app/features/nav/navSlice";
 import { useAddGameToRecentHistoryMutation } from "@/app/features/search/searchAPI";
@@ -69,7 +69,7 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
     <div className={cn("justify-center items-center ", className)}>
       <div className="relative w-full bg-primary">
         <Input
-          className="h-8 w-full pe-9 bg-white border-none text-black"
+          className="h-8 w-full pe-9 bg-white border-none text-black "
           placeholder="Search something..."
           ref={inputRef}
           {...props}

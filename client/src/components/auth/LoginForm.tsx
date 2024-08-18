@@ -29,23 +29,24 @@ const LoginForm = () => {
         setStatus(errorMsg.data.error);
       } else {
         const data = response.data;
-        dispatch(
-          setCredentials({
-            accessToken: data.gqeRxt3B9mZ2i.ks23kfm,
-            user: {
-              userid: data.userObj._id,
-              displayname: data.userObj.displayname,
-              ...(data.userObj.imgURL && { imgURL: data.userObj.imgURL }),
-            },
-          })
-        );
-        setTriggerAlertFooter({
-          trigger: "login",
-          title: "Welcome back, Gamer!",
-          desc: "Dive back into the action and connect with your friends!",
-        });
-        localStorage.removeItem("anonUuid");
-        navigate("/");
+        if (data) {
+          dispatch(
+            setCredentials({
+              user: {
+                userid: data._id,
+                displayname: data.displayname,
+                ...(data.imgURL && { imgURL: data.imgURL }),
+              },
+            })
+          );
+          setTriggerAlertFooter({
+            trigger: "login",
+            title: "Welcome back, Gamer!",
+            desc: "Dive back into the action and connect with your friends!",
+          });
+          localStorage.removeItem("anonUuid");
+          navigate("/");
+        }
       }
       setSubmitting(false);
     }, 1500);

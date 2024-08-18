@@ -1,6 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { searchAPI } from "./features/search/searchAPI";
-import { giphyApiSlice } from "./features/giphy/giphySlice";
 import authReducer from "./features/auth/authSlice";
 import profileReducer from "./features/profile/profileSlice";
 import userReducer from "./features/users/userSlice";
@@ -33,9 +31,7 @@ const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    [searchAPI.reducerPath]: searchAPI.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
-    [giphyApiSlice.reducerPath]: giphyApiSlice.reducer,
     auth: persistedAuthReducer,
     profile: profileReducer,
     users: userReducer,
@@ -61,10 +57,8 @@ export const store = configureStore({
         ],
         ignoredPaths: ["post.postPreview"],
       },
-    })
-      .concat(searchAPI.middleware)
-      .concat(apiSlice.middleware)
-      .concat(giphyApiSlice.middleware),
+    }).concat(apiSlice.middleware),
+
   // concat here the other middleware APIs
 });
 

@@ -7,7 +7,6 @@ export const initialState: IState = {
     userid: null,
     imgURL: null,
   },
-  token: null,
 };
 
 const authSlice: any = createSlice({
@@ -15,9 +14,8 @@ const authSlice: any = createSlice({
   initialState: initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<CredentialsPayload>) => {
-      const { user, accessToken } = action.payload;
+      const { user } = action.payload;
       state.user = user;
-      state.token = accessToken;
     },
 
     setUpdateImgURL: (state, action: PayloadAction<{ imgURL: string }>) => {
@@ -29,7 +27,6 @@ const authSlice: any = createSlice({
       state.user.displayname = null;
       state.user.imgURL = null;
       state.user.userid = null;
-      state.token = null;
     },
   },
 });

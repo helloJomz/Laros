@@ -9,14 +9,20 @@ import { usePost } from "@/hooks/usePost";
 import {
   setIsSearchOpen,
   selectIsSearchOpen,
-  setSearchVal,
+  selectSearchVal,
 } from "@/app/features/nav/navSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { cn } from "@/lib/utils";
 import SearchResult from "./SearchResult";
+import useClickedOutside from "@/hooks/useClickedOutside";
+import { useUserContext } from "@/context/UserContext";
 
 const TopNavbar = () => {
   const { homePostRefetch } = usePost().navStates;
+
+  const { authenticatedUserObject } = useUserContext();
+  const { userid } = authenticatedUserObject;
+  const searchVal = useSelector(selectSearchVal);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +30,10 @@ const TopNavbar = () => {
   const currentLocation = useLocation().pathname;
   const isAtHomePage = currentLocation === "/";
   const isSearchOpen = useSelector(selectIsSearchOpen);
+
+  const { componentRef: searchRef } = useClickedOutside(() =>
+    dispatch(setIsSearchOpen({ isOpen: false }))
+  );
 
   // Context
   const { windowWidth } = useNavbarContext();
@@ -66,36 +76,21 @@ const TopNavbar = () => {
   ];
 
   const SearchComponent = () => {
-    if (windowWidth > 768)
-      return (
-        <>
-          <div className="absolute w-full h-full">
-            <div className="grid md:grid-cols-[25%,50%,25%] xl:grid-cols-[33%,34%,33%]">
-              <div className="w-full z-[-99999999999999]" />
-
-              <div
-                className="inset-x-0 w-full bg-primary shadow-2xl
-         z-[99999999] rounded-bl-sm rounded-br-sm h-fit px-4 pb-4"
-              >
-                <SearchResult />
-              </div>
-
-              <div
-                className="w-full z-[-99999999999999]"
-                onClick={() => console.log("hi")}
-              />
-            </div>
-          </div>
-        </>
-      );
-
     return (
       <>
-        <div
-          className="absolute inset-x-0 w-full bg-primary shadow-lg
-         z-[99999999] rounded-bl-sm rounded-br-sm h-fit pb-4 px-2"
-        >
-          <SearchResult />
+        <div className="w-full relative" ref={searchRef}>
+          <div className="flex gap-x-2 items-center px-2 pt-1">
+            <div
+              className="p-1 rounded-full cursor-pointer"
+              onClick={() => dispatch(setIsSearchOpen({ isOpen: false }))}
+            >
+              <IoMdArrowRoundBack size={24} />
+            </div>
+            <SearchBox className="w-full " />
+          </div>
+          <div className="absolute top-10 bg-primary z-[99999] w-full rounded-bl-md rounded-br-md">
+            <SearchResult />
+          </div>
         </div>
       </>
     );
@@ -108,17 +103,15 @@ const TopNavbar = () => {
           <div className="relative w-full h-full py-1">
             <nav
               className={cn(
-                "w-full h-full flex flex-col justify-center z-[999999] overflow-hidden",
+                "w-full h-full flex flex-col justify-center z-[999999]",
                 {
-                  "rounded-tl-sm rounded-tr-sm px-2": isSearchOpen,
-                  "bg-primary": isSearchOpen && windowWidth <= 768,
-                  "px-0": isSearchOpen && windowWidth > 768,
+                  "bg-primary rounded-tl-md rounded-tr-md":
+                    isSearchOpen && windowWidth <= 768,
                 }
               )}
             >
               {children}
             </nav>
-            {isSearchOpen && <SearchComponent />}
           </div>
         </div>
       </>
@@ -140,18 +133,7 @@ const TopNavbar = () => {
         </div>
       </div>
     ) : (
-      <div className="flex gap-x-2 items-center h-full">
-        <div
-          className="p-0.5"
-          onClick={() => {
-            dispatch(setIsSearchOpen({ isOpen: false }));
-            dispatch(setSearchVal({ search: null }));
-          }}
-        >
-          <IoMdArrowRoundBack size={24} />
-        </div>
-        <SearchBox className="flex-1" />
-      </div>
+      <SearchComponent />
     );
   };
 
@@ -166,7 +148,9 @@ const TopNavbar = () => {
           className={cn("w-full h-full py-1 flex justify-center gap-x-1", {
             "bg-primary rounded-tl-sm rounded-tr-sm":
               isSearchOpen && windowWidth > 768,
+            "rounded-br-sm rounded-bl-sm": !userid && !searchVal,
           })}
+          ref={searchRef}
         >
           {!isSearchOpen ? (
             Buttons.map((button, index) => (
@@ -179,22 +163,7 @@ const TopNavbar = () => {
               </div>
             ))
           ) : (
-            <div
-              className={cn("flex-1 flex gap-x-2 items-center h-full", {
-                "px-2": isSearchOpen,
-              })}
-            >
-              <div
-                className="hover:bg-violet-900 hover:bg-opacity-40 p-1.5 rounded-full cursor-pointer"
-                onClick={() => {
-                  dispatch(setIsSearchOpen({ isOpen: false }));
-                  dispatch(setSearchVal({ search: null }));
-                }}
-              >
-                <IoMdArrowRoundBack size={24} />
-              </div>
-              <SearchBox className="w-full" />
-            </div>
+            <SearchComponent />
           )}
         </div>
 

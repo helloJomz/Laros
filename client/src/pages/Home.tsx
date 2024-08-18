@@ -2,6 +2,7 @@ import CreatePost from "../components/common/CreatePost";
 import { usePost } from "@/hooks/usePost";
 import PostType from "../components/common/post/PostType";
 import { Helmet } from "react-helmet-async";
+import PostSkeleton from "@/components/profile/skeletons/PostSkeleton";
 
 const Home = () => {
   const { fetchedPosts } = usePost().postStates;
@@ -41,9 +42,7 @@ const Home = () => {
               })}
             </div>
           ) : (
-            <div>
-              <span>loading...</span>
-            </div>
+            <PostSkeleton />
           )}
         </div>
       </div>

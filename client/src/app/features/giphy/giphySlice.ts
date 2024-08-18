@@ -1,15 +1,10 @@
-import { BASE_API_URL } from "@/app/constants";
 import { GiphyResultObject } from "@/types/giphy";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { apiSlice } from "@/app/services/api";
 
-export const giphyApiSlice = createApi({
-  reducerPath: "giphy",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_API_URL}/giphy`,
-  }),
+export const giphyApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     randomGif: builder.query<GiphyResultObject, void>({
-      query: () => "/random_bg_gif",
+      query: () => "/giphy/random_bg_gif",
     }),
   }),
 });

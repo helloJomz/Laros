@@ -9,12 +9,12 @@ import {
   useCheckIfDisplayNameExistsMutation,
   useCheckIfEmailExistsMutation,
 } from "../../app/features/auth/authApiSlice";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaCheckDouble } from "react-icons/fa";
 import { BsBracesAsterisk } from "react-icons/bs";
 import { setCredentials } from "@/app/features/auth/authSlice";
 import { useDispatch } from "react-redux";
+import { useDebouncedCallback } from "use-debounce";
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -23,13 +23,6 @@ const SignupForm = () => {
   const [signup] = useSignupMutation();
   const [checkIfDisplayNameExists] = useCheckIfDisplayNameExistsMutation();
   const [checkIfEmailExists] = useCheckIfEmailExistsMutation();
-
-  const [emailValue, setEmailValue] = useState<string | null>(null);
-  const [displayNameValue, setDisplayNameValue] = useState<string | null>(null);
-
-  const { debouncedValue: debouncedEmailValue } = useDebounce(emailValue);
-  const { debouncedValue: debouncedDisplayNameValue } =
-    useDebounce(displayNameValue);
 
   const [validationEmailError, setValidationEmailError] = useState<{
     error: boolean;
@@ -45,13 +38,14 @@ const SignupForm = () => {
     error: false,
   });
 
+  const [notify, setNotify] = useState<boolean>(false);
+
   const handleSignUp = async (values: any) => {
     try {
       const response = await signup(values);
       const data = response.data;
       dispatch(
         setCredentials({
-          accessToken: data.gqeRxt3B9mZ2i.ks23kfm,
           user: {
             userid: data.userObj._id,
             displayname: data.userObj.displayname,
@@ -64,53 +58,47 @@ const SignupForm = () => {
     }
   };
 
-  useEffect(() => {
-    const executeEmailChecking = async () => {
-      const val: string = debouncedEmailValue!;
-      const res: any = await checkIfEmailExists(val);
-      if (res.error) {
+  const debounceEmailCheck = useDebouncedCallback(
+    async (value: string) => {
+      const { error } = await checkIfEmailExists(value);
+      if (error) {
         setValidationEmailError({
           error: true,
-          msg: res.error.data.error,
+          msg: "Email is already taken.",
         });
+      } else {
+        setValidationEmailError({ error: false });
       }
-    };
+    },
 
-    if (debouncedEmailValue) executeEmailChecking();
+    400
+  );
 
-    return () => {
-      setValidationEmailError({
-        error: false,
-        msg: null,
-      });
-    };
-  }, [debouncedEmailValue]);
-
-  useEffect(() => {
-    const executeDisplayNameChecking = async () => {
-      const val: string = debouncedDisplayNameValue!;
-      const res: any = await checkIfDisplayNameExists(val);
-
-      if (res.error) {
+  const debounceDisplaynameCheck = useDebouncedCallback(
+    async (value: string) => {
+      const { error } = await checkIfDisplayNameExists(value);
+      if (error) {
         setValidationDisplayNameError({
           error: true,
-          msg: res.error.data.error,
+          msg: "Displayname is already taken.",
+        });
+      } else {
+        setValidationDisplayNameError({
+          error: false,
         });
       }
-    };
-
-    if (debouncedDisplayNameValue) executeDisplayNameChecking();
-
-    return () => {
-      setValidationDisplayNameError({
-        error: false,
-        msg: null,
-      });
-    };
-  }, [debouncedDisplayNameValue]);
+    },
+    400
+  );
 
   return (
-    <div>
+    <div className="px-6 flex flex-col gap-y-2">
+      {notify && (
+        <div className="bg-red-200 p-2 rounded text-red-500 text-sm text-center mb-4">
+          <span>Check for errors, and please try again.</span>
+        </div>
+      )}
+
       <Formik
         initialValues={{
           displayname: "",
@@ -121,9 +109,19 @@ const SignupForm = () => {
         validationSchema={SignupUserSchema}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           setTimeout(async () => {
+            setNotify(false);
             setSubmitting(true);
+            if (
+              validationDisplayNameError.error ||
+              validationEmailError.error
+            ) {
+              setNotify(true);
+              setSubmitting(false);
+              return;
+            }
             await handleSignUp(values);
             resetForm();
+
             setSubmitting(false);
             navigate("/upload/avatar", {
               state: { from: "/signup", isNew: true },
@@ -149,33 +147,29 @@ const SignupForm = () => {
                   onChange={(e) => {
                     const value = e.target.value;
                     setFieldValue("email", value);
-                    setEmailValue(value);
+                    debounceEmailCheck(value);
                   }}
                   className={
-                    touched &&
-                    !errors.email &&
                     validationEmailError.error === false &&
-                    !validationEmailError.msg &&
-                    emailValue
+                    values.email &&
+                    !errors.email
                       ? "border border-green-500"
                       : ""
                   }
                 />
 
-                {touched &&
+                {values.email &&
                   validationEmailError.error === true &&
-                  validationEmailError.msg && (
+                  !errors.email && (
                     <div className="flex gap-x-1 text-xs text-red-500 items-center">
                       <BsBracesAsterisk />
                       <span>{validationEmailError.msg}</span>
                     </div>
                   )}
 
-                {touched &&
-                  !errors.email &&
+                {values.email &&
                   validationEmailError.error === false &&
-                  !validationEmailError.msg &&
-                  emailValue && (
+                  !errors.email && (
                     <div className="absolute top-10 right-3 text-green-500">
                       <FaCheckDouble />
                     </div>
@@ -191,33 +185,29 @@ const SignupForm = () => {
                   onChange={(e) => {
                     const value = e.target.value;
                     setFieldValue("displayname", value);
-                    setDisplayNameValue(value);
+                    debounceDisplaynameCheck(value);
                   }}
                   className={
-                    touched &&
-                    !errors.displayname &&
                     validationDisplayNameError.error === false &&
-                    !validationDisplayNameError.msg &&
-                    displayNameValue
+                    values.displayname &&
+                    !errors.displayname
                       ? "border border-green-500"
                       : ""
                   }
                 />
 
-                {touched &&
+                {values.displayname &&
                   validationDisplayNameError.error === true &&
-                  validationDisplayNameError.msg && (
+                  !errors.displayname && (
                     <div className="flex gap-x-1 text-xs text-red-500 items-center">
                       <BsBracesAsterisk />
-                      <span>{validationDisplayNameError.msg}</span>
+                      <span>{validationEmailError.msg}</span>
                     </div>
                   )}
 
-                {touched &&
-                  !errors.displayname &&
+                {values.displayname &&
                   validationDisplayNameError.error === false &&
-                  !validationDisplayNameError.msg &&
-                  displayNameValue && (
+                  !errors.displayname && (
                     <div className="absolute top-10 right-3 text-green-500">
                       <FaCheckDouble />
                     </div>

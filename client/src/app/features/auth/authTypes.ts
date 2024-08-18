@@ -8,7 +8,6 @@ interface ShapeOfUser {
 
 export interface IState {
   user: ShapeOfUser;
-  token: string | null;
 }
 
 export interface CredentialsPayload {

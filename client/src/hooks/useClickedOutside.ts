@@ -1,17 +1,17 @@
-import { RefObject, useEffect } from "react";
+import { useEffect, useRef, RefObject } from "react";
 
-export const useClickOutside = (
-  searchBoxRef: RefObject<HTMLDivElement>,
-  setIsOpenSearch: (status: boolean) => void
-) => {
+const useClickedOutside = (
+  callback: () => void
+): { componentRef: RefObject<HTMLDivElement> } => {
+  const componentRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // If clicked outside set the setIsOpenSearch to false which causes the search box to dissapear.
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchBoxRef.current &&
-        !searchBoxRef.current.contains(event.target as Node)
+        componentRef.current &&
+        !componentRef.current.contains(event.target as Node)
       ) {
-        setIsOpenSearch(false);
+        callback();
       }
     };
 
@@ -20,5 +20,9 @@ export const useClickOutside = (
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [searchBoxRef, setIsOpenSearch]);
+  }, [callback]);
+
+  return { componentRef };
 };
+
+export default useClickedOutside;

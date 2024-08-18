@@ -62,7 +62,7 @@ const SearchResult = () => {
   const EmptySearchHistory = () => {
     return (
       <>
-        <div className="py-1 text-center">
+        <div className="pt-2 pb-3 text-center">
           <span className="text-xs md:text-sm">No recent search history.</span>
         </div>
       </>
@@ -72,7 +72,7 @@ const SearchResult = () => {
   const SearchHistoriesWithValue = () => {
     return (
       <>
-        <div className="flex justify-between items-center pt-1.5">
+        <div className="flex justify-between items-center pt-1.5 px-4">
           <span className="text-sm md:text-md font-semibold">Recent</span>
           <span
             className="text-xs hover:underline cursor-pointer"
@@ -82,22 +82,24 @@ const SearchResult = () => {
           </span>
         </div>
 
-        <div className="flex flex-col gap-y-2 md:gap-y-0.5">
+        <div className="flex flex-col gap-y-2 md:gap-y-0.5 px-4 pb-4 md:px-2 md:pb-2">
           {searchHistories.map((history, index) => (
             <div
-              className="flex justify-between items-center hover:bg-violet-900 hover:bg-opacity-40 lg:p-2 rounded cursor-pointer"
+              className="flex gap-x-3 justify-between items-center hover:bg-violet-900 hover:bg-opacity-40 lg:p-2 rounded cursor-pointer"
               key={`${index}-${history._id}`}
-              onClick={() => {
-                history.anon
-                  ? console.log(history._id)
-                  : history.user
-                  ? navigate(`/${history.user.displayname}`)
-                  : navigate(`/game/${history.game.guid}`);
-                dispatch(setIsSearchOpen({ isOpen: false }));
-                dispatch(setSearchVal({ search: null }));
-              }}
             >
-              <div className="flex gap-x-2 items-center text-sm">
+              <div
+                className="flex gap-x-2 items-center text-sm  w-full p-0.5"
+                onClick={() => {
+                  history.anon
+                    ? console.log(history._id)
+                    : history.user
+                    ? navigate(`/${history.user.displayname}`)
+                    : navigate(`/game/${history.game.guid}`);
+                  dispatch(setIsSearchOpen({ isOpen: false }));
+                  dispatch(setSearchVal({ search: null }));
+                }}
+              >
                 {history.anon ? (
                   <div className="w-8 h-8 rounded-full bg-gray-800 items-center flex flex-col justify-center">
                     <History stroke="#ffff" />
@@ -110,7 +112,7 @@ const SearchResult = () => {
                         : history.game.icon_url
                     }
                     alt=""
-                    className="w-8 h-8 rounded-full"
+                    className="w-8 h-8 rounded-full object-cover"
                   />
                 )}
 
@@ -145,8 +147,8 @@ const SearchResult = () => {
     return (
       <>
         <div className="flex flex-col gap-y-3 ">
-          {searchHistories.length === 0 && <EmptySearchHistory />}
-          {searchHistories.length > 0 && <SearchHistoriesWithValue />}
+          {userid && searchHistories.length === 0 && <EmptySearchHistory />}
+          {userid && searchHistories.length > 0 && <SearchHistoriesWithValue />}
         </div>
       </>
     );
@@ -155,7 +157,7 @@ const SearchResult = () => {
   return (
     <div>
       {!isResultLoading ? (
-        <div className="py-2 flex flex-col gap-y-3 ">
+        <div className="flex flex-col gap-y-3 px-4 py-4">
           {user.map((u: any) => (
             <div
               key={u.displayname}

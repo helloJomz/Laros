@@ -25,7 +25,7 @@ const AlertToast = ({
     <>
       <Alert
         className={cn(
-          "fixed bottom-3 left-1/2 transform -translate-x-1/2 w-[80%] md:w-fit md:left-3 md:transform-none md:translate-x-0 flex gap-x-2 md:gap-x-4 items-center cursor-pointer hover:bg-slate-800",
+          "z-[9999] fixed bottom-3 left-1/2 transform -translate-x-1/2 w-[80%] md:w-fit md:left-3 md:transform-none md:translate-x-0 flex gap-x-2 md:gap-x-4 items-center cursor-pointer hover:bg-slate-800",
           className,
           {
             "w-[24rem]": cutTheAlert,

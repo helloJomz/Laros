@@ -153,7 +153,10 @@ const GamePage = () => {
             </div>
             <div className="rounded w-full flex gap-x-2 flex-wrap text-center gap-y-2">
               {gameObject.platforms.map((p: any) => (
-                <Badge className="bg-gradient-to-r from-violet-500 to-fuchsia-600 w-fit">
+                <Badge
+                  key={p.id}
+                  className="bg-gradient-to-r from-violet-500 to-fuchsia-600 w-fit"
+                >
                   {p.name}
                 </Badge>
               ))}
@@ -181,7 +184,10 @@ const GamePage = () => {
                     gameObject.images.length - 1 === index
                   )
                     return (
-                      <div className="w-full h-full rounded col-span-2 px-20">
+                      <div
+                        key={image.medium_url}
+                        className="w-full h-full rounded col-span-2 px-20"
+                      >
                         <img
                           src={image.medium_url}
                           alt=""
@@ -191,7 +197,7 @@ const GamePage = () => {
                     );
 
                   return (
-                    <div className="w-full h-full ">
+                    <div key={image.medium_url} className="w-full h-full ">
                       <img
                         src={image.medium_url}
                         alt=""

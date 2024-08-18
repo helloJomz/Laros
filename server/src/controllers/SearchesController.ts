@@ -91,7 +91,7 @@ export const getAllRecentHistoryController = async (
 ) => {
   const { userid } = req.query;
 
-  if (userid !== null && userid !== undefined && userid !== "null")
+  if (userid === null && userid === undefined && userid === "null")
     return res
       .status(400)
       .json({ message: "UserId is required to get the recent history." });
@@ -123,8 +123,6 @@ export const deleteOneRecentHistoryController = async (
     userid: objectUserId,
     _id: objectHistoryId,
   });
-
-  console.log(deletedHistory);
 
   return res.status(200).json(deletedHistory);
 };
