@@ -9,7 +9,7 @@ import { UserModel } from "../models/User";
 import mongoose from "mongoose";
 
 const projectId = GOOGLE_STORAGE_PROJECT_ID;
-const keyFilename = GOOGLE_STORAGE_KEY;
+const keyFilename = "/etc/secrets/cloudkey.json";
 
 const storage = new Storage({
   projectId,
