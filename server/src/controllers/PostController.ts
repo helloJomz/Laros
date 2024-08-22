@@ -209,6 +209,7 @@ export const fetchPostsController = async (req: any, res: Response) => {
           $project: {
             _id: 1,
             userid: 1,
+            bg: 1,
             postType: 1,
             content: 1,
             postImgURL: 1,
@@ -243,7 +244,7 @@ export const fetchHomePostsController = async (req: any, res: Response) => {
   try {
     if (vieweruid !== null && vieweruid !== undefined && vieweruid !== "null") {
       const objectViewerUID = stringToObjectId(vieweruid.toString());
-
+      console.log("im still here");
       const skip = 0;
       const limit = 5;
 
@@ -328,6 +329,7 @@ export const fetchHomePostsController = async (req: any, res: Response) => {
           $project: {
             _id: 1,
             userid: 1,
+            bg: 1,
             postType: 1,
             content: 1,
             postImgURL: 1,
