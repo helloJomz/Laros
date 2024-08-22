@@ -44,9 +44,9 @@ const MainLayout = ({ currentLocation }: MainLayoutProps) => {
         <TopNavbar />
         <PromptToLogin />
         <CollectionOfModals />
-        <div className="flex-grow md:grid md:grid-cols-[25%,50%,25%] xl:grid-cols-[32.7%,34.6%,32.7%]">
+        <div className="flex-grow md:grid md:grid-cols-[25%,50%,25%] xl:grid-cols-[32.7%,34.6%,32.7%] overflow-y-auto">
           <LeftSideBar className="hidden md:block" />
-          <div className="h-full py-16 md:pt-16 md:pb-0 overflow-y-auto">
+          <div className="flex-grow pt-16 pb-14  md:pt-16 md:pb-0 ">
             <Outlet />
           </div>
           <RightSideBar className="hidden lg:block" />
