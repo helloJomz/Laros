@@ -22,4 +22,10 @@ const AnonymousRoute = ({ auth }: { auth: string }) => {
 //     : <Navigate to={redirectTarget} replace />;
 // };
 
+// const RoleAccess = ({ roles = [], user, redirectTarget }) => {
+//   return !roles.length || roles.includes(user?.role)
+//     ? <Outlet />
+//     : <Navigate to={redirectTarget} replace />;
+// };
+
 export { PrivateRoute, AnonymousRoute };
