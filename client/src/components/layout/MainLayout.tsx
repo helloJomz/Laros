@@ -29,7 +29,7 @@ const MainLayout = ({ currentLocation }: MainLayoutProps) => {
           <TopNavbar />
           <PromptToLogin />
           <CollectionOfModals />
-          <div className="flex-grow overflow-y-auto h-full ">
+          <div className="flex-grow overflow-y-auto h-full py-16">
             <Outlet />
           </div>
           <Alerts />
@@ -44,9 +44,9 @@ const MainLayout = ({ currentLocation }: MainLayoutProps) => {
         <TopNavbar />
         <PromptToLogin />
         <CollectionOfModals />
-        <div className="flex-grow md:grid md:grid-cols-[25%,50%,25%] xl:grid-cols-[32.7%,34.6%,32.7%] h-full overflow-y-auto">
+        <div className="flex-grow md:grid md:grid-cols-[25%,50%,25%] xl:grid-cols-[32.7%,34.6%,32.7%]">
           <LeftSideBar className="hidden md:block" />
-          <div className="h-full">
+          <div className="h-full py-16 md:pt-16 md:pb-0 overflow-y-auto">
             <Outlet />
           </div>
           <RightSideBar className="hidden lg:block" />

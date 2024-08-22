@@ -15,7 +15,7 @@ import ProfilePage from "./pages/ProfilePage";
 import GamePage from "./pages/GamePage";
 
 function App() {
-  const auth = useSelector(selectCurrentUser);
+  const { userid } = useSelector(selectCurrentUser);
   const { pathname: location } = useLocation();
 
   return (
@@ -23,7 +23,7 @@ function App() {
       <NavbarContextProvider>
         <UserContextProvider>
           <Routes>
-            <Route element={<AnonymousRoute auth={auth} />}>
+            <Route element={<AnonymousRoute auth={userid} />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
             </Route>
@@ -33,7 +33,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/:displayname" element={<ProfilePage />} />
 
-              <Route element={<PrivateRoute auth={auth} />}>
+              <Route element={<PrivateRoute auth={userid} />}>
                 <Route path="/upload/avatar" element={<UploadAvatar />} />
               </Route>
 

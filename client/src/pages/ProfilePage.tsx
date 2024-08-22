@@ -17,8 +17,6 @@ const ProfilePage = () => {
   const { isProfileError, isProfileLoading, profilePageEndpoint } =
     useProfile();
 
-  console.log(profilePageEndpoint);
-
   const [getUserByDisplayName] = useGetUserByDisplayNameMutation();
 
   useEffect(() => {

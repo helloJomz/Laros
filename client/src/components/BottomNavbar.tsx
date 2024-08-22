@@ -52,7 +52,7 @@ const BottomNavbar = () => {
 
   return (
     <>
-      <div className="w-full h-16 bg-gray-900 border-t border-slate-700">
+      <div className="fixed bottom-0 w-full h-16 bg-gray-900 border-t border-slate-700">
         <div className="flex gap-x-2 justify-between items-center h-full ">
           {Buttons.map(({ icon, onClick, label }, index) => {
             return (

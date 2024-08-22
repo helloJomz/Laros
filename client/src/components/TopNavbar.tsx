@@ -99,20 +99,15 @@ const TopNavbar = () => {
   const TopNavbarWrapper = ({ children }: { children: React.ReactNode }) => {
     return (
       <>
-        <div className="h-16 px-2  bg-gray-900">
-          <div className="relative w-full h-full py-1">
-            <nav
-              className={cn(
-                "w-full h-full flex flex-col justify-center z-[999999]",
-                {
-                  "bg-primary rounded-tl-md rounded-tr-md":
-                    isSearchOpen && windowWidth <= 768,
-                }
-              )}
-            >
-              {children}
-            </nav>
-          </div>
+        <div className="fixed top-0 w-full py-1 h-16 px-2  bg-gray-900 z-[999999]">
+          <nav
+            className={cn("w-full h-full flex flex-col justify-center ", {
+              "bg-primary rounded-tl-md rounded-tr-md":
+                isSearchOpen && windowWidth <= 768,
+            })}
+          >
+            {children}
+          </nav>
         </div>
       </>
     );
