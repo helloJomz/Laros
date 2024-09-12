@@ -1,13 +1,12 @@
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { cn } from "../lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchVal, selectSearchVal } from "@/app/features/nav/navSlice";
 import { useAddGameToRecentHistoryMutation } from "@/app/features/search/searchAPI";
 import { useUserContext } from "@/context/UserContext";
 import { addHistory } from "@/app/features/search/searchSlice";
-import { useDebouncedCallback } from "use-debounce";
 
 type SearchBoxProps = React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -16,8 +15,6 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
 
   const dispatch = useDispatch();
   const searchVal = useSelector(selectSearchVal);
-
-  const [text, setText] = useState<string>("");
 
   // FOR FOCUSING THE INPUTBOX WHEN THE COMPONENT MOUNTS
   const inputRef = useRef<HTMLInputElement>(null);
