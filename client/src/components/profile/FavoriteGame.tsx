@@ -16,7 +16,7 @@ const FavoriteGame = ({ className }: FavoriteGameProps) => {
         <span className="text-xs text-muted-foreground">Favorite games</span>
         <div className="flex justify-center lg:justify-normal gap-x-1 -space-x-2">
           <img
-            src="https://yt3.googleusercontent.com/wzEypbVsmY9BI-IbLwVius4UvC2rejtJB_PTXAdPpYXQ07EIjl5Ms55NCFq_dILwONpxrzE2xA=s900-c-k-c0x00ffffff-no-rj"
+            src="https://assets.nintendo.com/image/upload/v1718726257/Microsites/zelda-portal/videos/posters/TLoZ-EchoesOfWisdom-s"
             alt=""
             className="w-8 h-8 rounded-full object-cover cursor-pointer"
           />

@@ -32,8 +32,6 @@ const PostType = ({ postObject }: { postObject: PostObject }) => {
   const { setModalOpen, setHelper, modalType } = useModal();
   const { content, postImgURL, createdAt } = postObject;
 
-  console.log(postObject);
-
   const [ref, size] = useResizeImage(windowWidth);
 
   const isVerified: boolean = true;

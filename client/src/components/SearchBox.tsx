@@ -1,7 +1,7 @@
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { cn } from "../lib/utils";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchVal, selectSearchVal } from "@/app/features/nav/navSlice";
 import { useAddGameToRecentHistoryMutation } from "@/app/features/search/searchAPI";
@@ -16,6 +16,8 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
 
   const dispatch = useDispatch();
   const searchVal = useSelector(selectSearchVal);
+
+  const [text, setText] = useState<string>("");
 
   // FOR FOCUSING THE INPUTBOX WHEN THE COMPONENT MOUNTS
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,9 +63,9 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
     }
   };
 
-  const debouncedOnChange = useDebouncedCallback((value) => {
-    dispatch(setSearchVal({ search: value }));
-  }, 700);
+  // const debouncedOnChange = useDebouncedCallback((value) => {
+  //   dispatch(setSearchVal({ search: value }));
+  // }, 700);
 
   return (
     <div className={cn("justify-center items-center ", className)}>
@@ -74,8 +76,9 @@ const SearchBox = ({ className, ...props }: SearchBoxProps) => {
           ref={inputRef}
           {...props}
           onKeyDown={handleEnter}
+          value={searchVal as string}
           onChange={(e) => {
-            debouncedOnChange(e.target.value);
+            dispatch(setSearchVal({ search: e.target.value }));
           }}
         />
 

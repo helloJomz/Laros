@@ -37,11 +37,11 @@ const CreatePost = () => {
 
   const [selectedFile, setSelectedFile] = useState<File | string | null>(null);
 
-  const handleImageClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const handleImageClick = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -165,7 +165,8 @@ const CreatePost = () => {
           {!usePreviewImg && (
             <div
               className="bg-slate-700 p-1.5 rounded-full hover:bg-slate-600 cursor-pointer"
-              onClick={handleImageClick}
+              // DISABLED!
+              // onClick={handleImageClick}
             >
               <Images size={18} />
             </div>

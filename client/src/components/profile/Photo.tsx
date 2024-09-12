@@ -2,7 +2,6 @@ import { useNavbarContext } from "@/context/NavbarContext";
 import { cn } from "@/lib/utils";
 import FollowLikeButton from "./FollowLikeButton";
 import { useProfile } from "@/hooks/useProfile";
-import { useModal } from "@/hooks/useModal";
 
 type PhotoProps = {
   variant: "display" | "cover";
@@ -14,7 +13,7 @@ const Photo = ({ variant }: PhotoProps) => {
   const { userObject } = useProfile();
   const { imgURL, displayname } = userObject || {};
 
-  const { setModalOpen } = useModal();
+  // const { setModalOpen } = useModal();
 
   if (variant === "cover")
     return (
@@ -39,7 +38,6 @@ const Photo = ({ variant }: PhotoProps) => {
             "w-40 h-40": windowWidth <= 500,
           }
         )}
-        onClick={() => setModalOpen("displaypicture")}
       >
         <img
           src={imgURL}
